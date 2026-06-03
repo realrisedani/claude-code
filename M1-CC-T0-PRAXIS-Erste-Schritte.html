@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praxis-Übung: Claude Code erste Schritte</title>
+<style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--orange:#F97316;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--orange);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.pill-green{background:var(--green)}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.steps-header{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.75rem}
+.step{background:var(--card);border:1px solid var(--border);border-radius:.75rem;padding:1rem 1.1rem;margin-bottom:.65rem;display:grid;grid-template-columns:2.5rem 1fr;gap:.75rem;align-items:start}
+.step-num{width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0}
+.s1 .step-num{background:rgba(124,58,237,.2);color:var(--accent);border:1.5px solid var(--accent)}
+.s2 .step-num{background:rgba(6,182,212,.2);color:var(--cyan);border:1.5px solid var(--cyan)}
+.s3 .step-num{background:rgba(16,185,129,.2);color:var(--green);border:1.5px solid var(--green)}
+.s4 .step-num{background:rgba(249,115,22,.2);color:var(--orange);border:1.5px solid var(--orange)}
+.step-body h3{font-size:.9rem;font-weight:700;margin-bottom:.35rem}
+.step-body p{font-size:.83rem;color:var(--muted);margin-bottom:.45rem;line-height:1.5}
+.cmd{background:#0D0D1A;border:1px solid var(--border);border-radius:.4rem;padding:.5rem .85rem;font-family:'SF Mono','Fira Code',monospace;font-size:.82rem;color:var(--green);display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem}
+.cmd-comment{color:var(--muted);font-size:.75rem}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:.3rem;margin-right:.3rem;text-transform:uppercase;letter-spacing:.05em}
+.tag-v{background:rgba(124,58,237,.2);color:var(--accent)}
+.tag-t{background:rgba(6,182,212,.2);color:var(--cyan)}
+.tag-b{background:rgba(16,185,129,.2);color:var(--green)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.83rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}
+.card ul li b{color:var(--cyan)}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.5}
+.box-orange{background:rgba(249,115,22,.08);border-color:var(--orange)}
+.box-orange b{color:var(--orange)}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}
+.box-green b{color:var(--green)}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}
+.box-cyan b{color:var(--cyan)}
+.preview{background:#0D0D1A;border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin:.5rem 0;font-size:.82rem}
+.preview-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem}
+.btn-demo{display:inline-block;padding:.5rem 1.2rem;border-radius:.4rem;font-weight:700;font-size:.85rem;margin:.25rem 0}
+.btn-before{background:#3B82F6;color:#fff}
+.btn-after{background:#F97316;color:#fff}
+.arrow{color:var(--muted);margin:0 .75rem;font-size:.9rem}
+.iteration{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.outcome{background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(16,185,129,.06));border:1px solid var(--orange);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.outcome b{color:var(--orange)}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;margin:.5rem 0}
+.checklist li{display:flex;align-items:center;gap:.6rem}
+.check{width:1.1rem;height:1.1rem;border-radius:.2rem;background:rgba(16,185,129,.2);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--green);flex-shrink:0}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}
+.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+</style>
+</head>
+<body><div class="wrap">
+
+  <div class="meta">
+    <span class="pill">Praxis-Übung</span>
+    <span class="pill pill-green">Track 0</span>
+    <span class="dur">~15 Min · Hands-on</span>
+  </div>
+
+  <h1>Claude Code: Erste Schritte</h1>
+  <p class="sub">Installieren → Authentifizieren → HTML generieren → im Browser öffnen → erste Iteration</p>
+
+  <div class="facts">
+    <div class="fact"><div class="fact-val">4 Schritte</div><div class="fact-lbl">von 0 zu HTML</div></div>
+    <div class="fact"><div class="fact-val">1 Prompt</div><div class="fact-lbl">HTML generieren</div></div>
+    <div class="fact"><div class="fact-val">open</div><div class="fact-lbl">im Browser</div></div>
+    <div class="fact"><div class="fact-val">Orange!</div><div class="fact-lbl">erste Iteration</div></div>
+  </div>
+
+  <p class="steps-header">Die 4 Schritte</p>
+
+  <!-- SCHRITT 1 -->
+  <div class="step s1">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Claude Code installieren <span class="tag tag-v">Terminal</span></h3>
+      <p>Einmalig installieren — danach steht <code>claude</code> global zur Verfügung.</p>
+      <div class="cmd"><span>npm install -g @anthropic-ai/claude-code</span></div>
+      <div class="cmd"><span>claude --version</span><span class="cmd-comment"># Erfolg: zeigt Versionsnummer</span></div>
+      <div class="box box-cyan" style="margin-top:.5rem">💡 <b>Fehler "permission denied"?</b> Dann: <code>sudo npm install -g @anthropic-ai/claude-code</code> — oder Node.js Version prüfen (mind. v18).</div>
+    </div>
+  </div>
+
+  <!-- SCHRITT 2 -->
+  <div class="step s2">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Authentifizieren <span class="tag tag-t">Auth</span></h3>
+      <p>Beim ersten Start fragt Claude Code nach deinem Account. Zwei Optionen:</p>
+      <div class="cmd"><span>claude</span><span class="cmd-comment"># startet Auth-Flow automatisch</span></div>
+      <div class="grid2" style="margin-top:.5rem">
+        <div class="card">
+          <h3>Option A — Claude Pro</h3>
+          <ul>
+            <li><b>claude.ai/pro</b> — $20/Mo</li>
+            <li>Im Terminal: "Login with Claude.ai"</li>
+            <li>Browser öffnet sich automatisch</li>
+            <li>Einfachster Start</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Option B — API Key</h3>
+          <ul>
+            <li><b>console.anthropic.com</b> → API Keys</li>
+            <li>Key kopieren</li>
+            <li><b>export ANTHROPIC_API_KEY=</b>sk-...</li>
+            <li>Flexibel, pay-per-use</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHRITT 3 -->
+  <div class="step s3">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Erste HTML-Seite generieren <span class="tag tag-b">Magie</span></h3>
+      <p>Ordner erstellen, Claude starten, Prompt eingeben — Claude schreibt die Datei direkt.</p>
+      <div class="cmd"><span>mkdir mein-projekt && cd mein-projekt</span></div>
+      <div class="cmd"><span>claude</span><span class="cmd-comment"># Session starten</span></div>
+      <div class="box box-green" style="margin-top:.5rem">
+        <b>Dein erster Prompt:</b><br>
+        <code style="display:block;margin-top:.35rem;font-size:.85rem;color:#F1F5F9">"Erstelle eine moderne index.html mit einem großen Titel, kurzer Beschreibung und einem blauen Call-to-Action-Button."</code>
+      </div>
+      <p style="margin-top:.4rem;font-size:.8rem;color:var(--muted)">Claude erstellt <code>index.html</code> direkt auf deiner Festplatte — kein Copy-Paste nötig.</p>
+      <div class="cmd"><span>open index.html</span><span class="cmd-comment"># öffnet im Standard-Browser (Mac)</span></div>
+      <div class="cmd"><span>start index.html</span><span class="cmd-comment"># Windows</span></div>
+    </div>
+  </div>
+
+  <!-- SCHRITT 4 -->
+  <div class="step s4">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Erste Iteration — Button orange <span class="tag tag-v" style="background:rgba(249,115,22,.2);color:var(--orange)">Iteration</span></h3>
+      <p>Das ist der entscheidende Unterschied zu Browser-Claude: Claude ändert die echte Datei. Kein Copy-Paste.</p>
+
+      <div class="preview">
+        <div class="preview-label">Vorher → Nachher</div>
+        <div class="iteration">
+          <span class="btn-demo btn-before">Button</span>
+          <span class="arrow">→ "Mach den Button orange" →</span>
+          <span class="btn-demo btn-after">Button</span>
+        </div>
+      </div>
+
+      <div class="box box-orange" style="margin-top:.5rem">
+        <b>Im Terminal (Claude läuft noch):</b><br>
+        <code style="display:block;margin-top:.35rem;font-size:.85rem;color:#F1F5F9">"Mach den Button orange."</code><br>
+        <span style="font-size:.8rem">→ Claude ändert die Datei → Browser neu laden → fertig.</span>
+      </div>
+
+      <div class="grid2" style="margin-top:.5rem">
+        <div class="card">
+          <h3>Was Claude tut</h3>
+          <ul>
+            <li>Liest <b>index.html</b> automatisch</li>
+            <li>Findet den Button-CSS</li>
+            <li>Ändert <b>background</b> zu #F97316</li>
+            <li>Speichert die Datei direkt</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Dein Flow</h3>
+          <ul>
+            <li>Prompt tippen</li>
+            <li>Claude arbeitet (~3 Sek)</li>
+            <li><b>Browser</b> Cmd+R neu laden</li>
+            <li>Änderung sehen ✓</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLISTE -->
+  <div class="box box-green">
+    <b>Checkliste — hast du alles gemacht?</b>
+    <ul class="checklist" style="margin-top:.5rem">
+      <li><div class="check">✓</div> claude --version zeigt Versionsnummer</li>
+      <li><div class="check">✓</div> claude startet ohne Fehler</li>
+      <li><div class="check">✓</div> index.html wurde von Claude erstellt</li>
+      <li><div class="check">✓</div> Seite öffnet sich im Browser</li>
+      <li><div class="check">✓</div> Button ist nach Prompt orange</li>
+    </ul>
+  </div>
+
+  <!-- OUTCOME -->
+  <div class="outcome">
+    🎯 <span><b>Lernziel erreicht:</b> Du hast Claude Code installiert, authentifiziert, eine HTML-Seite per Sprache erstellt, im Browser geöffnet und deine erste Iteration durchgeführt. Das ist der vollständige Claude-Code-Loop.</span>
+  </div>
+
+  <!-- EXTRA TIPPS -->
+  <div class="grid2">
+    <div class="card">
+      <h3>Nützliche Befehle</h3>
+      <ul>
+        <li><b>/help</b> — alle Befehle</li>
+        <li><b>/clear</b> — Context reset</li>
+        <li><b>Esc</b> — Eingabe abbrechen</li>
+        <li><b>/exit</b> — Session beenden</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Nächste Iterationen</h3>
+      <ul>
+        <li>"Füge eine Navbar hinzu"</li>
+        <li>"Mach das Layout responsive"</li>
+        <li>"Füge Google Font Inter ein"</li>
+        <li>"Dark Mode toggle"</li>
+      </ul>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a href="M1-CC-T0-07-Claude-Code-Installieren.html">← L7 Installieren</a>
+    <span>Track 0 · Praxis</span>
+    <a href="M1-CC-T0-08-Erstes-Magie-Projekt.html">L8 Erstes Magie-Projekt →</a>
+  </nav>
+
+</div></body></html>
