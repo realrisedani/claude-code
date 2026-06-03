@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T0 · L3 — Was kostet AI wirklich</title>
+<style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem;width:100%}
+
+/* Header */
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--cyan);font-size:1rem;margin-bottom:2rem}
+
+/* Quick-facts */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:2rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.75rem 1rem;text-align:center}
+.fact-val{font-size:1.1rem;font-weight:800}
+.fact-lbl{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+
+/* Content grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem 1.1rem}
+.card h3{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.6rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.88rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}
+.card ul li span{color:var(--cyan);font-weight:700}
+
+/* Highlight row */
+.highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.75rem}
+.hl{border-radius:.6rem;padding:.8rem 1rem;text-align:center;font-size:.85rem}
+.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}
+.hl-w{background:rgba(245,158,11,.1);border:1px solid var(--warn)}
+.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}
+.hl-val{font-size:1.3rem;font-weight:800;margin-bottom:.2rem}
+.hl-g .hl-val{color:var(--green)}
+.hl-w .hl-val{color:var(--warn)}
+.hl-r .hl-val{color:var(--red)}
+
+/* Warning box */
+.warn-box{background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:.6rem;padding:.8rem 1rem;margin-bottom:.75rem;font-size:.88rem;display:flex;gap:.6rem;align-items:flex-start}
+.warn-box .icon{font-size:1.1rem;flex-shrink:0}
+strong{color:var(--red)}
+
+/* Outcome */
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.9rem 1.1rem;display:flex;align-items:center;gap:.75rem}
+.outcome-text{font-size:.88rem}
+.outcome-text b{color:var(--cyan)}
+
+/* Nav */
+.nav{display:flex;justify-content:space-between;margin-top:2rem;padding-top:1.25rem;border-top:1px solid var(--border);font-size:.82rem;color:var(--muted)}
+.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="meta">
+    <span class="pill">Track 0 · L3</span>
+    <span class="dur">⏱ ~15 Min</span>
+  </div>
+
+  <h1>Was kostet AI wirklich?</h1>
+  <p class="sub">Bewusste Kosten-Entscheidung: Free vs Pro vs API</p>
+
+  <!-- Facts -->
+  <div class="facts">
+    <div class="fact"><div class="fact-val">3</div><div class="fact-lbl">Bezahlmodelle</div></div>
+    <div class="fact"><div class="fact-val">$20/Mo</div><div class="fact-lbl">Claude Pro</div></div>
+    <div class="fact"><div class="fact-val">$14/Mo</div><div class="fact-lbl">100-Fragen-Bot</div></div>
+  </div>
+
+  <!-- Highlights -->
+  <div class="highlights">
+    <div class="hl hl-g"><div class="hl-val">Free</div>Für Einsteiger &amp; Testen</div>
+    <div class="hl hl-w"><div class="hl-val">Pro $20</div>Für tägliche Nutzung</div>
+    <div class="hl hl-r"><div class="hl-val">API</div>Für eigene Produkte</div>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid">
+    <div class="card">
+      <h3>Pro-Vergleich</h3>
+      <ul>
+        <li>Claude Pro — <span>$20/Mo</span></li>
+        <li>ChatGPT Plus — <span>$20/Mo</span></li>
+        <li>Gemini Advanced — <span>$22/Mo</span></li>
+        <li>Alle drei? — <span>$62/Mo</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Realistisches Agentur-Budget</h3>
+      <ul>
+        <li>Claude Pro — <span>$20</span></li>
+        <li>API-Kosten — <span>$50–80</span></li>
+        <li>Weitere Tools — <span>$120</span></li>
+        <li>Total — <span>$190–220/Mo</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>API: Wie Token-Preise funktionieren</h3>
+      <ul>
+        <li>1.000 Token ≈ 750 Wörter</li>
+        <li>Sonnet Input: <span>$3/MTok</span></li>
+        <li>Sonnet Output: <span>$15/MTok</span></li>
+        <li>Dieser Kurs: <span>$50–100 gesamt</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Cost-Discipline-Regeln</h3>
+      <ul>
+        <li>Spending-Limit setzen</li>
+        <li>Günstiges Modell für einfache Tasks</li>
+        <li>/cost nach jeder Session</li>
+        <li>Budget pro Projekt definieren</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Warning -->
+  <div class="warn-box">
+    <span class="icon">🚨</span>
+    <span><strong>Die $300-Schock-Falle:</strong> Kein Spending-Limit → Claude läuft endlos in Loops → Monatsrechnung explodiert. Immer Limit setzen in <b>console.anthropic.com</b>.</span>
+  </div>
+
+  <!-- Outcome -->
+  <div class="outcome">
+    <span style="font-size:1.4rem">✅</span>
+    <div class="outcome-text">Du hast einen <b>Anthropic-Account mit Safety-Limit</b> und eine bewusste <b>Pro-Entscheidung</b> für deine Situation.</div>
+  </div>
+
+  <nav class="nav">
+    <a href="M1-CC-T0-02-AI-Landschaft.html">← L2 AI-Landschaft</a>
+    <span>Track 0 · 3 von 10</span>
+    <a href="M1-CC-T0-04-Computer-Basics.html">L4 Computer-Basics →</a>
+  </nav>
+
+</div>
+</body>
+</html>

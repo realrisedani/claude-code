@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L40 — Eval Loop | Track 7 · Modul 5</title>
+<style>
+  :root {
+    --bg: #0F0F1A; --card: #1A1A2E; --accent: #7C3AED; --cyan: #06B6D4;
+    --green: #10B981; --warn: #F59E0B; --red: #EF4444; --white: #F1F5F9;
+    --muted: #94A3B8; --border: #2D2D4E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--white); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 16px; line-height: 1.7; min-height: 100vh; position: relative; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; position: relative; z-index: 1; }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 48px; font-size: 13px; color: var(--muted); }
+  .nav a { color: var(--cyan); text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+  .track-badge { background: linear-gradient(135deg, var(--accent), #5B21B6); color: #fff; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .lesson-header { margin-bottom: 48px; }
+  .lesson-header .meta { font-size: 13px; color: var(--muted); margin-bottom: 12px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .lesson-header h1 { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--white) 0%, var(--green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 16px; }
+  .lesson-header .subtitle { font-size: 1.1rem; color: var(--muted); max-width: 680px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-bottom: 28px; }
+  .card.accent-left { border-left: 3px solid var(--accent); }
+  .card.cyan-left { border-left: 3px solid var(--cyan); }
+  .card.green-left { border-left: 3px solid var(--green); }
+  .card.warn-left { border-left: 3px solid var(--warn); }
+  .card.red-left { border-left: 3px solid var(--red); }
+  h2 { font-size: 1.5rem; font-weight: 700; color: var(--white); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  h2 .num { background: var(--accent); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  h3 { font-size: 1.1rem; font-weight: 600; color: var(--cyan); margin-bottom: 12px; margin-top: 20px; }
+  h3:first-child { margin-top: 0; }
+  .highlight { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+  .highlight.cyan { background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.25); }
+  .highlight.green { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.25); }
+  .highlight.warn { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); }
+  .highlight.red { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+  pre { background: #0A0A14; border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; overflow-x: auto; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13.5px; line-height: 1.6; margin: 16px 0; color: #E2E8F0; }
+  code { font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 0.88em; background: rgba(124,58,237,0.15); padding: 2px 6px; border-radius: 4px; color: var(--cyan); }
+  pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+  ul, ol { padding-left: 20px; margin: 12px 0; }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--white); }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th { background: rgba(124,58,237,0.2); color: var(--white); padding: 10px 14px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); color: var(--white); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } .lesson-header h1 { font-size: 1.8rem; } }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag.accent { background: rgba(124,58,237,0.2); color: var(--accent); border: 1px solid rgba(124,58,237,0.3); }
+  .tag.cyan { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+  .tag.green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .tag.warn { background: rgba(245,158,11,0.15); color: var(--warn); border: 1px solid rgba(245,158,11,0.3); }
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 36px 0; }
+  .practice-box { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 28px 32px; margin-top: 32px; }
+  .practice-box h3 { color: var(--green); margin-top: 0; }
+  .step-flow { display: flex; gap: 0; flex-wrap: wrap; margin: 24px 0; }
+  .step-flow-item { flex: 1; min-width: 120px; text-align: center; position: relative; padding: 16px 8px; }
+  .step-flow-item:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 20px; }
+  .step-flow-circle { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #5B21B6); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; margin: 0 auto 8px; font-size: 16px; }
+  .step-flow-label { font-size: 12px; color: var(--muted); }
+  .score-bar { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+  .score-bar-fill { height: 8px; border-radius: 4px; }
+  .score-bar-label { font-size: 13px; color: var(--muted); min-width: 80px; }
+  .score-bar-val { font-size: 13px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <nav class="nav">
+    <a href="M5-AGY-39-Pricing.html">← L39 Pricing</a>
+    <span class="track-badge">Track 7 · Modul 5 · Agency Delivery</span>
+    <a href="M5-AGY-41-Knowledge-Base.html">L41 Knowledge Base →</a>
+  </nav>
+
+  <div class="lesson-header">
+    <div class="meta">
+      <span>🔬 Lektion 40</span>
+      <span>⏱ ~30 Min Lesezeit</span>
+      <span class="tag green">Evals</span>
+      <span class="tag accent">Engineering</span>
+    </div>
+    <h1>Eval Loop</h1>
+    <p class="subtitle">Prompt ändern → Output besser oder schlechter? Ohne Evals: Raten. Mit Evals: Zahlen. So baust du systematische Qualitätssicherung für AI-Outputs.</p>
+  </div>
+
+  <!-- Warum Evals -->
+  <div class="card accent-left">
+    <h2><span class="num">1</span> Warum Evals — der Unterschied zwischen Raten und Wissen</h2>
+    <p>Du änderst den System-Prompt deines Chatbots. Er klingt jetzt "irgendwie besser" — oder doch schlechter? Du testest 5 Beispiele manuell und entscheidest. Das Problem: 5 Beispiele sind keine repräsentative Stichprobe. Du optimierst auf 5, regredierst auf 500.</p>
+
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="highlight red">
+        <strong style="color: var(--red);">❌ Ohne Evals</strong>
+        <ul style="margin-top: 10px; color: var(--muted);">
+          <li>Gefühl statt Daten</li>
+          <li>Regressionen unbemerkt</li>
+          <li>Kein Vergleich von Prompt-Versionen</li>
+          <li>Jede Änderung ist ein Glücksspiel</li>
+          <li>Schwer delegierbar</li>
+        </ul>
+      </div>
+      <div class="highlight green">
+        <strong style="color: var(--green);">✅ Mit Evals</strong>
+        <ul style="margin-top: 10px; color: var(--muted);">
+          <li>Score vorher: 72% — nachher: 89%</li>
+          <li>Regressionen sofort sichtbar</li>
+          <li>Jede Prompt-Änderung messbar</li>
+          <li>CI/CD für AI-Outputs möglich</li>
+          <li>Automatisierbar, skalierbar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight warn" style="margin-top: 20px;">
+      <strong>📐 Analogie:</strong> Evals sind für AI-Prompts was Unit-Tests für Code sind. Du würdest keinen Code deployen ohne Tests. Warum deployest du Prompts ohne Evals?
+    </div>
+
+    <h3>Was ist ein Eval-Set?</h3>
+    <p style="color: var(--muted);">Ein Eval-Set ist eine Sammlung von <strong style="color:var(--white)">Input/Expected-Output-Paaren</strong>, gegen die du dein System automatisch testest. Minimum: 20 Beispiele. Ideal: 50-100 für repräsentative Ergebnisse.</p>
+
+    <pre><code>// Eval-Case-Struktur
+{
+  "id": "eval-001",
+  "input": "Erkläre mir, wie ihr Onboarding funktioniert",
+  "expectedOutput": "Enthält: 3-Schritte, Zeitrahmen, Ansprechpartner",
+  "checkFn": "enthält alle 3 Pflicht-Elemente",
+  "category": "onboarding",
+  "priority": "high"
+}</code></pre>
+  </div>
+
+  <!-- Der Eval-Loop -->
+  <div class="card cyan-left">
+    <h2><span class="num">2</span> Der Eval-Loop — 6 Schritte</h2>
+
+    <div class="step-flow">
+      <div class="step-flow-item">
+        <div class="step-flow-circle">1</div>
+        <div class="step-flow-label">Eval-Set erstellen</div>
+      </div>
+      <div class="step-flow-item">
+        <div class="step-flow-circle">2</div>
+        <div class="step-flow-label">Baseline messen</div>
+      </div>
+      <div class="step-flow-item">
+        <div class="step-flow-circle">3</div>
+        <div class="step-flow-label">Prompt ändern</div>
+      </div>
+      <div class="step-flow-item">
+        <div class="step-flow-circle">4</div>
+        <div class="step-flow-label">Eval laufen</div>
+      </div>
+      <div class="step-flow-item">
+        <div class="step-flow-circle">5</div>
+        <div class="step-flow-label">Score vergleichen</div>
+      </div>
+      <div class="step-flow-item">
+        <div class="step-flow-circle">6</div>
+        <div class="step-flow-label">Commit/Revert</div>
+      </div>
+    </div>
+
+    <h3>Schritt 1: Eval-Set erstellen — Mindest-20-Regel</h3>
+    <p style="color: var(--muted);">20 Beispiele sind das absolute Minimum für statistische Aussagekraft. Sammle Beispiele aus:</p>
+    <ul style="color: var(--muted);">
+      <li><strong style="color:var(--white)">Real-World-Conversations:</strong> Exportiere die ersten 50 echten Nutzer-Anfragen</li>
+      <li><strong style="color:var(--white)">Edge Cases:</strong> Fragen die den Bot früher zum Scheitern gebracht haben</li>
+      <li><strong style="color:var(--white)">Happy-Path:</strong> Standard-Anfragen die gut funktionieren sollten</li>
+      <li><strong style="color:var(--white)">Adversarial:</strong> Versuche den Bot aus dem Rahmen zu bringen</li>
+    </ul>
+
+    <h3>Schritt 2: Baseline messen</h3>
+    <p style="color: var(--muted);">Führe Evals gegen den aktuellen Prompt aus und notiere den Score. Das ist deine Baseline — jede zukünftige Änderung wird dagegen gemessen.</p>
+    <pre><code>Baseline-Messung:
+  Prompt v1.0 → Score: 68/100 (68%)
+  ✓ 68 Cases passed
+  ✗ 32 Cases failed
+  Kategorien: onboarding 80%, pricing 55%, support 65%</code></pre>
+
+    <h3>Schritt 6: Commit oder Revert</h3>
+    <div class="two-col">
+      <div class="highlight green">
+        <strong style="color:var(--green)">✅ Committen wenn:</strong>
+        <ul style="margin-top: 8px; color: var(--muted);">
+          <li>Score ≥ Baseline + 3%</li>
+          <li>Kein Rückschritt in High-Priority-Cases</li>
+          <li>Verbesserung statistisch signifikant</li>
+        </ul>
+      </div>
+      <div class="highlight red">
+        <strong style="color:var(--red)">❌ Revertieren wenn:</strong>
+        <ul style="margin-top: 8px; color: var(--muted);">
+          <li>Score ≤ Baseline − 1%</li>
+          <li>Rückschritt bei High-Priority-Cases</li>
+          <li>Verbesserung nur im "Bauchgefühl"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 Grading-Strategien -->
+  <div class="card green-left">
+    <h2><span class="num">3</span> Die 3 Grading-Strategien</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Wie bewertest du, ob ein Output "gut" ist? Es gibt drei Ansätze, jeder mit unterschiedlichem Trade-off zwischen Kosten, Geschwindigkeit und Flexibilität.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Strategie</th>
+          <th>Wie es funktioniert</th>
+          <th>Kosten</th>
+          <th>Geschwindigkeit</th>
+          <th>Flexibilität</th>
+          <th>Wann nutzen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Rules-Based</strong></td>
+          <td>String-Match, Regex, JSON-Schema</td>
+          <td style="color:var(--green)">Minimal</td>
+          <td style="color:var(--green)">Sehr schnell</td>
+          <td style="color:var(--red)">Gering</td>
+          <td>Strukturierte Outputs, Pflichtfelder</td>
+        </tr>
+        <tr>
+          <td><strong>Claude-as-Judge</strong></td>
+          <td>Claude bewertet Output 1-5</td>
+          <td style="color:var(--warn)">Mittel</td>
+          <td style="color:var(--warn)">Mittel</td>
+          <td style="color:var(--green)">Hoch</td>
+          <td>Qualitative Bewertung, Tonalität</td>
+        </tr>
+        <tr>
+          <td><strong>Hybrid</strong></td>
+          <td>Rules für Struktur + Claude für Qualität</td>
+          <td style="color:var(--warn)">Mittel</td>
+          <td style="color:var(--warn)">Mittel</td>
+          <td style="color:var(--green)">Hoch</td>
+          <td>Empfohlen für die meisten Use-Cases</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Strategie A: Rules-Based Grading</h3>
+    <pre><code>// Beispiel: Chatbot muss Preisinfo + Kontakt + CTA enthalten
+function rulesBasedGrade(output: string): boolean {
+  const checks = [
+    output.includes('€') || output.includes('Euro'),  // Preis erwähnt
+    output.match(/\d{2}:\d{2}/) !== null,               // Öffnungszeiten
+    output.toLowerCase().includes('kontakt'),            // Kontakt-CTA
+    output.length >= 100 && output.length <= 800,        // Länge OK
+    !output.includes('ich weiß nicht'),                  // Kein Unwissen
+  ]
+  return checks.filter(Boolean).length >= 4 // mind. 4/5 müssen passen
+}
+
+// Regex-Beispiel: JSON-Format validieren
+function validateJsonOutput(output: string): boolean {
+  try {
+    const parsed = JSON.parse(output)
+    return (
+      typeof parsed.title === 'string' &&
+      Array.isArray(parsed.features) &&
+      parsed.features.length >= 3
+    )
+  } catch {
+    return false
+  }
+}</code></pre>
+
+    <h3>Strategie B: Claude-as-Judge</h3>
+    <pre><code>const judgePrompt = `Du bist ein Quality-Assurer für einen Kundensupport-Chatbot.
+
+Bewerte folgende Antwort auf einer Skala von 1-5:
+1 = Falsch/Gefährlich
+2 = Unvollständig/Missverständlich
+3 = Akzeptabel aber nicht optimal
+4 = Gut, erfüllt alle Anforderungen
+5 = Exzellent, übertrifft Erwartungen
+
+Kriterien:
+- Korrektheit der Information
+- Freundlicher, professioneller Ton
+- Klarer nächster Schritt für den Nutzer
+- Keine Fehlinformationen
+
+Kundenanfrage: "${evalCase.input}"
+Bot-Antwort: "${output}"
+
+Antworte NUR mit einer Zahl (1-5) und einer Begründung in einer Zeile.
+Format: "SCORE: [1-5] | REASON: [kurze Begründung]"`
+
+const judgment = await claude.messages.create({
+  model: 'claude-haiku-4-5',  // Günstigeres Modell für Grading
+  max_tokens: 100,
+  messages: [{ role: 'user', content: judgePrompt }]
+})
+
+const scoreMatch = judgment.content[0].text.match(/SCORE:\s*(\d)/)
+return parseInt(scoreMatch?.[1] ?? '0') >= 4</code></pre>
+  </div>
+
+  <!-- Das Eval-Skript -->
+  <div class="card warn-left">
+    <h2><span class="num">4</span> Das vollständige Eval-Skript (TypeScript)</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Hier ist das komplette, produktionsbereite Eval-Skript das du für deine Projekte verwenden kannst:</p>
+
+    <pre><code>import Anthropic from '@anthropic-ai/sdk'
+
+const client = new Anthropic()
+
+// ---- Typen ----
+interface EvalCase {
+  id: string
+  input: string
+  expectedOutput?: string
+  checkFn?: (output: string) => boolean
+  category: string
+  priority: 'high' | 'medium' | 'low'
+}
+
+interface EvalResult {
+  id: string
+  passed: boolean
+  output: string
+  category: string
+  priority: string
+}
+
+// ---- Eval-Fälle laden ----
+const evalCases: EvalCase[] = [
+  {
+    id: 'e001',
+    input: 'Wie viel kostet das Basic-Paket?',
+    checkFn: (out) => out.includes('800') && out.includes('€'),
+    category: 'pricing',
+    priority: 'high'
+  },
+  {
+    id: 'e002',
+    input: 'Wann sind Sie erreichbar?',
+    checkFn: (out) => out.match(/\d{1,2}[:\-]\d{2}/) !== null,
+    category: 'support',
+    priority: 'high'
+  },
+  {
+    id: 'e003',
+    input: 'Wie lange dauert das Onboarding?',
+    expectedOutput: 'Woche',
+    category: 'onboarding',
+    priority: 'medium'
+  },
+  // ... weitere Cases
+]
+
+// ---- Eval-Runner ----
+async function runEvals(
+  cases: EvalCase[],
+  systemPrompt: string
+): Promise<{ score: number; total: number; passed: number; results: EvalResult[]; breakdown: Record<string, number> }> {
+
+  const results: EvalResult[] = []
+  const categoryScores: Record<string, { passed: number; total: number }> = {}
+
+  for (const evalCase of cases) {
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5',
+      max_tokens: 512,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: evalCase.input }]
+    })
+
+    const output = response.content[0].type === 'text'
+      ? response.content[0].text
+      : ''
+
+    const passed = evalCase.checkFn
+      ? evalCase.checkFn(output)
+      : output.toLowerCase().includes(evalCase.expectedOutput!.toLowerCase())
+
+    results.push({ id: evalCase.id, passed, output, category: evalCase.category, priority: evalCase.priority })
+
+    // Category-Tracking
+    if (!categoryScores[evalCase.category]) {
+      categoryScores[evalCase.category] = { passed: 0, total: 0 }
+    }
+    categoryScores[evalCase.category].total++
+    if (passed) categoryScores[evalCase.category].passed++
+  }
+
+  const passed = results.filter(r => r.passed).length
+  const breakdown = Object.fromEntries(
+    Object.entries(categoryScores).map(([cat, data]) => [
+      cat, Math.round((data.passed / data.total) * 100)
+    ])
+  )
+
+  return { score: passed / cases.length, total: cases.length, passed, results, breakdown }
+}
+
+// ---- Haupt-Ausführung ----
+async function main() {
+  const systemPromptV1 = `Du bist ein freundlicher Kundenberater für MeineAgentur GmbH...`
+  const systemPromptV2 = `Du bist ein präziser Kundenberater für MeineAgentur GmbH.
+  Antworte immer mit konkreten Zahlen und einem klaren nächsten Schritt...`
+
+  console.log('🔬 Eval-Loop startet...\n')
+
+  const baseline = await runEvals(evalCases, systemPromptV1)
+  console.log(`📊 Baseline (v1): ${(baseline.score * 100).toFixed(1)}% (${baseline.passed}/${baseline.total})`)
+  console.log('   Breakdown:', baseline.breakdown)
+
+  const newVersion = await runEvals(evalCases, systemPromptV2)
+  console.log(`\n📊 Neue Version (v2): ${(newVersion.score * 100).toFixed(1)}% (${newVersion.passed}/${newVersion.total})`)
+  console.log('   Breakdown:', newVersion.breakdown)
+
+  const delta = ((newVersion.score - baseline.score) * 100).toFixed(1)
+  const improved = newVersion.score > baseline.score
+
+  console.log(`\n${improved ? '✅' : '❌'} Delta: ${improved ? '+' : ''}${delta}%`)
+  console.log(improved ? '→ Commit neue Version' : '→ Revert — Baseline war besser')
+
+  // Fehlgeschlagene Cases ausgeben
+  const failed = newVersion.results.filter(r => !r.passed)
+  if (failed.length > 0) {
+    console.log(`\n❌ Fehlgeschlagene Cases (${failed.length}):`)
+    failed.slice(0, 5).forEach(f => {
+      console.log(`  [${f.id}] ${f.category}/${f.priority}: "${f.output.slice(0, 80)}..."`)
+    })
+  }
+}
+
+main().catch(console.error)</code></pre>
+  </div>
+
+  <!-- CI/CD Integration -->
+  <div class="card green-left">
+    <h2><span class="num">5</span> Continuous Eval — GitHub Actions</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Jeder Commit der den System-Prompt ändert löst automatisch Evals aus. Regressionen werden im PR sichtbar, bevor sie in Produktion gehen.</p>
+
+    <pre><code># .github/workflows/eval.yml
+name: AI Eval Pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'src/prompts/**'
+      - 'src/ai/**'
+  push:
+    branches: [main]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Eval Suite
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx src/evals/run.ts --output json > eval-results.json
+
+      - name: Check Eval Score
+        run: |
+          SCORE=$(cat eval-results.json | jq '.score')
+          THRESHOLD=0.80
+          echo "Eval score: $SCORE (threshold: $THRESHOLD)"
+          if (( $(echo "$SCORE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Eval score below threshold! Blocking merge."
+            exit 1
+          fi
+          echo "✅ Eval score OK"
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = require('./eval-results.json')
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔬 Eval Results\n\n**Score: ${(results.score * 100).toFixed(1)}%**\n\nBreakdown: ${JSON.stringify(results.breakdown)}`
+            })</code></pre>
+
+    <div class="highlight green">
+      <strong>Ergebnis:</strong> Jeder PR zeigt automatisch den Eval-Score. Ein Rückgang über 3% blockiert den Merge. Das ist CI/CD für AI — so wie du es für Code kennst.
+    </div>
+  </div>
+
+  <!-- Eval-Patterns -->
+  <div class="card accent-left">
+    <h2><span class="num">6</span> Eval-Patterns für verschiedene Use-Cases</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Use-Case</th>
+          <th>Grading-Strategie</th>
+          <th>Key-Checks</th>
+          <th>Min-Cases</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>FAQ-Chatbot</strong></td>
+          <td>Hybrid</td>
+          <td>Korrekte Infos, kein Halluzinieren, CTA vorhanden</td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <td><strong>Klassifikator</strong></td>
+          <td>Rules-Based</td>
+          <td>Exakter Label-Match, Precision/Recall</td>
+          <td>100</td>
+        </tr>
+        <tr>
+          <td><strong>Text-Generator</strong></td>
+          <td>Claude-as-Judge</td>
+          <td>Tonalität, Vollständigkeit, Keine Verbote</td>
+          <td>20</td>
+        </tr>
+        <tr>
+          <td><strong>Code-Generator</strong></td>
+          <td>Rules-Based</td>
+          <td>Kompiliert, Tests bestehen, Kein eval()</td>
+          <td>30</td>
+        </tr>
+        <tr>
+          <td><strong>Data-Extraktor</strong></td>
+          <td>Rules-Based</td>
+          <td>JSON-Schema-Valid, Alle Felder befüllt</td>
+          <td>40</td>
+        </tr>
+        <tr>
+          <td><strong>Email-Generator</strong></td>
+          <td>Hybrid</td>
+          <td>Betreff vorhanden, Tonalität, Keine Tippfehler</td>
+          <td>20</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Eval-Set wachsen lassen: Jeder Bug = neuer Eval-Case</h3>
+    <div class="highlight cyan">
+      <strong>Die goldene Regel:</strong> Wenn ein Nutzer über einen schlechten Output beschwert, oder du einen Fehler findest — füge sofort einen neuen Eval-Case hinzu bevor du den Bug fixst. So vermeidest du Regressions-Blindheit.
+      <pre style="margin-top: 12px;"><code># Workflow bei Bug
+1. Bug gefunden: Bot antwortet falsch auf "Habt ihr ein Studenten-Rabatt?"
+2. Neuen Eval-Case hinzufügen (BEVOR Fix):
+   { input: "Habt ihr einen Studentenrabatt?", checkFn: out => out.includes('nein') }
+3. Eval laufen: zeigt Fehler (baseline sinkt)
+4. Prompt fixen
+5. Eval laufen: Case jetzt grün
+6. Commit</code></pre>
+    </div>
+  </div>
+
+  <!-- Kunden-Eval-Sets -->
+  <div class="card cyan-left">
+    <h2><span class="num">7</span> Kunden-Eval-Sets aufbauen</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Deine Kunden sind die besten Quellen für Eval-Cases — sie wissen, was "gut" bedeutet für ihr Business.</p>
+
+    <h3>Der Kunden-Eval-Prozess</h3>
+    <ol>
+      <li style="margin-bottom: 10px;"><strong>Liefere Chatbot-Prototype</strong> an Kunden</li>
+      <li style="margin-bottom: 10px;"><strong>Bitte Kunden um 20 "gute Antworten"</strong> — Beispiele die er als perfekt empfinden würde. Format: Frage + Erwartete Antwort</li>
+      <li style="margin-bottom: 10px;"><strong>Automatisiere daraus Eval-Cases</strong> — Rules-Based wo möglich, Claude-as-Judge für Qualität</li>
+      <li style="margin-bottom: 10px;"><strong>Zeige dem Kunden den Score</strong> — "Euer Chatbot trifft 89% aller Erwartungen"</li>
+      <li><strong>Optimiere auf Score, nicht auf Gefühl</strong> — jede Iteration zeigt messbaren Fortschritt</li>
+    </ol>
+
+    <div class="highlight">
+      <strong>Bonus:</strong> Der Eval-Score ist ein hervorragendes Verkaufsargument für deine Betreuung. "Ich habe euren Chatbot von 68% auf 91% Qualitäts-Score verbessert" ist überzeugender als "Ich habe den Prompt ein bisschen angepasst".
+    </div>
+
+    <h3>Score-Fortschritt visualisieren</h3>
+    <div style="padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border);">
+      <div style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Typischer Verbesserungsverlauf:</div>
+      <div class="score-bar">
+        <div class="score-bar-label">v1.0 (Tag 1)</div>
+        <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; height: 16px;">
+          <div class="score-bar-fill" style="width: 62%; background: var(--red); height: 100%;"></div>
+        </div>
+        <div class="score-bar-val" style="color: var(--red);">62%</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-bar-label">v1.3 (Woche 1)</div>
+        <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; height: 16px;">
+          <div class="score-bar-fill" style="width: 74%; background: var(--warn); height: 100%;"></div>
+        </div>
+        <div class="score-bar-val" style="color: var(--warn);">74%</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-bar-label">v2.0 (Woche 2)</div>
+        <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; height: 16px;">
+          <div class="score-bar-fill" style="width: 85%; background: var(--cyan); height: 100%;"></div>
+        </div>
+        <div class="score-bar-val" style="color: var(--cyan);">85%</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-bar-label">v2.4 (Woche 4)</div>
+        <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; height: 16px;">
+          <div class="score-bar-fill" style="width: 91%; background: var(--green); height: 100%;"></div>
+        </div>
+        <div class="score-bar-val" style="color: var(--green);">91%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Anti-Patterns -->
+  <div class="card red-left">
+    <h2><span class="num">8</span> Anti-Patterns beim Eval-Aufbau</h2>
+    <table>
+      <thead>
+        <tr><th>Anti-Pattern</th><th>Problem</th><th>Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Zu kleines Eval-Set (&lt;10)</strong></td>
+          <td>Nicht repräsentativ, Ergebnis zufällig</td>
+          <td>Minimum 20, ideal 50+</td>
+        </tr>
+        <tr>
+          <td><strong>Nur manuelle Evals</strong></td>
+          <td>Nicht skalierbar, nicht in CI/CD integrierbar</td>
+          <td>Automatisiertes Skript von Anfang an</td>
+        </tr>
+        <tr>
+          <td><strong>Eval-Set nie updaten</strong></td>
+          <td>Regressionen auf neuen Use-Cases unbemerkt</td>
+          <td>Jeder Bug → neuer Eval-Case</td>
+        </tr>
+        <tr>
+          <td><strong>Teuerstes Modell für Grading</strong></td>
+          <td>Hohe Eval-Kosten, verlangsamt Loop</td>
+          <td>Haiku für Grading, Sonnet für Production</td>
+        </tr>
+        <tr>
+          <td><strong>Kein Score-Tracking</strong></td>
+          <td>Kein Trend sichtbar, Fortschritt unklar</td>
+          <td>Scores in CSV oder DB loggen</td>
+        </tr>
+        <tr>
+          <td><strong>Überfitting auf Eval-Set</strong></td>
+          <td>Score hoch, Production-Qualität trotzdem schlecht</td>
+          <td>Eval-Set regelmäßig mit neuen Real-Cases erweitern</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="practice-box">
+    <h3>🎯 Praxis-Übung: Eval-Loop für deinen Chatbot</h3>
+    <ol>
+      <li style="margin-bottom: 12px;"><strong>Schritt 1:</strong> Wähle einen bestehenden Chatbot/Prompt-basierten Service den du für einen Kunden betreibst (oder baue einen Demo-Chatbot).</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 2:</strong> Erstelle ein Eval-Set mit mindestens 20 Cases. Mix: 10 Happy-Path, 5 Edge Cases, 5 Adversarial. Speichere als <code>evals/cases.ts</code>.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 3:</strong> Implementiere das Eval-Skript aus dieser Lektion. Führe Baseline-Messung durch.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 4:</strong> Ändere den System-Prompt in einer Richtung (z.B. mehr Beispiele, klarere Instruktionen). Führe Evals erneut aus. Vergleiche Scores.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 5:</strong> Iteriere mindestens 3-4 Mal bis du einen Score-Gewinn von mindestens 10 Prozentpunkten erzielst.</li>
+      <li><strong>Bonus:</strong> Integriere die Evals als GitHub Action. Stelle sicher, dass PRs mit Prompt-Änderungen den Score automatisch anzeigen.</li>
+    </ol>
+    <div class="highlight green" style="margin-top: 20px;">
+      <strong>Erfolgskriterium:</strong> Du kannst dem Kunden sagen: "Wir haben euren Chatbot durch 4 Iterationen von X% auf Y% Qualitäts-Score verbessert." Zahlen statt Gefühl.
+    </div>
+  </div>
+
+  <nav class="nav" style="margin-top: 48px; margin-bottom: 0;">
+    <a href="M5-AGY-39-Pricing.html">← L39 Pricing</a>
+    <span style="color: var(--muted); font-size: 13px;">L40 · Eval Loop</span>
+    <a href="M5-AGY-41-Knowledge-Base.html">L41 Knowledge Base →</a>
+  </nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L38 — Client Onboarding | Track 7 · Modul 5</title>
+<style>
+  :root {
+    --bg: #0F0F1A;
+    --card: #1A1A2E;
+    --accent: #7C3AED;
+    --cyan: #06B6D4;
+    --green: #10B981;
+    --warn: #F59E0B;
+    --red: #EF4444;
+    --white: #F1F5F9;
+    --muted: #94A3B8;
+    --border: #2D2D4E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 48px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .nav a { color: var(--cyan); text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+  .nav .track-badge {
+    background: linear-gradient(135deg, var(--accent), #5B21B6);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Header */
+  .lesson-header {
+    margin-bottom: 48px;
+  }
+  .lesson-header .meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .lesson-header h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--white) 0%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .lesson-header .subtitle {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 680px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .card.accent-left {
+    border-left: 3px solid var(--accent);
+  }
+  .card.cyan-left {
+    border-left: 3px solid var(--cyan);
+  }
+  .card.green-left {
+    border-left: 3px solid var(--green);
+  }
+  .card.warn-left {
+    border-left: 3px solid var(--warn);
+  }
+  .card.red-left {
+    border-left: 3px solid var(--red);
+  }
+
+  /* Section headings */
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+  h3:first-child { margin-top: 0; }
+
+  /* Highlight boxes */
+  .highlight {
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .highlight.cyan {
+    background: rgba(6,182,212,0.08);
+    border-color: rgba(6,182,212,0.25);
+  }
+  .highlight.green {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(16,185,129,0.25);
+  }
+  .highlight.warn {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.25);
+  }
+  .highlight.red {
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(239,68,68,0.25);
+  }
+
+  /* Code blocks */
+  pre {
+    background: #0A0A14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 16px 0;
+    color: #E2E8F0;
+  }
+  code {
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.88em;
+    background: rgba(124,58,237,0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--cyan);
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  /* Lists */
+  ul, ol {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--white); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th {
+    background: rgba(124,58,237,0.2);
+    color: var(--white);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); color: var(--white); }
+
+  /* Step boxes */
+  .step-grid {
+    display: grid;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .step-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .step-num {
+    background: linear-gradient(135deg, var(--accent), #5B21B6);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .step-content strong { color: var(--white); display: block; margin-bottom: 4px; }
+  .step-content span { color: var(--muted); font-size: 14px; }
+
+  /* KPI badges */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .kpi-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .kpi-label { font-size: 13px; color: var(--muted); }
+
+  /* Practice box */
+  .practice-box {
+    background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.05));
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-top: 32px;
+  }
+  .practice-box h3 {
+    color: var(--green);
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+  .tag.accent { background: rgba(124,58,237,0.2); color: var(--accent); border: 1px solid rgba(124,58,237,0.3); }
+  .tag.cyan { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+  .tag.green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .tag.warn { background: rgba(245,158,11,0.15); color: var(--warn); border: 1px solid rgba(245,158,11,0.3); }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 36px 0;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+  }
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+    .lesson-header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="#">← Track 6 · L37 Production</a>
+    <span class="track-badge">Track 7 · Modul 5 · Agency Delivery</span>
+    <a href="M5-AGY-39-Pricing.html">L39 Pricing →</a>
+  </nav>
+
+  <!-- Header -->
+  <div class="lesson-header">
+    <div class="meta">
+      <span>📋 Lektion 38</span>
+      <span>⏱ ~25 Min Lesezeit</span>
+      <span class="tag accent">Agency Delivery</span>
+      <span class="tag cyan">Workflow</span>
+    </div>
+    <h1>Client Onboarding</h1>
+    <p class="subtitle">Warum ein strukturiertes Onboarding-System den Unterschied zwischen 2 Stunden und 2 Wochen Einarbeitung ausmacht — und wie du es mit Claude automatisierst.</p>
+  </div>
+
+  <!-- Section 1: Why -->
+  <div class="card accent-left">
+    <h2><span class="num">1</span> Warum Onboarding-Disziplin entscheidend ist</h2>
+    <p>Stell dir vor: Neuer Kunde. Du erinnerst dich an die wichtigsten Infos aus dem Erstgespräch, hast ein paar Notizen in einer Notiz-App, und irgendwo liegt das unterzeichnete Angebot. Drei Wochen später fragst du nochmal nach dem Tonfall. Sechs Wochen später verwendest du die falsche Zielgruppe in einem Text. Der Kunde ist unzufrieden — und du auch.</p>
+
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="highlight red">
+        <strong style="color: var(--red);">❌ Ohne System</strong>
+        <ul style="margin-top: 10px;">
+          <li>Wichtige Infos vergessen</li>
+          <li>Missverständnisse im Projektverlauf</li>
+          <li>Jeder Kunde ist ein Unikat-Prozess</li>
+          <li>Einarbeitung dauert 1-2 Wochen</li>
+          <li>Kein Wissenstransfer möglich</li>
+          <li>Claude macht Fehler mangels Kontext</li>
+        </ul>
+      </div>
+      <div class="highlight green">
+        <strong style="color: var(--green);">✅ Mit System</strong>
+        <ul style="margin-top: 10px;">
+          <li>Alle Infos strukturiert erfasst</li>
+          <li>Claude kennt den Kunden vollständig</li>
+          <li>Reproduzierbarer Prozess</li>
+          <li>Einarbeitung: 2 Stunden</li>
+          <li>Delegierbar an VA oder Kollegen</li>
+          <li>Erster Output sofort on-brand</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight warn" style="margin-top: 20px;">
+      <strong>💡 Die Kernaussage:</strong> Onboarding ist nicht nur für den Kunden — es ist primär für dich und deine Claude-Instanz. Ein vollständiges Onboarding bedeutet, Claude kann von Tag 1 exakt wie der Kunde sprechen und denken.
+    </div>
+  </div>
+
+  <!-- Section 2: 7-Schritte -->
+  <div class="card cyan-left">
+    <h2><span class="num">2</span> Der 7-Schritte-Onboarding-Workflow</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Dieser Workflow ist sequenziell. Jeder Schritt baut auf dem vorherigen auf. Halte diese Reihenfolge ein — sie ist durch Praxis optimiert.</p>
+
+    <div class="step-grid">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Customer Brief ausfüllen (12 Fragen)</strong>
+          <span>Das Fundament. Alle strategischen Infos auf einem Dokument. Schickst du dem Kunden vorab als Typeform oder füllst es im Kick-off gemeinsam aus. Speichern als <code>docs/customer-brief.md</code>.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Knowledge-Base aufbauen</strong>
+          <span>Aus dem Brief destillierst du die Knowledge-Base (<code>docs/kb/</code>). Claude liest diese bei jedem Projekt-Start. Enthält: FAQ, Preise, Tonalität, Don'ts, Produkt-Details.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Projekt-Repository erstellen</strong>
+          <span>GitHub Repo mit klarer Struktur. Private Repo. Client hat keinen Zugang (es sei denn, er zahlt dafür). Enthält den gesamten Code, Prompts, Docs und Assets für diesen Kunden.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>CLAUDE.md für Kunden-Projekt schreiben</strong>
+          <span>Die wichtigste Datei. Claude liest sie automatisch wenn du das Projekt-Verzeichnis öffnest. Enthält alle kundenspezifischen Regeln, Tonalität, verbotene Formulierungen und Service-Scope.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Ersten Quick-Win liefern (innerhalb 7 Tage)</strong>
+          <span>Psychologisch entscheidend: Kunden wollen früh sehen, dass sie richtig investiert haben. Liefere etwas Kleines, aber Wertvolles in der ersten Woche. Beispiel: 5 fertige Social-Media-Posts oder eine überarbeitete Bio.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <strong>Welcome-Email schicken</strong>
+          <span>Professionell, strukturiert, mit Erwartungsmanagement. Erklärt: Was passiert wann, wie ist der Kommunikationskanal, was braucht der Kunde von dir (Assets, Zugänge, Feedback-Deadlines).</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <strong>Kick-off-Meeting halten</strong>
+          <span>30-45 Minuten. Nicht zum Informationen sammeln (das hast du schon), sondern zur Beziehungspflege, Erwartungsausrichtung und dem Durchgehen des ersten Quick-Win-Plans. Mit Agenda, die du vorab schickst.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Customer Brief -->
+  <div class="card green-left">
+    <h2><span class="num">3</span> Der Customer Brief — Die 12 Fragen</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Diese 12 Fragen sind kein Fragebogen — sie sind ein strategisches Instrument. Jede Frage hat einen klaren Grund, warum sie Claude braucht, um gute Arbeit zu leisten.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Frage</th>
+          <th>Warum Claude das braucht</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Was ist dein Hauptprodukt/Service?</td>
+          <td>Fundament — ohne das läuft nichts</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>Wer ist deine Zielgruppe?</td>
+          <td>Sprache, Beispiele und Concerns anpassen</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Was ist das größte Problem deiner Kunden?</td>
+          <td>Für Headlines, Value Propositions und Pain Points</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>Was unterscheidet dich von Wettbewerbern?</td>
+          <td>USP-Kommunikation, Differenzierung</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>Welche Tools nutzt du schon? (CRM, etc.)</td>
+          <td>Integrationen, Workflows, Exportformate</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td>Was hat bisher nicht funktioniert?</td>
+          <td>Schmerzen vermeiden, nicht wiederholen</td>
+        </tr>
+        <tr>
+          <td><strong>7</strong></td>
+          <td>Was ist dein Hauptziel für die nächsten 3 Monate?</td>
+          <td>Fokus und Priorisierung aller Outputs</td>
+        </tr>
+        <tr>
+          <td><strong>8</strong></td>
+          <td>Wer ist dein idealer Neukunde?</td>
+          <td>Spezifische Persona für Targeting und Content</td>
+        </tr>
+        <tr>
+          <td><strong>9</strong></td>
+          <td>Wie ist dein Tonfall? (formal/locker/technisch)</td>
+          <td>Direkter Einfluss auf jeden Output von Claude</td>
+        </tr>
+        <tr>
+          <td><strong>10</strong></td>
+          <td>Was darf Claude niemals sagen/tun?</td>
+          <td>Guardrails — kritisch für Vertrauen und Compliance</td>
+        </tr>
+        <tr>
+          <td><strong>11</strong></td>
+          <td>Wer im Team hat Zugang?</td>
+          <td>Access-Management, Sicherheit, Abrechnung</td>
+        </tr>
+        <tr>
+          <td><strong>12</strong></td>
+          <td>Was ist dein Budget/Erwartung?</td>
+          <td>Service-Level festlegen, Scope managen</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight cyan">
+      <strong>📝 Profi-Tipp:</strong> Schick den Brief 48h vor dem Kick-off-Meeting zu. Bitte den Kunden, die Antworten schriftlich auszufüllen. Das spart 20 Minuten Meeting-Zeit und du bekommst durchdachtere Antworten als im Gespräch.
+    </div>
+
+    <h3>Customer Brief — vollständiges Template</h3>
+    <pre><code># Customer Brief: [Kundenname]
+Datum: [DATUM]
+Ausgefüllt von: [NAME]
+
+## 1. Hauptprodukt/Service
+[Beschreibung in 2-3 Sätzen]
+
+## 2. Zielgruppe
+- Alter:
+- Beruf/Position:
+- Hauptschmerzen:
+- Sprache/Bildungsniveau:
+
+## 3. Größtes Kundenproblem
+[Was hält deine Kunden nachts wach?]
+
+## 4. Differenzierung
+[Was können wir, was andere nicht können?]
+
+## 5. Bestehende Tools
+- CRM:
+- Email-Marketing:
+- Social Media:
+- Projektmanagement:
+- Besonderheiten:
+
+## 6. Was hat NICHT funktioniert?
+[Ehrliche Antwort erwünscht]
+
+## 7. Ziel nächste 3 Monate
+[Konkret und messbar]
+
+## 8. Idealer Neukunde
+[Detaillierte Beschreibung der besten Kunden]
+
+## 9. Tonalität
+- Formell oder locker:
+- Du oder Sie:
+- Humor: ja/nein/wenig
+- Fachbegriffe: ja/erklären/vermeiden
+- Beispiel guter Ton: [Link oder Text]
+- Beispiel schlechter Ton: [Link oder Text]
+
+## 10. Verbote (Don'ts)
+- Themen:
+- Formulierungen:
+- Versprechen:
+
+## 11. Team-Zugang
+- Name | Rolle | E-Mail | Zugangslevel
+
+## 12. Budget &amp; Erwartung
+- Budget/Monat:
+- Wichtigste Erwartung:
+- Wie misst du Erfolg?</code></pre>
+  </div>
+
+  <!-- Section 4: Slash Command -->
+  <div class="card accent-left">
+    <h2><span class="num">4</span> Custom Slash Command <code>/onboard</code> bauen</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Mit einem Custom Slash Command automatisierst du den gesamten Onboarding-Report-Prozess. Einen Befehl — und Claude liefert alles.</p>
+
+    <h3>Slash Command Datei erstellen</h3>
+    <p style="color: var(--muted); margin-bottom: 12px;">Erstelle die Datei unter <code>.claude/commands/onboard.md</code> im Agentur-Workspace:</p>
+    <pre><code>---
+name: onboard
+description: Neuen Kunden onboarden — erstellt CLAUDE.md, KB-Struktur und Quick-Win-Plan
+---
+
+Du bist ein erfahrener Agentur-Projektmanager.
+Lies den Customer Brief unter docs/customer-brief.md vollständig.
+
+Erstelle dann folgende 3 Dokumente:
+
+## Aufgabe 1: CLAUDE.md erstellen
+Erstelle eine vollständige CLAUDE.md-Datei für diesen Kunden.
+Folge dem Standard-Template der Agentur.
+Inkludiere: Tonalität, Zielgruppe, USPs, Don'ts, verfügbare Services.
+
+## Aufgabe 2: Knowledge-Base-Struktur aufbauen
+Erstelle folgende Dateien mit erstem Inhalt:
+- docs/kb/faq.md (10 häufige Fragen basierend auf dem Brief)
+- docs/kb/produkt.md (Produkt/Service-Beschreibung)
+- docs/kb/tonalitaet.md (Tonalitäts-Guide mit Beispielen)
+- docs/kb/donts.md (Liste verbotener Formulierungen)
+
+## Aufgabe 3: Quick-Win-Plan erstellen
+Erstelle einen 7-Tage-Plan mit dem ersten konkreten Deliverable.
+Das Deliverable soll:
+- In 1-2 Arbeitsstunden erstellbar sein
+- Sofort sichtbaren Wert für den Kunden zeigen
+- Die Kernkompetenz der Agentur demonstrieren
+
+Format: Markdown-Tabelle mit Tag, Aufgabe, Verantwortlicher, Ergebnis.</code></pre>
+
+    <h3>Nutzung</h3>
+    <pre><code># Im Kunden-Verzeichnis:
+cd clients/kunde-mustermann/
+
+# Customer Brief vorhanden? Dann:
+/onboard
+
+# Claude erstellt automatisch:
+# ✓ CLAUDE.md
+# ✓ docs/kb/faq.md
+# ✓ docs/kb/produkt.md
+# ✓ docs/kb/tonalitaet.md
+# ✓ docs/kb/donts.md
+# ✓ docs/quick-win-plan.md</code></pre>
+
+    <div class="highlight green">
+      <strong>⚡ Zeitersparnis:</strong> Manuell ca. 3-4 Stunden. Mit <code>/onboard</code> ca. 15-20 Minuten (inkl. Review und Anpassungen). Das ist deine erste ROI-Demonstration für Claude im Agentur-Kontext.
+    </div>
+  </div>
+
+  <!-- Section 5: KB Struktur -->
+  <div class="card cyan-left">
+    <h2><span class="num">5</span> Knowledge-Base Struktur</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Die Knowledge-Base ist das Langzeitgedächtnis deiner Claude-Instanz für diesen Kunden. Gut gepflegt bedeutet: Claude antwortet immer on-brand.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>Verzeichnisstruktur</h3>
+        <pre><code>clients/kunde-a/
+├── CLAUDE.md              # Regeln + Kontext
+├── docs/
+│   ├── customer-brief.md  # Ursprünglicher Brief
+│   └── kb/
+│       ├── faq.md         # 20+ häufige Fragen
+│       ├── produkt.md     # Produkt/Service-Details
+│       ├── tonalitaet.md  # Sprach-Guide
+│       ├── donts.md       # Verbote
+│       ├── preise.md      # Preisliste
+│       └── glossar.md     # Fachbegriffe
+├── src/                   # Code/Scripts
+├── assets/                # Logos, Bilder
+└── deliverables/          # Fertige Outputs</code></pre>
+      </div>
+      <div>
+        <h3>Beispiel: faq.md</h3>
+        <pre><code># FAQ: Mustermann GmbH
+
+## Allgemein
+
+**Wie lange dauert die Lieferzeit?**
+Standard: 5 Werktage.
+Express (Aufpreis 50%): 48h.
+
+**Was ist inbegriffen?**
+Alle Services lt. Retainer-Paket.
+Änderungen: 2 Revisionen inklusive.
+
+## Preise
+
+**Gibt es Rabatte?**
+Nein. Preisliste ist fix.
+Bei Jahresvertrag: 10% Rabatt.
+
+## Support
+
+**Wie erreiche ich euch?**
+E-Mail: hallo@agentur.de
+Antwortzeit: < 24h (Mo-Fr)</code></pre>
+      </div>
+    </div>
+
+    <h3>KB in CLAUDE.md einbinden</h3>
+    <pre><code># In der CLAUDE.md des Kunden-Projekts:
+
+## Knowledge-Base
+Lies bei Projektstart folgende Dateien:
+- docs/kb/faq.md — für alle Kundenanfragen
+- docs/kb/tonalitaet.md — IMMER anwenden
+- docs/kb/donts.md — NIEMALS ignorieren
+- docs/kb/preise.md — für alle Preis-Erwähnungen</code></pre>
+  </div>
+
+  <!-- Section 6: CLAUDE.md Template -->
+  <div class="card green-left">
+    <h2><span class="num">6</span> CLAUDE.md pro Kunden-Projekt — Template</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Dies ist das Template für jede kunden-spezifische CLAUDE.md. Fülle alle Platzhalter beim Onboarding aus.</p>
+
+    <pre><code># CLAUDE.md — [Kundenname] Projekt
+Erstellt: [DATUM] | Letzte Aktualisierung: [DATUM]
+
+## Projekt-Übersicht
+- **Kunde:** [Name]
+- **Branche:** [Branche]
+- **Hauptprodukt:** [Kurzbeschreibung]
+- **Unser Service:** [Was wir für diesen Kunden tun]
+- **Vertragslaufzeit:** [Von–Bis]
+
+## Zielgruppe
+[Detaillierte Beschreibung aus Customer Brief]
+Beispiel: "Selbstständige Coaches (30-50 Jahre), die ihre ersten
+Online-Kurse verkaufen wollen. Technik-affin, aber kein Developer."
+
+## Tonalität
+- **Anrede:** Du (konsequent)
+- **Stil:** Freundlich-professionell, auf Augenhöhe
+- **Emojis:** Sparsam (max 1 pro Post, nur bei Social Media)
+- **Fachbegriffe:** Immer kurz erklären
+
+### Gut-Beispiele (so klingt der Kunde):
+"Hey! Ich zeig dir heute, wie du in 3 Schritten..."
+"Stell dir vor, du könntest endlich..."
+
+### Schlecht-Beispiele (so klingt der Kunde NICHT):
+"Sehr geehrte Damen und Herren..."
+"Im Rahmen dieser Lerneinheit wird verdeutlicht..."
+
+## USPs (immer erwähnen wenn relevant)
+1. [USP 1]
+2. [USP 2]
+3. [USP 3]
+
+## VERBOTE (niemals tun)
+- ❌ ROI-Versprechen ohne Disclaimer
+- ❌ Konkrete Umsatzzahlen nennen
+- ❌ Wettbewerber beim Namen nennen
+- ❌ [Weitere kundenspezifische Verbote]
+
+## Verfügbare Services (was wir liefern)
+- [Service 1]: [Beschreibung + Format]
+- [Service 2]: [Beschreibung + Format]
+
+## Team
+- **Projektleitung:** [Name, Email]
+- **Kundenkontakt:** [Name, Kanal]
+
+## Wichtige Deadlines
+- Content-Plan: jeden 20. des Monats
+- Review-Frist: 3 Werktage nach Lieferung</code></pre>
+  </div>
+
+  <!-- Section 7: Welcome Email -->
+  <div class="card warn-left">
+    <h2><span class="num">7</span> Welcome-Email Template</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Die Welcome-Email setzt Erwartungen und signalisiert Professionalität. Claude kann sie auf Basis des Customer Briefs personalisieren.</p>
+
+    <pre><code>Betreff: Herzlich willkommen — wir legen los! 🚀
+
+Hallo [Name],
+
+danke für dein Vertrauen! Wir freuen uns auf die Zusammenarbeit.
+
+Hier ein kurzer Überblick, wie es jetzt weitergeht:
+
+## Was dich in den ersten 7 Tagen erwartet
+- [DATUM]: Kick-off-Meeting (30 Min, Link: [ZOOM])
+- [DATUM]: Erster Deliverable: [Konkretes Ergebnis]
+- [DATUM]: Dein Feedback bis wann?
+
+## Was wir von dir brauchen
+☐ Zugang zu [Tool X] (bitte bis [DATUM])
+☐ Dein Logo in hoher Auflösung
+☐ Bestehende Texte/Assets (optional, für Style-Guide)
+☐ Bestätigung der Zielgruppe aus dem Brief
+
+## Unser Kommunikationskanal
+📧 Hauptkanal: E-Mail an [EMAIL]
+⏱ Antwortzeit: < 24h (Mo-Fr, 9-18 Uhr)
+🚨 Dringend: WhatsApp [NUMMER]
+
+## Deine Ansprechpartnerin
+[NAME] — [ROLLE]
+[EMAIL] | [TELEFON]
+
+Hast du Fragen? Schreib einfach!
+
+Bis zum Kick-off,
+[Name]
+[Agenturname]
+
+---
+P.S. Schau gerne schon mal in den angehängten
+Projekt-Zeitplan — da siehst du die nächsten 4 Wochen auf einen Blick.</code></pre>
+  </div>
+
+  <!-- Section 8: Quick-Win -->
+  <div class="card accent-left">
+    <h2><span class="num">8</span> Die erste 7-Tage-Quick-Win Definition</h2>
+    <p style="color: var(--muted); margin-bottom: 16px;">Der Quick-Win ist psychologisch das Wichtigste. Er bestätigt die Kaufentscheidung und baut Vertrauen auf, bevor der eigentliche Projektrhythmus greift.</p>
+
+    <h3>Kriterien für einen guten Quick-Win</h3>
+    <ul>
+      <li><strong>In max. 2 Arbeitsstunden erstellbar</strong> — du hast noch andere Kunden</li>
+      <li><strong>Sofort nutzbar</strong> — kein "kommt nächste Woche"</li>
+      <li><strong>Repräsentativ</strong> — zeigt, was du kannst</li>
+      <li><strong>Daten-basiert</strong> — nutzt die Infos aus dem Brief</li>
+      <li><strong>Überraschend gut</strong> — "Wow, das war schnell"</li>
+    </ul>
+
+    <h3>Quick-Win Ideen nach Service-Typ</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Dein Service</th>
+          <th>Idealer Quick-Win</th>
+          <th>Zeitaufwand</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Social Media</td>
+          <td>5 fertige Posts mit Captions + Hashtags</td>
+          <td>45 Min</td>
+        </tr>
+        <tr>
+          <td>Email-Marketing</td>
+          <td>Überarbeitete Welcome-Sequenz (3 Mails)</td>
+          <td>90 Min</td>
+        </tr>
+        <tr>
+          <td>Copywriting</td>
+          <td>Website-Hero-Text überarbeitet</td>
+          <td>60 Min</td>
+        </tr>
+        <tr>
+          <td>SEO</td>
+          <td>Keyword-Analyse + Top-5-Chancen</td>
+          <td>60 Min</td>
+        </tr>
+        <tr>
+          <td>AI-Chatbot</td>
+          <td>Erster funktionierender Prototype</td>
+          <td>120 Min</td>
+        </tr>
+        <tr>
+          <td>Strategie</td>
+          <td>Content-Strategie-Dokument (1 Monat)</td>
+          <td>90 Min</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Section 9: KPIs -->
+  <div class="card cyan-left">
+    <h2><span class="num">9</span> Onboarding-KPIs</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">Was du nicht misst, kannst du nicht verbessern. Diese KPIs zeigen dir, wie gut dein Onboarding-System funktioniert.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-value">&lt; 2h</span>
+        <span class="kpi-label">Zeit bis CLAUDE.md fertig</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-value">&lt; 7d</span>
+        <span class="kpi-label">Zeit bis erstes Deliverable</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-value">0</span>
+        <span class="kpi-label">Rückfragen zu Tonalität (Woche 1)</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-value">≥ 4/5</span>
+        <span class="kpi-label">Kunden-Onboarding-Score</span>
+      </div>
+    </div>
+
+    <h3>Onboarding-Feedback-Frage (nach Woche 1)</h3>
+    <div class="highlight cyan">
+      <p>"Auf einer Skala von 1-5: Wie gut haben wir in der ersten Woche verstanden, was du und dein Unternehmen brauchen?"</p>
+      <p style="margin-top: 8px; color: var(--muted);">Unter 4: Onboarding-Prozess analysieren und verbessern. Über 4: Weiter so.</p>
+    </div>
+
+    <h3>Häufige Onboarding-Fehler und Fixes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Fehler</th>
+          <th>Symptom</th>
+          <th>Fix</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Brief nicht vollständig ausgefüllt</td>
+          <td>Claude macht Fehler in Outputs</td>
+          <td>Pflichtfelder markieren, nachfragen</td>
+        </tr>
+        <tr>
+          <td>CLAUDE.md zu vage</td>
+          <td>Outputs klingen nicht nach Kunden</td>
+          <td>Mehr Beispiele, konkretere Verbote</td>
+        </tr>
+        <tr>
+          <td>Quick-Win zu spät</td>
+          <td>Kunde zweifelt an Investition</td>
+          <td>Quick-Win fest in Woche-1-Sprint einplanen</td>
+        </tr>
+        <tr>
+          <td>Kein Kick-off-Meeting</td>
+          <td>Missverständnisse über Scope</td>
+          <td>Meeting-Pflicht im Vertrag verankern</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Practice -->
+  <div class="practice-box">
+    <h3>🎯 Praxis-Übung: Dein Onboarding-System aufbauen</h3>
+    <p style="color: var(--muted); margin-bottom: 16px;">Diese Übung führt dich durch den kompletten Aufbau deines eigenen Onboarding-Systems. Plane 2-3 Stunden ein.</p>
+
+    <ol>
+      <li style="margin-bottom: 12px;"><strong>Schritt 1:</strong> Erstelle deinen Agentur-Workspace mit der Verzeichnisstruktur aus dieser Lektion. Nutze <code>mkdir -p clients/beispiel-kunde/docs/kb</code>.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 2:</strong> Fülle den Customer Brief für einen imaginären (oder echten) Kunden vollständig aus. Alle 12 Fragen.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 3:</strong> Erstelle den Slash Command <code>/onboard</code> unter <code>.claude/commands/onboard.md</code>. Führe ihn aus.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 4:</strong> Review die erstellte CLAUDE.md und Knowledge-Base. Ergänze was fehlt.</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 5:</strong> Erstelle den ersten Quick-Win manuell. Wie lange hat es gedauert? Wie viel hätte ohne Claude gedauert?</li>
+      <li style="margin-bottom: 12px;"><strong>Schritt 6:</strong> Personalisiere die Welcome-Email-Template mit Claude für diesen Kunden.</li>
+      <li><strong>Bonus:</strong> Onboarde deinen nächsten echten Kunden mit diesem System. Notiere Verbesserungen.</li>
+    </ol>
+
+    <div class="highlight green" style="margin-top: 20px;">
+      <strong>Erfolgskriterium:</strong> Ein fremder Kollege kann das Repo öffnen und sofort produktive Outputs für diesen Kunden liefern — ohne ein einziges Gespräch mit dir zu führen.
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="nav" style="margin-top: 48px; margin-bottom: 0;">
+    <a href="#">← Track 6 · L37 Production</a>
+    <span style="color: var(--muted); font-size: 13px;">L38 · Client Onboarding</span>
+    <a href="M5-AGY-39-Pricing.html">L39 Pricing →</a>
+  </nav>
+
+</div>
+</body>
+</html>

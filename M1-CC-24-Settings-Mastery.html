@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L24 · settings.json Mastery</title><style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
+.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
+.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
+.hl-a{background:rgba(124,58,237,.1);border:1px solid var(--accent)}.hl-a .hl-val{color:var(--accent)}
+.hl-c{background:rgba(6,182,212,.1);border:1px solid var(--cyan)}.hl-c .hl-val{color:var(--cyan)}
+.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+</style></head><body><div class="wrap">
+<div class="meta"><span class="pill">Track 4 · L24</span><span class="dur">~25 Min</span></div>
+<h1>settings.json Mastery</h1>
+<p class="sub">3 Settings-Dateien — Permissions, Hooks, MCP vollständig konfiguriert</p>
+<div class="facts">
+  <div class="fact"><div class="fact-val">3 Dateien</div><div class="fact-lbl">Ebenen</div></div>
+  <div class="fact"><div class="fact-val">Resolution</div><div class="fact-lbl">Order</div></div>
+  <div class="fact"><div class="fact-val">6 Sektionen</div><div class="fact-lbl">Struktur</div></div>
+  <div class="fact"><div class="fact-val">Production</div><div class="fact-lbl">Template</div></div>
+</div>
+<div class="hl">
+  <div class="hl-card hl-g"><div class="hl-val">Project Shared</div>Team im Repo</div>
+  <div class="hl-card hl-a"><div class="hl-val">Project Local</div>persönlich, kein Git</div>
+  <div class="hl-card hl-c"><div class="hl-val">User</div>global ~/.claude/</div>
+</div>
+<div class="grid">
+  <div class="card"><h3>Resolution-Order</h3><ul>
+    <li><b>Project Local</b> gewinnt immer</li>
+    <li>Dann <b>Project Shared</b></li>
+    <li>Dann <b>User</b> (global)</li>
+    <li>Lokales <b>überschreibt</b> globales</li>
+  </ul></div>
+  <div class="card"><h3>6 Sektionen</h3><ul>
+    <li><b>permissions</b> (allow/deny)</li>
+    <li><b>hooks</b> (Pre/PostToolUse etc.)</li>
+    <li><b>env</b> + <b>model</b></li>
+    <li><b>mcpServers</b> + experimental</li>
+  </ul></div>
+  <div class="card"><h3>Permissions mit Globs</h3><ul>
+    <li>allow: ["<b>Edit(src/**)</b>"]</li>
+    <li>allow: ["<b>Bash(npm run *)</b>"]</li>
+    <li>deny: ["<b>Edit(.env*)</b>"]</li>
+    <li>deny: ["<b>Bash(rm -rf*)</b>"]</li>
+  </ul></div>
+  <div class="card"><h3>Häufige Einstellungen</h3><ul>
+    <li>model: "<b>claude-sonnet-4-5</b>"</li>
+    <li>env: {<b>NODE_ENV: "development"</b>}</li>
+    <li>mcpServers: {<b>github: {...}</b>}</li>
+    <li>experimental: {<b>...</b>}</li>
+  </ul></div>
+</div>
+<div class="box box-cyan">💡 <b>Hygiene:</b> settings.json alle 4 Wochen reviewen — alte Permissions entfernen, neue ergänzen</div>
+<div class="outcome">🎯 <span><b>Lernziel:</b> settings.json committed, Hooks funktionieren, Approval-Frequenz messbar gesunken</span></div>
+<div class="nav"><span>← <a href="M1-CC-23-Custom-Commands.html">L23 Custom Commands</a></span><span><a href="M1-CC-25-Git-Workflow.html">Track 5 · L25 Git Workflow</a> →</span></div>
+</div></body></html>

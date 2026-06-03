@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track X · LN — Titel</title>
+<style>
+  :root {
+    --bg:       #0F0F1A;
+    --card:     #1A1A2E;
+    --accent:   #7C3AED;
+    --cyan:     #06B6D4;
+    --green:    #10B981;
+    --warn:     #F59E0B;
+    --red:      #EF4444;
+    --white:    #F1F5F9;
+    --muted:    #94A3B8;
+    --border:   #2D2D4E;
+    --card2:    #16213E;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* ── Layout ── */
+  .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── Header ── */
+  .lesson-header {
+    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .track-label {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .3rem .9rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+  .lesson-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: .75rem;
+  }
+  .lesson-subtitle {
+    color: var(--cyan);
+    font-size: 1.1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  /* ── Quick-Facts Bar ── */
+  .qf-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .75rem;
+    margin-bottom: 2.5rem;
+  }
+  @media (max-width: 600px) { .qf-bar { grid-template-columns: repeat(2, 1fr); } }
+  .qf-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .qf-icon { font-size: 1.5rem; margin-bottom: .3rem; }
+  .qf-value { font-size: 1.05rem; font-weight: 700; }
+  .qf-label { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 2.5rem; }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .section-num {
+    width: 2rem; height: 2rem;
+    background: var(--accent);
+    border-radius: .5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 800; flex-shrink: 0;
+  }
+  .section-title { font-size: 1.3rem; font-weight: 700; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: .75rem;
+  }
+  .card-title { font-weight: 700; margin-bottom: .5rem; }
+
+  /* ── Topic List ── */
+  .topic-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+  .topic-list li {
+    display: flex; align-items: flex-start; gap: .75rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: .6rem; padding: .75rem 1rem;
+    font-size: .95rem;
+  }
+  .topic-list li .icon { flex-shrink: 0; font-size: 1rem; margin-top: .1rem; }
+  .topic-list li strong { color: var(--cyan); }
+
+  /* ── Highlight boxes ── */
+  .box {
+    border-radius: .75rem;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: .75rem;
+    border-left: 3px solid;
+    font-size: .95rem;
+  }
+  .box-green  { background: rgba(16,185,129,.08); border-color: var(--green); }
+  .box-warn   { background: rgba(245,158,11,.08); border-color: var(--warn); }
+  .box-red    { background: rgba(239,68,68,.08);  border-color: var(--red); }
+  .box-cyan   { background: rgba(6,182,212,.08);  border-color: var(--cyan); }
+  .box-accent { background: rgba(124,58,237,.1);  border-color: var(--accent); }
+
+  .box .box-title { font-weight: 700; margin-bottom: .4rem; }
+  .box-green .box-title { color: var(--green); }
+  .box-warn  .box-title { color: var(--warn); }
+  .box-red   .box-title { color: var(--red); }
+  .box-cyan  .box-title { color: var(--cyan); }
+  .box-accent .box-title { color: var(--accent); }
+
+  /* ── Table ── */
+  .tbl-wrap { overflow-x: auto; border-radius: .75rem; border: 1px solid var(--border); margin-bottom: .75rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th {
+    background: var(--accent); color: #fff;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; padding: .65rem 1rem; text-align: left;
+  }
+  td { padding: .65rem 1rem; border-top: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+  /* ── Code block ── */
+  pre, code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: .85rem;
+  }
+  pre {
+    background: #0A0A14;
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin-bottom: .75rem;
+    line-height: 1.55;
+  }
+  code { background: rgba(124,58,237,.15); color: var(--cyan); padding: .1em .35em; border-radius: .3em; }
+  pre code { background: none; color: var(--white); padding: 0; }
+  .kw { color: #C792EA; } /* keyword */
+  .str { color: #C3E88D; } /* string */
+  .cm { color: #546E7A; } /* comment */
+  .fn { color: #82AAFF; } /* function */
+  .num { color: #F78C6C; } /* number */
+  .var { color: var(--cyan); } /* variable */
+
+  /* ── Pills / tags ── */
+  .pill {
+    display: inline-block;
+    padding: .2rem .7rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .pill-accent { background: rgba(124,58,237,.2); color: var(--accent); }
+  .pill-green  { background: rgba(16,185,129,.2); color: var(--green); }
+  .pill-warn   { background: rgba(245,158,11,.2); color: var(--warn); }
+  .pill-red    { background: rgba(239,68,68,.2);  color: var(--red); }
+  .pill-cyan   { background: rgba(6,182,212,.2);  color: var(--cyan); }
+
+  /* ── 2-col grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; }
+  @media (max-width: 720px) { .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── Exercise box ── */
+  .exercise {
+    background: linear-gradient(135deg, rgba(124,58,237,.12), rgba(6,182,212,.08));
+    border: 1px solid var(--accent);
+    border-radius: .75rem;
+    padding: 1.5rem;
+    margin-bottom: .75rem;
+  }
+  .exercise h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 1rem; }
+  .exercise ol { padding-left: 1.2rem; display: flex; flex-direction: column; gap: .5rem; font-size: .95rem; }
+
+  /* ── Outcome ── */
+  .outcome {
+    background: linear-gradient(135deg, rgba(16,185,129,.1), rgba(6,182,212,.06));
+    border: 1px solid var(--green);
+    border-radius: .75rem;
+    padding: 1.5rem;
+  }
+  .outcome h3 { color: var(--green); font-size: 1.05rem; margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+  .outcome ul { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+  .outcome ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  /* ── Footer nav ── */
+  .lesson-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 3rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: .85rem; color: var(--muted);
+  }
+  .lesson-nav a { color: var(--cyan); text-decoration: none; font-weight: 600; }
+  .lesson-nav a:hover { color: var(--white); }
+
+  /* ── Progress bar ── */
+  .progress-wrap { margin-bottom: 2rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-bottom: .4rem; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); border-radius: 999px; }
+
+  /* ── Tooltip/callout ── */
+  .callout {
+    display: flex; gap: .75rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: .75rem; padding: 1rem 1.25rem;
+    margin-bottom: .75rem; font-size: .9rem;
+  }
+  .callout .callout-icon { font-size: 1.25rem; flex-shrink: 0; }
+  .callout-title { font-weight: 700; margin-bottom: .25rem; }
+
+  /* ── Step counter ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex; gap: 1rem; position: relative;
+    padding-bottom: 1.25rem;
+  }
+  .step:last-child { padding-bottom: 0; }
+  .step-line {
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .step-dot {
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-size: .8rem; font-weight: 800;
+    flex-shrink: 0; position: relative; z-index: 1;
+  }
+  .step-connector {
+    width: 2px; flex: 1; background: var(--border);
+    margin: .2rem 0; min-height: 1.5rem;
+  }
+  .step:last-child .step-connector { display: none; }
+  .step-content { padding-top: .2rem; flex: 1; }
+  .step-title { font-weight: 700; margin-bottom: .25rem; }
+  .step-desc { font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="lesson-header">
+    <div class="track-label">Track X · Lektion N</div>
+    <h1 class="lesson-title">Lektion Titel</h1>
+    <p class="lesson-subtitle">Untertitel / Lernziel kurz</p>
+
+    <div class="qf-bar">
+      <div class="qf-card">
+        <div class="qf-icon">⏱</div>
+        <div class="qf-value">~15 Min</div>
+        <div class="qf-label">Lesedauer</div>
+      </div>
+      <div class="qf-card">
+        <div class="qf-icon">🎯</div>
+        <div class="qf-value">Lernziel</div>
+        <div class="qf-label">Kurzbeschreibung</div>
+      </div>
+      <div class="qf-card">
+        <div class="qf-icon">🛠</div>
+        <div class="qf-value">N Tools</div>
+        <div class="qf-label">im Fokus</div>
+      </div>
+      <div class="qf-card">
+        <div class="qf-icon">📋</div>
+        <div class="qf-value">1 Übung</div>
+        <div class="qf-label">Praxis heute</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ SECTION: Übersicht ═══ -->
+  <section>
+    <div class="section-label">
+      <div class="section-num">01</div>
+      <h2 class="section-title">Was dich erwartet</h2>
+    </div>
+    <ul class="topic-list">
+      <li><span class="icon">▸</span><span><strong>Thema 1</strong> — Beschreibung</span></li>
+      <li><span class="icon">▸</span><span><strong>Thema 2</strong> — Beschreibung</span></li>
+      <li><span class="icon">▸</span><span><strong>Thema 3</strong> — Beschreibung</span></li>
+    </ul>
+  </section>
+
+  <hr>
+
+  <!-- ═══ SECTION: Hauptinhalt ═══ -->
+  <section>
+    <div class="section-label">
+      <div class="section-num">02</div>
+      <h2 class="section-title">Hauptthema</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Karten-Titel</div>
+      <p>Inhaltstext...</p>
+    </div>
+
+    <div class="box box-cyan">
+      <div class="box-title">💡 Hinweis</div>
+      Info-Box Inhalt
+    </div>
+
+    <div class="box box-warn">
+      <div class="box-title">⚠ Wichtig</div>
+      Warnung
+    </div>
+
+    <pre><code><span class="kw">const</span> <span class="var">example</span> = <span class="str">"Hello World"</span>
+<span class="fn">console</span>.log(<span class="var">example</span>) <span class="cm">// Ausgabe</span></code></pre>
+  </section>
+
+  <hr>
+
+  <!-- ═══ SECTION: Tabelle ═══ -->
+  <section>
+    <div class="section-label">
+      <div class="section-num">03</div>
+      <h2 class="section-title">Vergleich / Übersicht</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Spalte A</th><th>Spalte B</th><th>Spalte C</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Wert 1</td><td>Wert 2</td><td><span class="pill pill-green">Gut</span></td></tr>
+          <tr><td>Wert 3</td><td>Wert 4</td><td><span class="pill pill-warn">Mittel</span></td></tr>
+          <tr><td>Wert 5</td><td>Wert 6</td><td><span class="pill pill-red">Schlecht</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ═══ PRAXIS-ÜBUNG ═══ -->
+  <section>
+    <div class="section-label">
+      <div class="section-num">04</div>
+      <h2 class="section-title">Praxis-Übung</h2>
+    </div>
+    <div class="exercise">
+      <h3>🛠 Übung: Titel</h3>
+      <ol>
+        <li>Schritt 1</li>
+        <li>Schritt 2</li>
+        <li>Schritt 3</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══ OUTCOME ═══ -->
+  <section>
+    <div class="outcome">
+      <h3>✅ Was du jetzt kannst</h3>
+      <ul>
+        <li>Fähigkeit 1</li>
+        <li>Fähigkeit 2</li>
+        <li>Fähigkeit 3</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══ NAV ═══ -->
+  <nav class="lesson-nav">
+    <a href="#">← Vorherige Lektion</a>
+    <span>Track X · L N von M</span>
+    <a href="#">Nächste Lektion →</a>
+  </nav>
+
+</div>
+</body>
+</html>

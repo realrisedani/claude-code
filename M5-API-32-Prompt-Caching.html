@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L32 · Prompt Caching</title>
+<style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
+.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
+.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}.hl-r .hl-val{color:var(--red)}
+.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
+.hl-a{background:rgba(124,58,237,.1);border:1px solid var(--accent)}.hl-a .hl-val{color:var(--accent)}
+.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+</style></head><body><div class="wrap">
+<div class="meta"><span class="pill">Track 6 · L32</span><span class="dur">~20 Min</span></div>
+<h1>Prompt Caching</h1>
+<p class="sub">90% Kostenersparnis durch Cache-Breakpoints</p>
+<div class="facts">
+  <div class="fact"><div class="fact-val">ctrl</div><div class="fact-lbl">cache_control</div></div>
+  <div class="fact"><div class="fact-val">90%</div><div class="fact-lbl">günstiger</div></div>
+  <div class="fact"><div class="fact-val">5 Min</div><div class="fact-lbl">TTL</div></div>
+  <div class="fact"><div class="fact-val">Hit</div><div class="fact-lbl">Cache-Hit-Tracking</div></div>
+</div>
+<div class="hl">
+  <div class="hl-card hl-r"><div class="hl-val">$6/Tag</div>Kein Cache</div>
+  <div class="hl-card hl-g"><div class="hl-val">$0.60/Tag</div>Mit Cache</div>
+  <div class="hl-card hl-a"><div class="hl-val">90%</div>Ersparnis</div>
+</div>
+<div class="grid">
+  <div class="card"><h3>Breakpoint setzen</h3><ul>
+    <li><b>system:</b> [{type:'text',</li>
+    <li>text:'...',</li>
+    <li><b>cache_control:</b> {type:'ephemeral'}}]</li>
+  </ul></div>
+  <div class="card"><h3>Cache-Hit prüfen</h3><ul>
+    <li><b>response.usage</b></li>
+    <li><b>.cache_read_input_tokens</b> &gt; 0</li>
+    <li>→ Cache-Hit! Kosten gespart</li>
+  </ul></div>
+  <div class="card"><h3>Wo Caching lohnt</h3><ul>
+    <li><b>System-Prompt ⭐⭐⭐</b> immer cachen</li>
+    <li><b>Knowledge-Base ⭐⭐⭐</b> großer Effekt</li>
+    <li><b>Conversation-History ⭐⭐</b> | kurze Prompts ⭐</li>
+  </ul></div>
+  <div class="card"><h3>TTL</h3><ul>
+    <li><b>5 Minuten</b> Standard-TTL</li>
+    <li>Request &lt;5 Min = <b>Cache-Hit</b></li>
+    <li>Danach = <b>neue Cache-Erstellung</b></li>
+  </ul></div>
+</div>
+<div class="box box-green"><b>💡 Beispiel:</b> 2000-Token-System-Prompt × 1000 Anfragen/Tag → ohne Cache $6/Tag, mit Cache $0.60/Tag</div>
+<div class="outcome">🎯 <span><b>Lernziel:</b> Cache-Hits in Usage sichtbar, messbare Kostenreduktion</span></div>
+<div class="nav"><a href="M5-API-31-Tool-Use.html">← L31 Tool Use</a><a href="M5-API-33-Streaming.html">L33 Streaming →</a></div>
+</div></body></html>
