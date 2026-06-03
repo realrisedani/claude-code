@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L37 · Production Patterns</title>
+<style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
+.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
+.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}.hl-r .hl-val{color:var(--red)}
+.hl-w{background:rgba(245,158,11,.1);border:1px solid var(--warn)}.hl-w .hl-val{color:var(--warn)}
+.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
+.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+</style></head><body><div class="wrap">
+<div class="meta"><span class="pill">Track 6 · L37</span><span class="dur">~25 Min</span></div>
+<h1>Production Patterns</h1>
+<p class="sub">Rate-Limits, Retry-Strategie, Logging — API-ready für Produktion</p>
+<div class="facts">
+  <div class="fact"><div class="fact-val">Limits</div><div class="fact-lbl">Rate-Limits</div></div>
+  <div class="fact"><div class="fact-val">Backoff</div><div class="fact-lbl">Exponential Backoff</div></div>
+  <div class="fact"><div class="fact-val">12</div><div class="fact-lbl">Log-Felder</div></div>
+  <div class="fact"><div class="fact-val">10</div><div class="fact-lbl">Punkte-Checklist</div></div>
+</div>
+<div class="hl">
+  <div class="hl-card hl-r"><div class="hl-val">429</div>Rate-Limit</div>
+  <div class="hl-card hl-w"><div class="hl-val">Backoff</div>Retry-Strategie</div>
+  <div class="hl-card hl-g"><div class="hl-val">Fallback</div>Modell-Switch</div>
+</div>
+<div class="grid">
+  <div class="card"><h3>Rate-Limits</h3><ul>
+    <li><b>x-ratelimit-limit/remaining</b> lesen</li>
+    <li><b>reset-requests</b> Header beachten</li>
+    <li>Vor Überschreitung <b>drosseln</b></li>
+  </ul></div>
+  <div class="card"><h3>Retry-Strategie</h3><ul>
+    <li><b>429/529</b> → warten</li>
+    <li><b>Math.pow(2,attempt)*1000</b> ms</li>
+    <li>→ retry bis <b>maxRetries</b></li>
+  </ul></div>
+  <div class="card"><h3>Logging-Felder</h3><ul>
+    <li><b>timestamp, requestId, model</b></li>
+    <li><b>inputTokens, outputTokens, cost</b></li>
+    <li><b>latencyMs, userId, cacheHit, errorCode</b></li>
+  </ul></div>
+  <div class="card"><h3>6 Key-Metrics</h3><ul>
+    <li><b>P95-Latenz,</b> Error-Rate</li>
+    <li><b>Cache-Hit-Rate,</b> Token-Usage</li>
+    <li><b>Cost/User,</b> Concurrent-Requests</li>
+  </ul></div>
+</div>
+<div class="box box-red"><b>🚨 Secrets:</b> ANTHROPIC_API_KEY nur in .env — NIE in Code, NIE in Git-History. Sofort rotieren wenn exposed.</div>
+<div class="outcome">🎯 <span><b>Lernziel:</b> API-Integration mit Retry + Logging + Rate-Limit-Awareness</span></div>
+<div class="nav"><a href="M5-API-36-Files-API.html">← L36 Files API</a><a href="M5-AGY-38-Client-Onboarding.html">Track 7 · L38 Onboarding →</a></div>
+</div></body></html>
