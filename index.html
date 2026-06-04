@@ -119,7 +119,7 @@ footer a{color:var(--accent);text-decoration:none}
 
   <div class="today">
     <span class="tag">HEUTE</span>
-    <span><b>Ziel: 40 Videos</b> = Track&nbsp;0 (8) + Track&nbsp;1–5 (29) + 3 zum Anwärmen. Der Rest (API + Agency) folgt.</span>
+    <span><b>Track&nbsp;0 ✅ fertig</b> (8 Videos, eingefroren). Jetzt dran: <b>Track&nbsp;1–5 (29)</b>, danach API + Agency. <b>44 noch offen</b> — Tagesziel 40 bringt dich auf ~48/52.</span>
   </div>
 
   <div class="progress-card">
@@ -142,7 +142,7 @@ footer a{color:var(--accent);text-decoration:none}
     <div class="track-head">
       <span class="tnum">Track 0</span>
       <span class="track-title">Onramp — Grundlagen für Einsteiger</span>
-      <span class="track-meta">8 Videos · ~2,9 Std</span>
+      <span class="track-meta">✅ fertig · aufgenommen &amp; eingefroren</span>
     </div>
     <div class="rows">
       <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="t0-03">
@@ -528,16 +528,23 @@ footer a{color:var(--accent);text-decoration:none}
     minsEl.textContent=(h?h+' Std ':'')+m+' Min im Kasten';
   }
   chks.forEach(function(c){
-    if(localStorage.getItem(KEY+c.getAttribute('data-id'))==='1')c.checked=true;
+    var id=c.getAttribute('data-id');
+    var saved=localStorage.getItem(KEY+id);
+    if(saved==='1')c.checked=true;
+    else if(saved==='0')c.checked=false;
+    else if(id.indexOf('t0-')===0)c.checked=true; // Track 0 ist fertig = Standard erledigt
     c.addEventListener('change',function(){
-      if(c.checked)localStorage.setItem(KEY+c.getAttribute('data-id'),'1');
-      else localStorage.removeItem(KEY+c.getAttribute('data-id'));
+      localStorage.setItem(KEY+id,c.checked?'1':'0');
       refresh();
     });
   });
   document.getElementById('reset').addEventListener('click',function(){
-    if(!confirm('Allen Aufnahme-Fortschritt zurücksetzen?'))return;
-    chks.forEach(function(c){c.checked=false;localStorage.removeItem(KEY+c.getAttribute('data-id'));});
+    if(!confirm('Allen Aufnahme-Fortschritt zurücksetzen? (Track 0 bleibt fertig)'))return;
+    chks.forEach(function(c){
+      var id=c.getAttribute('data-id');
+      localStorage.removeItem(KEY+id);
+      c.checked=id.indexOf('t0-')===0;
+    });
     refresh();
   });
   refresh();
