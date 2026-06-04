@@ -2,6 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "kpi-dashboard",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3002", "."],
+      "port": 3002
+    },
+    {
       "name": "3d-scroll-site",
       "runtimeExecutable": "node",
       "runtimeArgs": ["3d-scroll-site/node_modules/next/dist/bin/next", "dev", "3d-scroll-site", "--port", "3001"],
