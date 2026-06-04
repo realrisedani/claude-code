@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aufnahme-Cockpit — Claude Code Kurs</title>
+<style>
+:root{
+  --bg:#0F0F1A; --card:#1A1A2E; --accent:#7C3AED; --cyan:#06B6D4;
+  --green:#10B981; --warn:#F59E0B; --red:#EF4444; --white:#F1F5F9;
+  --muted:#94A3B8; --border:#2D2D4E;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--white);line-height:1.5;
+  padding:32px 20px 80px;position:relative;min-height:100vh;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.15;
+}
+.wrap{max-width:920px;margin:0 auto;position:relative;z-index:1}
+
+/* Header */
+header{text-align:center;margin-bottom:28px}
+.kicker{color:var(--accent);font-weight:700;letter-spacing:2px;font-size:.8rem;text-transform:uppercase}
+h1{font-size:2rem;margin:6px 0 4px;background:linear-gradient(90deg,var(--white),var(--cyan));
+   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:var(--muted);font-size:1rem}
+
+/* Progress */
+.progress-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:18px 20px;margin:22px 0 14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.pcount{font-size:2rem;font-weight:800;color:var(--cyan);line-height:1;white-space:nowrap}
+.pcount small{font-size:1rem;color:var(--muted);font-weight:500}
+.pbar-wrap{flex:1;min-width:200px}
+.pbar{height:12px;background:#0c0c16;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.pbar > div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--cyan));
+  border-radius:8px;transition:width .3s ease}
+.pmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:.82rem;margin-top:6px}
+.reset{background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:8px 14px;border-radius:10px;cursor:pointer;font-size:.82rem;white-space:nowrap}
+.reset:hover{border-color:var(--red);color:var(--red)}
+
+/* Today banner */
+.today{background:linear-gradient(90deg,rgba(124,58,237,.18),rgba(6,182,212,.12));
+  border:1px solid var(--accent);border-radius:14px;padding:14px 18px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;font-size:.92rem}
+.today b{color:var(--white)}
+.today .tag{background:var(--accent);color:#fff;font-weight:700;font-size:.72rem;
+  padding:4px 9px;border-radius:20px;white-space:nowrap}
+
+/* Legend */
+.legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+  color:var(--muted);font-size:.84rem;margin:14px 0 24px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* Track */
+.track{margin-bottom:30px}
+.track-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.tnum{display:inline-block;background:var(--accent);color:#fff;font-weight:700;
+  font-size:.74rem;padding:4px 10px;border-radius:8px;letter-spacing:.5px}
+.track-title{font-size:1.18rem;font-weight:700}
+.track-meta{margin-left:auto;color:var(--muted);font-size:.84rem}
+
+/* Rows */
+.rows{display:flex;flex-direction:column;gap:7px}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);
+  border:1px solid var(--border);border-radius:12px;padding:11px 14px;transition:.15s}
+.row:hover{border-color:var(--accent);transform:translateX(2px)}
+.row.done{opacity:.5}
+.row.done .title{text-decoration:line-through;text-decoration-color:var(--muted)}
+.chk{appearance:none;-webkit-appearance:none;width:22px;height:22px;flex-shrink:0;
+  border:2px solid var(--border);border-radius:7px;cursor:pointer;position:relative;background:#0c0c16}
+.chk:hover{border-color:var(--green)}
+.chk:checked{background:var(--green);border-color:var(--green)}
+.chk:checked::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:#06281b;font-weight:900;font-size:.95rem}
+.num{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700;font-size:.86rem;
+  width:26px;text-align:center;flex-shrink:0}
+.type{font-size:1rem;flex-shrink:0;width:20px;text-align:center;cursor:help}
+.title{flex:1;min-width:0;color:var(--white);text-decoration:none;font-weight:600;font-size:.96rem}
+.title:hover{color:var(--cyan)}
+.title .msg{display:block;color:var(--muted);font-weight:400;font-size:.82rem;margin-top:1px}
+.dur{flex-shrink:0;color:var(--cyan);font-weight:700;font-size:.92rem;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.dur small{color:var(--muted);font-weight:500;font-size:.72rem}
+.open-ico{flex-shrink:0;color:var(--muted);font-size:.9rem;text-decoration:none}
+.row:hover .open-ico{color:var(--accent)}
+
+/* Extras / Alt */
+.extras{margin-top:10px;padding:12px 14px;background:rgba(245,158,11,.06);
+  border:1px dashed var(--warn);border-radius:12px}
+.extras .ehead{color:var(--warn);font-weight:700;font-size:.8rem;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:8px}
+.erow{display:flex;align-items:center;gap:10px;font-size:.88rem;padding:5px 0}
+.erow a{color:var(--white);text-decoration:none;font-weight:600}
+.erow a:hover{color:var(--cyan)}
+.erow .note{color:var(--muted);font-size:.82rem}
+
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:40px}
+footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">RealRise · Aufnahme-Cockpit</div>
+    <h1>Claude Code — der komplette Kurs</h1>
+    <p class="sub">Eine Seite. Alle Lektionen. Klick auf den Titel öffnet die Slide — Haken setzen, wenn aufgenommen.</p>
+  </header>
+
+  <div class="today">
+    <span class="tag">HEUTE</span>
+    <span><b>Ziel: 40 Videos</b> = Track&nbsp;0 (8) + Track&nbsp;1–5 (29) + 3 zum Anwärmen. Der Rest (API + Agency) folgt.</span>
+  </div>
+
+  <div class="progress-card">
+    <div class="pcount"><span id="done">0</span><small>/<span id="total">0</span> Videos</small></div>
+    <div class="pbar-wrap">
+      <div class="pbar"><div id="fill"></div></div>
+      <div class="pmeta"><span id="pct">0 % aufgenommen</span><span id="mins">0 Min im Kasten</span></div>
+    </div>
+    <button class="reset" id="reset">Fortschritt zurücksetzen</button>
+  </div>
+
+  <div class="legend">
+    <span>🟢 <b>RECAP</b> — kurz erinnern, kein Demo</span>
+    <span>🔵 <b>WERKZEUG</b> — 1 Live-Demo</span>
+    <span>🟣 <b>DENKEN</b> — über Slides reden</span>
+  </div>
+
+  <!-- ================= TRACK 0 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 0</span>
+      <span class="track-title">Onramp — Grundlagen für Einsteiger</span>
+      <span class="track-meta">8 Videos · ~2,9 Std</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="t0-03">
+        <span class="num">03</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-03-Was-Kostet-AI.html">Was kostet AI wirklich?<span class="msg">Weniger als ein Kaffee am Tag — Abos & Token einfach erklärt.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-03-Was-Kostet-AI.html">↗</a></div>
+
+      <div class="row" data-min="25"><input type="checkbox" class="chk" data-id="t0-04">
+        <span class="num">04</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-04-Computer-Basics.html">Computer-Basics für AI-Builder<span class="msg">Terminal, Ordner, Dateien — die 5 Begriffe, die du brauchst.</span></a>
+        <span class="dur">25<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-04-Computer-Basics.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="t0-05">
+        <span class="num">05</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-05-Erster-Mini-Code.html">Dein erster Mini-Code in 10 Min<span class="msg">Ohne Vorwissen — von Null zum ersten echten Code.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-05-Erster-Mini-Code.html">↗</a></div>
+
+      <div class="row" data-min="30"><input type="checkbox" class="chk" data-id="t0-06">
+        <span class="num">06</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-06-Git-In-5-Min.html">Git &amp; GitHub in 5 Min<span class="msg">Git ist nur „Speichern mit Rückgängig" — mehr nicht.</span></a>
+        <span class="dur">30<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-06-Git-In-5-Min.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="t0-07">
+        <span class="num">07</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-07-Claude-Code-Installieren.html">Claude Code installieren<span class="msg">Einmal installieren, für immer nutzen — Schritt für Schritt.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-07-Claude-Code-Installieren.html">↗</a></div>
+
+      <div class="row" data-min="30"><input type="checkbox" class="chk" data-id="t0-08">
+        <span class="num">08</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-08-Erstes-Magie-Projekt.html">Erstes Magie-Projekt<span class="msg">Dein erster Wow-Moment: Claude baut etwas Echtes für dich.</span></a>
+        <span class="dur">30<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-08-Erstes-Magie-Projekt.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="t0-09">
+        <span class="num">09</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-09-Was-Anders.html">Was Claude Code WIRKLICH anders macht<span class="msg">Warum es anders ist als ChatGPT & Copilot.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-09-Was-Anders.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="t0-10">
+        <span class="num">10</span><span class="type" title="RECAP">🟢</span>
+        <a class="title" target="_blank" href="track-0-onramp/M1-CC-T0-10-Onramp-Fertig.html">Onramp fertig — dein Weg ab hier<span class="msg">Du kannst die Basics — ab hier beginnt das Profi-Level.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-0-onramp/M1-CC-T0-10-Onramp-Fertig.html">↗</a></div>
+    </div>
+    <div class="extras">
+      <div class="ehead">Bonus (optional)</div>
+      <div class="erow"><span class="type">🟢</span>
+        <a target="_blank" href="track-0-onramp/M1-CC-T0-PRAXIS-Erste-Schritte.html">Praxis-Übung: Erste Schritte</a>
+        <span class="note">~15 Min Hands-on — als Wiederholung/Übung, wenn du magst.</span></div>
+      <div class="erow"><span class="type">📄</span>
+        <span class="note">L1–L2 (Intro + KI-Landschaft) sind bereits als PDF fertig — kein extra Video nötig.</span></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 1 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 1</span>
+      <span class="track-title">Foundation — Claude Code Kern</span>
+      <span class="track-meta">6 Videos · ~63 Min</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="6"><input type="checkbox" class="chk" data-id="cc-01">
+        <span class="num">01</span><span class="type" title="RECAP">🟢</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-01-Installation.html">Installation &amp; 3 Modi<span class="msg">Installiert hast du in T0 — jetzt die 3 Modi, die alles steuern.</span></a>
+        <span class="dur">6<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-01-Installation.html">↗</a></div>
+
+      <div class="row" data-min="10"><input type="checkbox" class="chk" data-id="cc-02">
+        <span class="num">02</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-02-Mental-Model-Phasen.html">Mental Model &amp; Phasen-Kontrolle<span class="msg">Claude arbeitet in 4 Phasen — du musst erkennen, wo er ist.</span></a>
+        <span class="dur">10<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-02-Mental-Model-Phasen.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-03">
+        <span class="num">03</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-03-Permissions.html">Permissions &amp; Git-Disziplin<span class="msg">Accept Edits ohne sauberen git-Stand ist russisch Roulette.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-03-Permissions.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-04">
+        <span class="num">04</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-04-Slash-Commands.html">Slash Commands Tour<span class="msg">Die 12 Befehle, die du im Schlaf kennen musst.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-04-Slash-Commands.html">↗</a></div>
+
+      <div class="row" data-min="9"><input type="checkbox" class="chk" data-id="cc-05">
+        <span class="num">05</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-05-Cost-Token-Economy.html">Cost &amp; Token Economy<span class="msg">Du zahlst für Kontext — lern ihn schlank zu halten.</span></a>
+        <span class="dur">9<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-05-Cost-Token-Economy.html">↗</a></div>
+
+      <div class="row" data-min="10"><input type="checkbox" class="chk" data-id="cc-06">
+        <span class="num">06</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-06-IDE-Integration.html">IDE Integration<span class="msg">Claude lebt in deinem Editor, nicht nur im Terminal.</span></a>
+        <span class="dur">10<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-06-IDE-Integration.html">↗</a></div>
+    </div>
+    <div class="extras">
+      <div class="ehead">Alt — beim Aufnehmen überspringen</div>
+      <div class="erow"><span class="type">⏭</span>
+        <a target="_blank" href="track-1-claude-code/M1-Claude-Code-Setup.html">M1-Claude-Code-Setup (Setup &amp; First Run)</a>
+        <span class="note">Zweite L1-Variante. Inhalt steckt in T0-07 + L01 — nur als Backup behalten.</span></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 2 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 2</span>
+      <span class="track-title">Context Mastery — Claude versteht dein Projekt</span>
+      <span class="track-meta">5 Videos · ~61 Min</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="16"><input type="checkbox" class="chk" data-id="cc-07">
+        <span class="num">07</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-07-CLAUDE-MD.html">CLAUDE.md ⭐<span class="msg">Eine Datei, mit der Claude dein Projekt versteht — das wichtigste Feature.</span></a>
+        <span class="dur">16<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-07-CLAUDE-MD.html">↗</a></div>
+
+      <div class="row" data-min="13"><input type="checkbox" class="chk" data-id="cc-08">
+        <span class="num">08</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-08-Memory.html">Memory &amp; Präferenzen<span class="msg">Schreib deine Regeln einmal, Claude merkt sie sich für immer.</span></a>
+        <span class="dur">13<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-08-Memory.html">↗</a></div>
+
+      <div class="row" data-min="10"><input type="checkbox" class="chk" data-id="cc-09">
+        <span class="num">09</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-09-Context-Management.html">Context Window Management<span class="msg">Volles Kontextfenster = dummer Claude. So hältst du ihn schlau.</span></a>
+        <span class="dur">10<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-09-Context-Management.html">↗</a></div>
+
+      <div class="row" data-min="13"><input type="checkbox" class="chk" data-id="cc-10">
+        <span class="num">10</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-10-Session-Lifecycle.html">Session Lifecycle<span class="msg">/clear, resume, state.md — so verlierst du nie den Faden.</span></a>
+        <span class="dur">13<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-10-Session-Lifecycle.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-11">
+        <span class="num">11</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-11-Spec-Driven.html">Spec-Driven Development<span class="msg">Erst Spec, dann Code — sonst baut Claude das Falsche.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-11-Spec-Driven.html">↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 3 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 3</span>
+      <span class="track-title">Execution Patterns — schneller & sauberer arbeiten</span>
+      <span class="track-meta">7 Videos · ~95 Min</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-12">
+        <span class="num">12</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-12-Plan-Mode-Deep.html">Plan Mode tief<span class="msg">Bei großen Features: planen lassen, bevor er anfasst.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-12-Plan-Mode-Deep.html">↗</a></div>
+
+      <div class="row" data-min="9"><input type="checkbox" class="chk" data-id="cc-13">
+        <span class="num">13</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-13-Parallel-Tools.html">Parallele Tool-Calls<span class="msg">Mehrere Reads gleichzeitig = schneller & billiger.</span></a>
+        <span class="dur">9<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-13-Parallel-Tools.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-14">
+        <span class="num">14</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-14-Sub-Agents.html">Sub-Agents Strategie<span class="msg">Lass Claude Helfer losschicken statt selbst alles zu lesen.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-14-Sub-Agents.html">↗</a></div>
+
+      <div class="row" data-min="13"><input type="checkbox" class="chk" data-id="cc-15">
+        <span class="num">15</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-15-Worktrees.html">Worktrees<span class="msg">Großer Umbau? In eigenem Arbeitsbereich, ohne Risiko.</span></a>
+        <span class="dur">13<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-15-Worktrees.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-16">
+        <span class="num">16</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-16-Debugging.html">Debugging Workflow<span class="msg">5 Phasen, um jeden Bug systematisch zu erlegen.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-16-Debugging.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-17">
+        <span class="num">17</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-17-TDD.html">TDD mit Claude<span class="msg">Tests zuerst — Claude tippt den Code, du tippst nichts.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-17-TDD.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-18">
+        <span class="num">18</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-18-Refactoring.html">Refactoring Patterns<span class="msg">Sauber umbauen mit Tests grün und atomaren Commits.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-18-Refactoring.html">↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 4 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 4</span>
+      <span class="track-title">Power Layer — MCP, Skills, Hooks, Automatik</span>
+      <span class="track-meta">6 Videos · ~87 Min</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-19">
+        <span class="num">19</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-19-MCP-Intro.html">MCP Servers Intro<span class="msg">MCP gibt Claude Augen & Hände in andere Tools.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-19-MCP-Intro.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-20">
+        <span class="num">20</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-20-MCP-Must-Haves.html">MCP Must-Haves<span class="msg">Die Server, die jede Agentur braucht — live angeschlossen.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-20-MCP-Must-Haves.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-21">
+        <span class="num">21</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-21-Skills.html">Skills<span class="msg">Eingebaute Superkräfte + dein eigener Skill.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-21-Skills.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-22">
+        <span class="num">22</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-22-Hooks.html">Hooks<span class="msg">Automatik: Claude formatiert/testet, ohne dass du fragst.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-22-Hooks.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-23">
+        <span class="num">23</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-23-Custom-Commands.html">Custom Slash Commands<span class="msg">Deine täglichen Abläufe als ein-Wort-Befehle.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-23-Custom-Commands.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-24">
+        <span class="num">24</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-24-Settings-Mastery.html">settings.json Mastery<span class="msg">Alle Einstellungen an einem Ort — der Profi-Hebel.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-24-Settings-Mastery.html">↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 5 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 5</span>
+      <span class="track-title">Shipping — von Commit bis Deploy</span>
+      <span class="track-meta">5 Videos · ~68 Min</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="13"><input type="checkbox" class="chk" data-id="cc-25">
+        <span class="num">25</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-25-Git-Workflow.html">Git Workflow<span class="msg">Profi-Commits & saubere PRs — über die Basics hinaus.</span></a>
+        <span class="dur">13<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-25-Git-Workflow.html">↗</a></div>
+
+      <div class="row" data-min="12"><input type="checkbox" class="chk" data-id="cc-26">
+        <span class="num">26</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-26-Code-Review.html">Code Review<span class="msg">/code-review vor jedem Commit — dein zweites Augenpaar.</span></a>
+        <span class="dur">12<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-26-Code-Review.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-27">
+        <span class="num">27</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-27-PR-Babysitting.html">PR-Babysitting<span class="msg">CI rot → Claude macht sie grün, ohne dich.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-27-PR-Babysitting.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="cc-28">
+        <span class="num">28</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-28-CI-CD.html">CI/CD mit Claude<span class="msg">Claude läuft in GitHub Actions — automatisch im Hintergrund.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-28-CI-CD.html">↗</a></div>
+
+      <div class="row" data-min="14"><input type="checkbox" class="chk" data-id="cc-29">
+        <span class="num">29</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="track-1-claude-code/M1-CC-29-Deploy-Patterns.html">Deploy Patterns<span class="msg">Sicher deployen, in &lt;5 Min zurückrollen, draus lernen.</span></a>
+        <span class="dur">14<small>min</small></span><a class="open-ico" target="_blank" href="track-1-claude-code/M1-CC-29-Deploy-Patterns.html">↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 6 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 6</span>
+      <span class="track-title">Anthropic API — selbst programmieren</span>
+      <span class="track-meta">8 Videos · ~2,9 Std</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="25"><input type="checkbox" class="chk" data-id="api-30">
+        <span class="num">30</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-30-Messages-API.html">Messages API Foundation<span class="msg">Die eine API, auf der alles aufbaut — dein erster Call.</span></a>
+        <span class="dur">25<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-30-Messages-API.html">↗</a></div>
+
+      <div class="row" data-min="30"><input type="checkbox" class="chk" data-id="api-31">
+        <span class="num">31</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-31-Tool-Use.html">Tool Use<span class="msg">Gib der API Werkzeuge — sie ruft deine Funktionen selbst auf.</span></a>
+        <span class="dur">30<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-31-Tool-Use.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="api-32">
+        <span class="num">32</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-32-Prompt-Caching.html">Prompt Caching<span class="msg">Gleichen Kontext cachen = bis zu 90 % weniger Kosten.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-32-Prompt-Caching.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="api-33">
+        <span class="num">33</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-33-Streaming.html">Streaming<span class="msg">Antworten Token für Token — wie im echten Chat.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-33-Streaming.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="api-34">
+        <span class="num">34</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-34-Batch.html">Batch API<span class="msg">Tausende Anfragen über Nacht zum halben Preis.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-34-Batch.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="api-35">
+        <span class="num">35</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-35-Vision.html">Vision<span class="msg">Bilder rein, Analyse raus — Claude sieht jetzt.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-35-Vision.html">↗</a></div>
+
+      <div class="row" data-min="15"><input type="checkbox" class="chk" data-id="api-36">
+        <span class="num">36</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-36-Files-API.html">Files API<span class="msg">Dateien einmal hochladen, immer wieder nutzen.</span></a>
+        <span class="dur">15<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-36-Files-API.html">↗</a></div>
+
+      <div class="row" data-min="25"><input type="checkbox" class="chk" data-id="api-37">
+        <span class="num">37</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="module-5/api/M5-API-37-Production.html">Production Patterns<span class="msg">Retries, Limits, Fehler — so läuft es stabil in Produktion.</span></a>
+        <span class="dur">25<small>min</small></span><a class="open-ico" target="_blank" href="module-5/api/M5-API-37-Production.html">↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 7 ================= -->
+  <section class="track">
+    <div class="track-head">
+      <span class="tnum">Track 7</span>
+      <span class="track-title">Agency Delivery — damit Geld verdienen</span>
+      <span class="track-meta">7 Videos · ~2,7 Std</span>
+    </div>
+    <div class="rows">
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="agy-38">
+        <span class="num">38</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-38-Client-Onboarding.html">Client Onboarding<span class="msg">Vom Erstgespräch zum startklaren Projekt — dein System.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-38-Client-Onboarding.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="agy-39">
+        <span class="num">39</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-39-Pricing.html">Pricing AI-augmented Work<span class="msg">Was du für AI-Arbeit verlangst — und wie du es begründest.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-39-Pricing.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="agy-40">
+        <span class="num">40</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-40-Eval-Loop.html">Eval Loop<span class="msg">Qualität messbar machen — bevor der Kunde es merkt.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-40-Eval-Loop.html">↗</a></div>
+
+      <div class="row" data-min="25"><input type="checkbox" class="chk" data-id="agy-41">
+        <span class="num">41</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-41-Knowledge-Base.html">Knowledge Base<span class="msg">Einmal dokumentiert, jedes Projekt schneller.</span></a>
+        <span class="dur">25<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-41-Knowledge-Base.html">↗</a></div>
+
+      <div class="row" data-min="25"><input type="checkbox" class="chk" data-id="agy-42">
+        <span class="num">42</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-42-Multi-Client.html">Multi-Client Struktur<span class="msg">Mehrere Kunden sauber getrennt — ohne Chaos.</span></a>
+        <span class="dur">25<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-42-Multi-Client.html">↗</a></div>
+
+      <div class="row" data-min="20"><input type="checkbox" class="chk" data-id="agy-43">
+        <span class="num">43</span><span class="type" title="WERKZEUG">🔵</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-43-Handoff.html">Handoff &amp; Documentation<span class="msg">Übergabe so, dass der Kunde allein weiterkommt.</span></a>
+        <span class="dur">20<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-43-Handoff.html">↗</a></div>
+
+      <div class="row" data-min="30"><input type="checkbox" class="chk" data-id="agy-44">
+        <span class="num">44</span><span class="type" title="DENKEN">🟣</span>
+        <a class="title" target="_blank" href="module-5/agency/M5-AGY-44-Scale-Layer.html">Scale Layer (Solo → Team)<span class="msg">Vom Solo-Freelancer zum Team — was sich ändert.</span></a>
+        <span class="dur">30<small>min</small></span><a class="open-ico" target="_blank" href="module-5/agency/M5-AGY-44-Scale-Layer.html">↗</a></div>
+    </div>
+  </section>
+
+  <footer>
+    52 Lektionen · RealRise Claude Code Kurs · <a href="https://github.com/realrisedani/claude-code" target="_blank">github.com/realrisedani/claude-code</a><br>
+    Fortschritt wird lokal in deinem Browser gespeichert (localStorage) — bleibt nach Neuladen erhalten.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var KEY='cc-rec-';
+  var chks=[].slice.call(document.querySelectorAll('.chk'));
+  var doneEl=document.getElementById('done');
+  var totalEl=document.getElementById('total');
+  var pctEl=document.getElementById('pct');
+  var minsEl=document.getElementById('mins');
+  var fillEl=document.getElementById('fill');
+  totalEl.textContent=chks.length;
+
+  function rowMin(chk){
+    var r=chk.closest('.row');
+    return r?parseInt(r.getAttribute('data-min'),10)||0:0;
+  }
+  function refresh(){
+    var done=0,mins=0;
+    chks.forEach(function(c){
+      var r=c.closest('.row');
+      if(c.checked){done++;mins+=rowMin(c);r&&r.classList.add('done');}
+      else{r&&r.classList.remove('done');}
+    });
+    doneEl.textContent=done;
+    var pct=chks.length?Math.round(done/chks.length*100):0;
+    pctEl.textContent=pct+' % aufgenommen';
+    fillEl.style.width=pct+'%';
+    var h=Math.floor(mins/60), m=mins%60;
+    minsEl.textContent=(h?h+' Std ':'')+m+' Min im Kasten';
+  }
+  chks.forEach(function(c){
+    if(localStorage.getItem(KEY+c.getAttribute('data-id'))==='1')c.checked=true;
+    c.addEventListener('change',function(){
+      if(c.checked)localStorage.setItem(KEY+c.getAttribute('data-id'),'1');
+      else localStorage.removeItem(KEY+c.getAttribute('data-id'));
+      refresh();
+    });
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    if(!confirm('Allen Aufnahme-Fortschritt zurücksetzen?'))return;
+    chks.forEach(function(c){c.checked=false;localStorage.removeItem(KEY+c.getAttribute('data-id'));});
+    refresh();
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
