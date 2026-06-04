@@ -1,73 +1,240 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L17 · TDD mit Claude</title><style>
-:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L17 · TDD mit Claude</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
 .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
 .pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
 .dur{color:var(--muted);font-size:.85rem}
 h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
-.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
 .fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
 .fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
 .card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
 .card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
-.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
+.lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
+.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
+.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
+.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
+.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
+.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
+.mode-card ul li::before{content:'· '}
+.mode-card ul li b{color:var(--white)}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+.code-block .key{color:#a5f3fc}
+.code-block .str{color:#86efac}
+.code-block .cmd{color:#a5f3fc}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
+.box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
 .box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
-.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
-.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
-.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
-.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
-.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}.hl-r .hl-val{color:var(--red)}
-.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
-.hl-a{background:rgba(124,58,237,.1);border:1px solid var(--accent)}.hl-a .hl-val{color:var(--accent)}
-.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+.box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600}
+td:nth-child(2){font-family:monospace;font-size:.78rem;color:var(--green)}
+td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
+.scenario-box{background:rgba(239,68,68,.06);border:2px solid rgba(239,68,68,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
+.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:.7rem}
+.scenario-steps{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
+.scenario-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.84rem;line-height:1.5}
+.s-num{background:var(--red);color:#fff;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.1rem}
+.rule-box .rule-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.4rem}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.checklist h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
+.check-item{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(45,45,78,.4);cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-item input[type=checkbox]{appearance:none;width:1.1rem;height:1.1rem;border:2px solid var(--border);border-radius:.3rem;cursor:pointer;flex-shrink:0;position:relative;transition:all .15s}
+.check-item input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+.check-item input[type=checkbox]:checked::after{content:'✓';position:absolute;color:#fff;font-size:.7rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
+.check-item label{font-size:.84rem;cursor:pointer;line-height:1.4}
+.check-item input:checked + label{color:var(--muted);text-decoration:line-through}
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+.quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
+.quiz ol li{padding-left:.2rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+.inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
+
 <div class="meta"><span class="pill">Track 3 · L17</span><span class="dur">~25 Min</span></div>
 <h1>TDD mit Claude</h1>
-<p class="sub">Tests zuerst — Anti-Halluzinations-Disziplin</p>
+<p class="sub">Tests zuerst — Claude tippt den Code, du tippst keine Zeile selbst.</p>
+
 <div class="facts">
-  <div class="fact"><div class="fact-val">Red→Green</div><div class="fact-lbl">Refactor</div></div>
-  <div class="fact"><div class="fact-val">Claude</div><div class="fact-lbl">schreibt Tests</div></div>
-  <div class="fact"><div class="fact-val">Kein Code</div><div class="fact-lbl">getippt</div></div>
-  <div class="fact"><div class="fact-val">Edge-Cases</div><div class="fact-lbl">diktieren</div></div>
+  <div class="fact"><div class="fact-val">Red</div><div class="fact-lbl">Test schlägt fehl</div></div>
+  <div class="fact"><div class="fact-val">Green</div><div class="fact-lbl">Code bis grün</div></div>
+  <div class="fact"><div class="fact-val">Refactor</div><div class="fact-lbl">aufräumen</div></div>
+  <div class="fact"><div class="fact-val">Test = Spec</div><div class="fact-lbl">Prinzip</div></div>
 </div>
-<div class="hl">
-  <div class="hl-card hl-r"><div class="hl-val">RED</div>Tests schreiben</div>
-  <div class="hl-card hl-g"><div class="hl-val">GREEN</div>Code bis Tests grün</div>
-  <div class="hl-card hl-a"><div class="hl-val">REFACTOR</div>aufräumen</div>
+
+<div class="lernziele">
+  <h3>Lernziele</h3>
+  <ul>
+    <li>Den Red-Green-Refactor-Zyklus mit Claude durchlaufen</li>
+    <li>Claude erst den Test schreiben lassen und ihn rot sehen, bevor Code entsteht</li>
+    <li>Verstehen, warum Tests als Spezifikation Halluzinationen aufdecken</li>
+  </ul>
 </div>
-<div class="grid">
-  <div class="card"><h3>TDD-Workflow</h3><ul>
-    <li>"Schreib Tests für X <b>OHNE Implementation</b>"</li>
-    <li>Tests <b>reviewen</b> — vollständig?</li>
-    <li>Tests rot? → "Implementiere <b>bis grün</b>"</li>
-    <li>Dann <b>Refactor</b> ohne Angst</li>
-  </ul></div>
-  <div class="card"><h3>Warum mit Claude perfekt</h3><ul>
-    <li>Claude liebt <b>klare Specs</b></li>
-    <li>Tests <b>sind</b> die Spec</li>
-    <li>Kein Interpretationsspielraum <b>mehr</b></li>
-    <li>Halluzinationen durch <b>Tests aufgedeckt</b></li>
-  </ul></div>
-  <div class="card"><h3>Edge-Cases diktieren</h3><ul>
-    <li><b>Leerer Input</b> / null / undefined</li>
-    <li><b>Unicode</b> / Sonderzeichen</li>
-    <li>Sehr <b>langer String</b> / Grenzwerte</li>
-    <li><b>Duplikate</b> / Reihenfolge-Varianten</li>
-  </ul></div>
-  <div class="card"><h3>TDD bei Bugs</h3><ul>
-    <li>"Schreib erst Test der <b>Bug reproduziert</b>"</li>
-    <li>Test ist <b>rot</b> → Bug bewiesen</li>
-    <li>Dann <b>fixen</b> bis Test grün</li>
-    <li>Test bleibt als <b>Regression-Guard</b></li>
-  </ul></div>
+
+<div class="section-title">Konzept — Red, Green, Refactor</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.65rem">TDD dreht die Reihenfolge um: erst der <b style="color:var(--white)">Test</b>, dann der Code. Du beschreibst, was rauskommen soll, Claude schreibt den Test (er schlägt fehl, weil es noch keine Implementierung gibt), und dann schreibt er den minimalen Code, bis der Test grün ist. Zum Schluss räumt er auf, während die Tests grün bleiben.</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Schritt</th><th>Status</th><th>Bedeutung</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Red</td><td>test rot</td><td>spec steht, code fehlt</td></tr>
+      <tr><td>Green</td><td>test gruen</td><td>minimal-code erfuellt spec</td></tr>
+      <tr><td>Refactor</td><td>test bleibt gruen</td><td>code aufraeumen, sicher</td></tr>
+    </tbody>
+  </table>
 </div>
-<div class="box box-green">💡 <b>Trick:</b> "Die Tests müssen jetzt rot sein — führe sie aus und zeig mir das Ergebnis" → verhindert Schummeln</div>
-<div class="outcome">🎯 <span><b>Lernziel:</b> Feature mit Tests vor Implementation gebaut, alle grün, kein Code selbst getippt</span></div>
-<div class="nav"><span>← <a href="M1-CC-16-Debugging.html">L16 Debugging</a></span><span><a href="M1-CC-18-Refactoring.html">L18 Refactoring</a> →</span></div>
-</div></body></html>
+
+<div class="box box-cyan">💡 <b>Tipp:</b> Der Test ist die Spezifikation in ausführbarer Form. Wenn Claude weiß, was der Test verlangt, hat er keinen Interpretationsspielraum mehr — er muss genau das bauen, was der Test prüft.</div>
+
+<div class="section-title">Warum TDD mit Claude so stark ist</div>
+
+<div class="mode-cards">
+  <div class="mode-card mc-g">
+    <h4>Test = klare Spec</h4>
+    <ul>
+      <li>Kein Raten, <b>was gemeint</b> ist</li>
+      <li>Claude liebt <b>klare Vorgaben</b></li>
+      <li>Erwartung ist <b>messbar</b></li>
+    </ul>
+  </div>
+  <div class="mode-card mc-w">
+    <h4>Halluzination fällt auf</h4>
+    <ul>
+      <li>Erfundener Code → <b>Test rot</b></li>
+      <li>Du siehst es <b>sofort</b></li>
+      <li>Kein stilles Falschverhalten</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-a">
+    <h4>Du tippst nichts</h4>
+    <ul>
+      <li>Claude schreibt Test <b>und</b> Code</li>
+      <li>Du diktierst nur die <b>Fälle</b></li>
+      <li>Du prüfst nur <b>grün/rot</b></li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-title">Praxis — der TDD-Zyklus</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Zuerst lässt du Claude nur den Test schreiben — ausdrücklich ohne Implementierung. Beispiel: eine Funktion <span class="inline-code">slugify</span>, die Text in URL-Slugs verwandelt.</p>
+
+<div class="code-block">
+<span class="comment"># Red: Test zuerst, ohne Implementierung</span><br>
+Schreib NUR einen Test für eine Funktion slugify(text).<br>
+Fälle: "Hallo Welt" → "hallo-welt", Umlaute "Über" → "ueber",<br>
+leerer String → "". Keine Implementierung. Lass den Test laufen.
+</div>
+
+<div class="code-block">
+<span class="comment"># Der Test (von Claude) — schlägt erwartbar fehl, slugify fehlt noch</span><br>
+<span class="key">test</span>(<span class="str">'macht aus Text einen Slug'</span>, () => {<br>
+&nbsp;&nbsp;<span class="key">expect</span>(slugify(<span class="str">'Hallo Welt'</span>)).<span class="key">toBe</span>(<span class="str">'hallo-welt'</span>);<br>
+&nbsp;&nbsp;<span class="key">expect</span>(slugify(<span class="str">'Über'</span>)).<span class="key">toBe</span>(<span class="str">'ueber'</span>);<br>
+&nbsp;&nbsp;<span class="key">expect</span>(slugify(<span class="str">''</span>)).<span class="key">toBe</span>(<span class="str">''</span>);<br>
+});
+</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Test ist rot. Jetzt darf Claude den minimalen Code schreiben — bis grün.</p>
+
+<div class="code-block">
+<span class="comment"># Green: minimale Implementierung bis der Test grün ist</span><br>
+<span class="key">function</span> slugify(text) {<br>
+&nbsp;&nbsp;<span class="key">return</span> text<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.replace(<span class="str">/ü/g</span>, <span class="str">'ue'</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.toLowerCase()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.trim()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.replace(<span class="str">/\s+/g</span>, <span class="str">'-'</span>);<br>
+}
+</div>
+
+<div class="box box-green">✅ <b>Regel:</b> Erst den Test rot sehen, dann erst Code. Lass dir das rote Ergebnis zeigen — sonst weißt du nicht, ob der Test überhaupt etwas prüft.</div>
+
+<div class="box box-warn">🚫 <b>Falle:</b> Wenn Claude Test und Code in einem Rutsch liefert und beides direkt grün ist, hast du nie gesehen, ob der Test wirklich fehlschlägt. Verlange "zeig mir den Test rot" als eigenen Schritt.</div>
+
+<div class="section-title">Szenario — TDD deckt eine Lücke auf</div>
+
+<div class="scenario-box">
+  <h3>Der vergessene Edge-Case</h3>
+  <div class="scenario-steps">
+    <div class="scenario-step"><div class="s-num">1</div><div>Du diktierst die Fälle, vergisst aber den Slug mit mehreren Leerzeichen</div></div>
+    <div class="scenario-step"><div class="s-num">2</div><div>Claude baut slugify, alle deine Tests sind grün</div></div>
+    <div class="scenario-step"><div class="s-num">3</div><div>Du ergänzt den Test: "Hallo&nbsp;&nbsp;&nbsp;Welt" soll "hallo-welt" geben — Test wird rot</div></div>
+    <div class="scenario-step"><div class="s-num">4</div><div>Claude bessert den Regex nach, Test grün — die Lücke ist geschlossen, bevor sie in Produktion ging</div></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-label">Der Wert von TDD</div>
+    <div style="font-size:.84rem;line-height:1.6">Jeder neue Fall, den du als Test formulierst, wird sofort geprüft. Du baust deine Spec Stück für Stück aus — und Claude muss jeder Erweiterung folgen.</div>
+  </div>
+</div>
+
+<div class="section-title">Jetzt du — selbst ausprobieren</div>
+
+<div class="box box-cyan">💡 <b>Jetzt du:</b> Such dir ein kleines Feature (z. B. eine Validierungs- oder Formatierungsfunktion). Lass Claude zuerst nur den Test mit drei bis vier Fällen schreiben und rot laufen. Dann erst den minimalen Code bis grün. Ergänze danach einen Edge-Case-Test und beobachte, wie Claude den Code nachzieht. Du tippst dabei keine Code-Zeile selbst.</div>
+
+<div class="section-title">Checkliste</div>
+
+<div class="checklist">
+  <h3>TDD Checkliste</h3>
+  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Claude nur den Test schreiben lassen, ohne Implementierung</label></div>
+  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Test rot gesehen, bevor Code entstand</label></div>
+  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Minimalen Code bis grün schreiben lassen</label></div>
+  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Einen Edge-Case als zusätzlichen Test ergänzt</label></div>
+  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Keine Code-Zeile selbst getippt — nur Fälle diktiert</label></div>
+</div>
+
+<div class="section-title">Wissens-Check</div>
+
+<div class="quiz">
+  <h3>3 Fragen zum Nachdenken</h3>
+  <ol>
+    <li>Warum musst du den Test rot sehen, bevor Code geschrieben wird?</li>
+    <li>Inwiefern ist ein Test die Spezifikation für Claude?</li>
+    <li>Wie deckt TDD eine Halluzination im generierten Code auf?</li>
+  </ol>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Ein Feature im Red-Green-Refactor-Zyklus gebaut, Test zuerst und rot gesehen, alle Tests grün — kein Code selbst getippt.</span></div>
+
+<nav class="nav"><a href="M1-CC-16-Debugging.html">← L16 Debugging</a><span>Track 3 · L17 TDD</span><a href="M1-CC-18-Refactoring.html">L18 Refactoring →</a></nav>
+
+</div>
+<script>
+document.querySelectorAll('.check-item input[type=checkbox]').forEach(cb=>{
+  const key='l17-tdd-check-'+cb.id;
+  if(localStorage.getItem(key)==='1')cb.checked=true;
+  cb.addEventListener('change',()=>localStorage.setItem(key,cb.checked?'1':'0'));
+});
+</script>
+</body></html>

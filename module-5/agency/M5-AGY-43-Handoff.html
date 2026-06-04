@@ -1,70 +1,274 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L43 · Handoff &amp; Documentation</title>
-<style>
-:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L43 · Handoff &amp; Documentation</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
 .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
 .pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
 .dur{color:var(--muted);font-size:.85rem}
 h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
-.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
 .fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
 .fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
 .card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
 .card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
-.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
+.lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
+.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
+.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
+.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
+.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
+.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
+.mode-card ul li::before{content:'· '}
+.mode-card ul li b{color:var(--white)}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+.code-block .key{color:#a5f3fc}
+.code-block .str{color:#86efac}
+.code-block .cmd{color:#a5f3fc}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
+.box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
+.box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
 .box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
-.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
-.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
-.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
-.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
-.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
-.hl-a{background:rgba(124,58,237,.1);border:1px solid var(--accent)}.hl-a .hl-val{color:var(--accent)}
-.hl-c{background:rgba(6,182,212,.1);border:1px solid var(--cyan)}.hl-c .hl-val{color:var(--cyan)}
-.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600}
+.scenario-box{background:rgba(16,185,129,.06);border:2px solid rgba(16,185,129,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
+.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.7rem}
+.scenario-steps{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
+.scenario-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.84rem;line-height:1.5}
+.s-num{background:var(--green);color:#0a0a14;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.1rem}
+.rule-box .rule-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.4rem}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.checklist h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
+.check-item{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(45,45,78,.4);cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-item input[type=checkbox]{appearance:none;width:1.1rem;height:1.1rem;border:2px solid var(--border);border-radius:.3rem;cursor:pointer;flex-shrink:0;position:relative;transition:all .15s}
+.check-item input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+.check-item input[type=checkbox]:checked::after{content:'✓';position:absolute;color:#fff;font-size:.7rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
+.check-item label{font-size:.84rem;cursor:pointer;line-height:1.4}
+.check-item input:checked + label{color:var(--muted);text-decoration:line-through}
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+.quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
+.quiz ol li{padding-left:.2rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+.inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
+
 <div class="meta"><span class="pill">Track 7 · L43</span><span class="dur">~20 Min</span></div>
 <h1>Handoff &amp; Documentation</h1>
-<p class="sub">Außenstehender Dev versteht Projekt in &lt;1 Tag</p>
+<p class="sub">Übergabe so dokumentiert, dass der Kunde allein weiterkommt.</p>
+
 <div class="facts">
-  <div class="fact"><div class="fact-val">5</div><div class="fact-lbl">Handoff-Pyramide</div></div>
-  <div class="fact"><div class="fact-val">README</div><div class="fact-lbl">Pflicht</div></div>
-  <div class="fact"><div class="fact-val">Runbook</div><div class="fact-lbl">operativ</div></div>
-  <div class="fact"><div class="fact-val">4h</div><div class="fact-lbl">Litmus-Test</div></div>
+  <div class="fact"><div class="fact-val">4</div><div class="fact-lbl">Pflicht-Artefakte</div></div>
+  <div class="fact"><div class="fact-val">README</div><div class="fact-lbl">Was + Start</div></div>
+  <div class="fact"><div class="fact-val">Runbook</div><div class="fact-lbl">Was-tun-wenn</div></div>
+  <div class="fact"><div class="fact-val">&lt;1 Tag</div><div class="fact-lbl">Litmus-Test</div></div>
 </div>
-<div class="hl">
-  <div class="hl-card hl-g"><div class="hl-val">README</div>Was+Start</div>
-  <div class="hl-card hl-a"><div class="hl-val">CLAUDE.md</div>Wie</div>
-  <div class="hl-card hl-c"><div class="hl-val">/docs</div>Warum</div>
+
+<div class="lernziele">
+  <h3>Lernziele</h3>
+  <ul>
+    <li>Die 4 Pflicht-Artefakte einer sauberen Übergabe kennen: README, Runbook, Zugänge-Liste, Wartungs-Anleitung</li>
+    <li>Eine Übergabe-Checkliste abarbeiten, mit der ein Außenstehender in unter einem Tag produktiv wird</li>
+    <li>Ein wiederverwendbares Handoff-Doku-Template selbst erstellen</li>
+  </ul>
 </div>
-<div class="grid">
-  <div class="card"><h3>Handoff-Pyramide</h3><ul>
-    <li><b>README.md</b> → CLAUDE.md</li>
-    <li><b>/docs</b> (Arch+Runbook) → /specs</li>
-    <li><b>/plans</b> — von oben nach unten</li>
-  </ul></div>
-  <div class="card"><h3>README Pflicht</h3><ul>
-    <li><b>Was ist das?</b> (2 Sätze)</li>
-    <li><b>Schnellstart</b> (4 Befehle)</li>
-    <li><b>Voraussetzungen</b> + Deployment</li>
-  </ul></div>
-  <div class="card"><h3>Runbook</h3><ul>
-    <li>Operationale <b>Checklisten</b></li>
-    <li>"Was tun wenn X" für <b>häufige Probleme</b></li>
-    <li>Kein Wissen im Kopf — <b>alles schriftlich</b></li>
-  </ul></div>
-  <div class="card"><h3>Handoff-Meeting</h3><ul>
-    <li><b>Repo-Tour</b> + offene Fragen</li>
-    <li><b>Zugänge übergeben</b> vollständig</li>
-    <li><b>1 Woche Overlap</b> eingeplant</li>
-  </ul></div>
+
+<div class="section-title">Konzept — Übergabe ist kein Abschiedsgeschenk</div>
+
+<p style="font-size:.88rem;color:var(--muted);margin-bottom:.65rem;line-height:1.7">Du lieferst ein Projekt ab — und drei Wochen später kommt die erste Support-Mail: "Wie ändere ich den Text im Chatbot?" Dann die nächste: "Der Bot antwortet nicht mehr, was tun?" Ohne saubere Übergabe wirst du zum dauerhaften Hotline-Dienst für ein Projekt, für das du längst bezahlt wurdest.</p>
+
+<p style="font-size:.88rem;color:var(--muted);margin-bottom:.65rem;line-height:1.7">Eine gute Übergabe macht den Kunden <b style="color:var(--white)">selbstständig</b>. Sie beantwortet die Fragen, bevor sie gestellt werden. Das Ziel: Der Kunde (oder ein fremder Entwickler, den er beauftragt) versteht das Projekt in unter einem Tag — ohne dich anzurufen.</p>
+
+<div class="mode-cards">
+  <div class="mode-card mc-a">
+    <h4>README</h4>
+    <ul>
+      <li><b>Was</b> ist das?</li>
+      <li><b>Wie</b> starte ich es?</li>
+      <li>Voraussetzungen</li>
+      <li>Schnellstart in 4 Befehlen</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-w">
+    <h4>Runbook</h4>
+    <ul>
+      <li><b>Was tun wenn X</b></li>
+      <li>Häufige Probleme + Fix</li>
+      <li>Routine-Aufgaben</li>
+      <li>Wer ist Notfall-Kontakt</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-g">
+    <h4>Zugänge + Wartung</h4>
+    <ul>
+      <li>Alle <b>Accounts</b> + Rollen</li>
+      <li>Wo liegen die <b>Keys</b></li>
+      <li>Was kostet <b>monatlich</b></li>
+      <li>Wartungs-Schritte</li>
+    </ul>
+  </div>
 </div>
-<div class="box box-cyan"><b>💡 Litmus-Test:</b> Gib Projekt-Repo an fremden Dev → kann er in 4h lokal zum Laufen bringen? Wenn Nein → Docs fehlen</div>
-<div class="outcome">🎯 <span><b>Lernziel:</b> README+CLAUDE.md+Runbook — Außenstehender in &lt;1 Tag produktiv</span></div>
-<div class="nav"><a href="M5-AGY-42-Multi-Client.html">← L42 Multi-Client</a><a href="M5-AGY-44-Scale-Layer.html">L44 Scale Layer →</a></div>
-</div></body></html>
+
+<div class="box box-cyan">💡 <b>Merksatz:</b> Wissen im Kopf ist kein geliefertes Projekt. Erst wenn alles schriftlich und getestet ist, ist die Arbeit wirklich übergeben. Alles andere ist eine unsichtbare Verbindlichkeit, die dich später Zeit kostet.</div>
+
+<div class="section-title">Die 4 Pflicht-Artefakte</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Artefakt</th><th>Zweck</th><th>Beantwortet die Frage</th></tr></thead>
+    <tbody>
+      <tr><td>README.md</td><td>Einstieg + lokaler Start</td><td>"Was ist das und wie bringe ich es zum Laufen?"</td></tr>
+      <tr><td>RUNBOOK.md</td><td>Betrieb + Fehlerbehebung</td><td>"Es geht etwas nicht — was tue ich?"</td></tr>
+      <tr><td>Zugänge-Liste</td><td>Accounts, Keys, Rollen</td><td>"Wo logge ich mich ein und mit welchen Rechten?"</td></tr>
+      <tr><td>Wartungs-Anleitung</td><td>Inhalte/Prompts pflegen</td><td>"Wie ändere ich Texte, ohne etwas kaputt zu machen?"</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="box box-warn">💡 <b>Zugänge-Liste — Sonderregel:</b> Sie enthält <b>keine</b> Passwörter im Klartext, sondern verweist auf einen Passwort-Manager (z.B. 1Password-Vault) oder einen sicheren Übergabe-Kanal. Niemals Keys in eine committe README schreiben.</div>
+
+<div class="section-title">README-Struktur</div>
+
+<div class="code-block">
+<span class="comment"># Bäckerei Sonne — FAQ-Chatbot</span><br>
+<br>
+<span class="comment">## Was ist das?</span><br>
+Ein FAQ-Chatbot auf der Website, der Kundenfragen zu<br>
+Öffnungszeiten, Sortiment und Bestellungen beantwortet.<br>
+<br>
+<span class="comment">## Schnellstart</span><br>
+<span class="cmd">npm install</span><br>
+<span class="cmd">cp .env.example .env</span>   <span class="comment"># Keys eintragen (siehe Zugänge-Liste)</span><br>
+<span class="cmd">npm run dev</span>            <span class="comment"># läuft auf http://localhost:3000</span><br>
+<span class="cmd">npm run deploy</span>         <span class="comment"># live stellen</span><br>
+<br>
+<span class="comment">## Voraussetzungen</span><br>
+- Node 20+, Anthropic-API-Key<br>
+- Hosting: Vercel (Account in Zugänge-Liste)<br>
+<br>
+<span class="comment">## Inhalte ändern</span><br>
+Texte des Bots liegen in <span class="str">content/faq.md</span> — siehe WARTUNG.md
+</div>
+
+<div class="section-title">Runbook-Struktur</div>
+
+<div class="code-block">
+<span class="comment"># RUNBOOK — Betrieb &amp; Notfälle</span><br>
+<br>
+<span class="comment">## Was tun, wenn der Bot nicht antwortet?</span><br>
+1. Status-Seite des Hosters prüfen (Link)<br>
+2. <span class="cmd">npm run logs</span> — Fehlermeldung lesen<br>
+3. API-Key abgelaufen? → in Vercel erneuern (siehe Zugänge)<br>
+<br>
+<span class="comment">## Was tun, wenn eine Antwort falsch ist?</span><br>
+1. Frage in <span class="str">content/faq.md</span> suchen und korrigieren<br>
+2. <span class="cmd">npm run deploy</span> — Änderung geht live<br>
+<br>
+<span class="comment">## Routine: monatlicher Check</span><br>
+- Logs auf Fehler durchsehen<br>
+- 5 Test-Fragen stellen, Antworten prüfen<br>
+<br>
+<span class="comment">## Notfall-Kontakt</span><br>
+Agentur: name@agentur.de — Reaktionszeit 24h (Wartungsvertrag)
+</div>
+
+<div class="box box-green">✅ <b>Die eine Regel:</b> Nichts wird übergeben, ohne dass du die Anleitung selbst einmal befolgt hast. Jeder Befehl in README und Runbook muss von dir auf einer frischen Umgebung getestet sein. Eine ungetestete Anleitung ist schlimmer als keine — sie erzeugt falsches Vertrauen.</div>
+
+<div class="section-title">Szenario — Sauberer Handoff, zufriedener Kunde</div>
+
+<div class="scenario-box">
+  <h3>Projektende bei Bäckerei Sonne — zwei Wege</h3>
+  <div class="scenario-steps">
+    <div class="scenario-step"><div class="s-num">1</div><div>Du übergibst Repo + README + Runbook + Zugänge-Liste + Wartungs-Anleitung, alle getestet.</div></div>
+    <div class="scenario-step"><div class="s-num">2</div><div>Eine Woche später will der Kunde einen FAQ-Eintrag ändern — er schlägt in WARTUNG.md nach und schafft es allein.</div></div>
+    <div class="scenario-step"><div class="s-num">3</div><div>Der Bot hakt einmal — der Kunde folgt dem Runbook, erneuert den Key, alles läuft. Kein Anruf bei dir.</div></div>
+    <div class="scenario-step"><div class="s-num">4</div><div>Der Kunde empfiehlt dich weiter: "Die haben so sauber übergeben, da musste ich nie nachfragen."</div></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-label">Der Gegenentwurf</div>
+    <div style="font-size:.84rem;line-height:1.5">Ohne Doku: 6 Support-Mails im ersten Monat, jede kostet dich 20 Minuten unbezahlt. Saubere Übergabe ist nicht nur netter — sie schützt deine Zeit und macht aus Kunden Empfehler.</div>
+  </div>
+</div>
+
+<div class="box box-red">🚫 <b>Die häufigste Falle:</b> "Ich erkläre das schnell im Call." Mündliche Übergaben verpuffen. Der Kunde vergisst 80% nach drei Tagen. Ein Handoff-Call ergänzt die Doku — er ersetzt sie nie.</div>
+
+<div class="section-title">Praxis — Handoff-Doku-Template erstellen</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Erstelle ein wiederverwendbares Template in deiner KB (aus L41), das du bei jedem Projektende nur noch ausfüllst.</p>
+
+<div class="code-block">
+<span class="comment"># 1. Template in der KB anlegen</span><br>
+<span class="cmd">mkdir -p agentur-kb/templates/handoff</span><br>
+<span class="cmd">cd agentur-kb/templates/handoff</span><br>
+<span class="cmd">touch README.md RUNBOOK.md WARTUNG.md ZUGAENGE.md</span><br>
+<br>
+<span class="comment"># 2. Mit Claude die Gerüste füllen</span><br>
+<span class="cmd">claude</span>  <span class="comment"># "Erstelle README-, Runbook- und Wartungs-Gerüste mit Platzhaltern"</span><br>
+<br>
+<span class="comment"># 3. Bei jedem Projektende kopieren + ausfüllen</span><br>
+<span class="cmd">cp -r agentur-kb/templates/handoff/* clients/baeckerei-sonne/docs/</span><br>
+<br>
+<span class="comment"># 4. Anleitungen auf frischer Umgebung TESTEN, dann committen</span><br>
+<span class="cmd">git add docs/ && git commit -m "handoff: doku fuer baeckerei sonne"</span>
+</div>
+
+<div class="section-title">Checkliste</div>
+
+<div class="checklist">
+  <h3>Übergabe-Checkliste</h3>
+  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">README mit "Was ist das?" + Schnellstart in 4 Befehlen</label></div>
+  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Runbook mit "Was tun wenn X" für die häufigsten Probleme</label></div>
+  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Zugänge-Liste — Accounts + Rollen, Keys via Passwort-Manager</label></div>
+  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Wartungs-Anleitung: wie ändert der Kunde Inhalte sicher</label></div>
+  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Jeden Befehl auf frischer Umgebung selbst getestet</label></div>
+  <div class="check-item"><input type="checkbox" id="c6"><label for="c6">Handoff-Call als Ergänzung, nicht als Ersatz der Doku</label></div>
+  <div class="check-item"><input type="checkbox" id="c7"><label for="c7">Litmus-Test bestanden: Außenstehender wird in &lt;1 Tag produktiv</label></div>
+</div>
+
+<div class="section-title">Wissens-Check</div>
+
+<div class="quiz">
+  <h3>3 Fragen zum Nachdenken</h3>
+  <ol>
+    <li>Welche 4 Artefakte gehören in jede Übergabe — und welche Frage beantwortet jedes davon?</li>
+    <li>Warum darf nichts übergeben werden, ohne dass du die Anleitung selbst getestet hast?</li>
+    <li>Warum ersetzt ein Handoff-Call niemals die schriftliche Doku?</li>
+  </ol>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> 4 Pflicht-Artefakte erstellt, Übergabe-Checkliste abgearbeitet, wiederverwendbares Handoff-Template gebaut — der Kunde kommt allein weiter, keine Support-Flut.</span></div>
+
+<nav class="nav"><a href="M5-AGY-42-Multi-Client.html">← L42 Multi-Client</a><span>Track 7 · L43 Handoff</span><a href="M5-AGY-44-Scale-Layer.html">L44 Scale Layer →</a></nav>
+
+</div>
+<script>
+document.querySelectorAll('.check-item input[type=checkbox]').forEach(cb=>{
+  const key='agy43-handoff-'+cb.id;
+  if(localStorage.getItem(key)==='1')cb.checked=true;
+  cb.addEventListener('change',()=>localStorage.setItem(key,cb.checked?'1':'0'));
+});
+</script>
+</body></html>

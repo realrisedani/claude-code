@@ -1,73 +1,211 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L16 · Debugging Workflow</title><style>
-:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L16 · Debugging Workflow</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
 .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
 .pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
 .dur{color:var(--muted);font-size:.85rem}
 h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
-.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
 .fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
 .fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
 .card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
 .card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
-.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
+.lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
+.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
+.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
+.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
+.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
+.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
+.mode-card ul li::before{content:'· '}
+.mode-card ul li b{color:var(--white)}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+.code-block .key{color:#a5f3fc}
+.code-block .str{color:#86efac}
+.code-block .cmd{color:#a5f3fc}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
+.box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
 .box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
-.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
-.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
-.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
-.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
-.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}.hl-r .hl-val{color:var(--red)}
-.hl-w{background:rgba(245,158,11,.1);border:1px solid var(--warn)}.hl-w .hl-val{color:var(--warn)}
-.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
-.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600}
+td:nth-child(2){font-family:monospace;font-size:.78rem;color:var(--green)}
+td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
+.scenario-box{background:rgba(239,68,68,.06);border:2px solid rgba(239,68,68,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
+.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:.7rem}
+.scenario-steps{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
+.scenario-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.84rem;line-height:1.5}
+.s-num{background:var(--red);color:#fff;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.1rem}
+.rule-box .rule-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.4rem}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.checklist h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
+.check-item{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(45,45,78,.4);cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-item input[type=checkbox]{appearance:none;width:1.1rem;height:1.1rem;border:2px solid var(--border);border-radius:.3rem;cursor:pointer;flex-shrink:0;position:relative;transition:all .15s}
+.check-item input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+.check-item input[type=checkbox]:checked::after{content:'✓';position:absolute;color:#fff;font-size:.7rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
+.check-item label{font-size:.84rem;cursor:pointer;line-height:1.4}
+.check-item input:checked + label{color:var(--muted);text-decoration:line-through}
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+.quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
+.quiz ol li{padding-left:.2rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+.inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
+
 <div class="meta"><span class="pill">Track 3 · L16</span><span class="dur">~25 Min</span></div>
 <h1>Debugging Workflow</h1>
-<p class="sub">5 Phasen — nie wieder stundenlanger Trial-and-Error</p>
+<p class="sub">Fünf Phasen, mit denen du jeden Bug systematisch erlegst — statt blind zu raten.</p>
+
 <div class="facts">
   <div class="fact"><div class="fact-val">5 Phasen</div><div class="fact-lbl">Struktur</div></div>
-  <div class="fact"><div class="fact-val">Bisect</div><div class="fact-lbl">Technik</div></div>
-  <div class="fact"><div class="fact-val">Log-Mining</div><div class="fact-lbl">Methode</div></div>
-  <div class="fact"><div class="fact-val">Regression</div><div class="fact-lbl">Test</div></div>
+  <div class="fact"><div class="fact-val">Reproduce</div><div class="fact-lbl">Phase 1</div></div>
+  <div class="fact"><div class="fact-val">Stacktrace</div><div class="fact-lbl">geben, nicht raten</div></div>
+  <div class="fact"><div class="fact-val">Verify</div><div class="fact-lbl">Phase 5</div></div>
 </div>
-<div class="hl">
-  <div class="hl-card hl-r"><div class="hl-val">REPRODUCE</div>zuverlässig triggern</div>
-  <div class="hl-card hl-w"><div class="hl-val">ISOLATE → FIX</div>eingrenzen &amp; beheben</div>
-  <div class="hl-card hl-g"><div class="hl-val">VERIFY</div>Regression-Test</div>
+
+<div class="lernziele">
+  <h3>Lernziele</h3>
+  <ul>
+    <li>Jeden Bug mit demselben 5-Phasen-Workflow angehen statt mit Trial-and-Error</li>
+    <li>Claude den Fehler samt Stacktrace geben, damit er nicht raten muss</li>
+    <li>Einen Fix erst akzeptieren, wenn du die Ursache verstanden und verifiziert hast</li>
+  </ul>
 </div>
-<div class="grid">
-  <div class="card"><h3>Phase 1–2: Reproduce + Isolate</h3><ul>
-    <li><b>Reproduce:</b> Bug zuverlässig triggern</li>
-    <li>Exakte <b>Schritte</b> dokumentieren</li>
-    <li><b>Isolate:</b> minimaler Reproduce-Fall</li>
-    <li>Alles Unnötige <b>entfernen</b></li>
-  </ul></div>
-  <div class="card"><h3>Phase 3–4: Hypothesize + Fix</h3><ul>
-    <li><b>Hypothesize:</b> Ursache eingrenzen</li>
-    <li>Bisect: <b>git bisect</b> für Regression</li>
-    <li><b>Fix:</b> minimale Änderung</li>
-    <li>Kein <b>Rewrite</b> — nur das Nötigste</li>
-  </ul></div>
-  <div class="card"><h3>Phase 5: Verify + Regress</h3><ul>
-    <li>Test schreiben der <b>Bug bestätigt</b></li>
-    <li>Fix anwenden → Test <b>grün</b></li>
-    <li>Regression-Test <b>committen</b></li>
-    <li>Bug <b>kommt nie wieder</b></li>
-  </ul></div>
-  <div class="card"><h3>Anti-Patterns</h3><ul>
-    <li>Fix ohne <b>Reproduce</b> versuchen</li>
-    <li><b>try-catch</b>-Wrapper als Lösung</li>
-    <li>50 <b>console.logs</b> ohne Plan</li>
-    <li>Symptom statt <b>Ursache</b> fixen</li>
-  </ul></div>
+
+<div class="section-title">Konzept — Die 5 Phasen</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.65rem">Die meisten Leute springen direkt zum Fix und raten. Der saubere Weg geht in fester Reihenfolge: erst sicher <b style="color:var(--white)">reproduzieren</b>, dann <b style="color:var(--white)">isolieren</b>, eine <b style="color:var(--white)">Hypothese</b> bilden, gezielt <b style="color:var(--white)">fixen</b> und am Ende <b style="color:var(--white)">verifizieren</b>. Jede Phase baut auf der vorigen auf.</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Aktion</th><th>Ergebnis</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1 Reproduzieren</td><td>bug zuverlaessig ausloesen</td><td>fester ablauf</td></tr>
+      <tr><td>2 Isolieren</td><td>auf kleinsten fall eingrenzen</td><td>klare quelle</td></tr>
+      <tr><td>3 Hypothese</td><td>ursache vermuten</td><td>pruefbare these</td></tr>
+      <tr><td>4 Fix</td><td>minimale aenderung</td><td>kein rewrite</td></tr>
+      <tr><td>5 Verifizieren</td><td>test + erneut pruefen</td><td>bug bleibt weg</td></tr>
+    </tbody>
+  </table>
 </div>
-<div class="box box-warn">⚠ <b>Goldene Regel:</b> Kein Fix ohne Reproduce. Ein Bug der nicht reproduziert werden kann, kommt garantiert wieder.</div>
-<div class="outcome">🎯 <span><b>Lernziel:</b> 1 Bug durch alle 5 Phasen gelöst, committed Regression-Test</span></div>
-<div class="nav"><span>← <a href="M1-CC-15-Worktrees.html">L15 Worktrees</a></span><span><a href="M1-CC-17-TDD.html">L17 TDD</a> →</span></div>
-</div></body></html>
+
+<div class="box box-cyan">💡 <b>Tipp:</b> Gib Claude immer die exakte Fehlermeldung und den Stacktrace im Wortlaut. Ein "irgendwas crasht" zwingt ihn zum Raten — die Zeilennummer aus dem Stacktrace führt ihn direkt zur Quelle.</div>
+
+<div class="section-title">Phase 1-3 in der Praxis</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Du gibst Claude den Fehler und führst ihn durch die ersten Phasen, statt sofort "fix das" zu sagen.</p>
+
+<div class="code-block">
+<span class="comment"># Phase 1+2: Reproduzieren und Isolieren</span><br>
+Hier der Stacktrace beim Login:<br>
+<span class="str">TypeError: Cannot read property 'id' of undefined</span><br>
+<span class="str">  at validateSession (auth/session.js:42)</span><br>
+<br>
+Schreib mir zuerst die genauen Schritte, mit denen ich<br>
+diesen Fehler zuverlässig auslöse. Noch keinen Fix.
+</div>
+
+<div class="code-block">
+<span class="comment"># Phase 3: Hypothese</span><br>
+Gut, reproduzierbar. Was ist deine Hypothese zur Ursache?<br>
+Erklär mir warum 'user' an Zeile 42 undefined sein kann,<br>
+bevor du irgendwas änderst.
+</div>
+
+<div class="section-title">Phase 4-5 — Fix und Verifizieren</div>
+
+<div class="code-block">
+<span class="comment"># Phase 4: minimaler Fix</span><br>
+Deine Hypothese passt. Mach den kleinstmöglichen Fix —<br>
+kein Umbau drumherum, nur die eine Ursache.<br>
+<br>
+<span class="comment"># Phase 5: verifizieren mit Test</span><br>
+Schreib einen Test, der den Bug reproduziert, lass ihn<br>
+laufen (muss rot sein), wende den Fix an, Test grün.
+</div>
+
+<div class="box box-warn">🚫 <b>Falle:</b> Akzeptier keinen Fix, den du nicht verstehst. Wenn Claude nicht erklären kann, warum der Bug auftrat, hat er womöglich nur das Symptom überklebt — und der Bug kommt zurück.</div>
+
+<div class="section-title">Szenario — ein echter Bug durch die 5 Phasen</div>
+
+<div class="scenario-box">
+  <h3>Login crasht sporadisch</h3>
+  <div class="scenario-steps">
+    <div class="scenario-step"><div class="s-num">1</div><div>Reproduzieren: Crash tritt nur auf, wenn ein Nutzer ohne Profil sich einloggt</div></div>
+    <div class="scenario-step"><div class="s-num">2</div><div>Isolieren: liegt an <span class="inline-code">validateSession</span>, Zeile 42 — <span class="inline-code">user</span> ist undefined</div></div>
+    <div class="scenario-step"><div class="s-num">3</div><div>Hypothese: bei neuen Nutzern wird das Profil erst nach dem ersten Login angelegt</div></div>
+    <div class="scenario-step"><div class="s-num">4</div><div>Fix: Null-Check vor dem Zugriff — eine Zeile, kein Umbau</div></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-label">Phase 5 — Verifizieren</div>
+    <div style="font-size:.84rem;line-height:1.6">Test schreiben, der einen Login ohne Profil simuliert. Test rot (Bug bestätigt) → Fix anwenden → Test grün. Der Test bleibt im Repo als Schutz gegen Rückfall.</div>
+  </div>
+</div>
+
+<div class="section-title">Jetzt du — selbst ausprobieren</div>
+
+<div class="box box-cyan">💡 <b>Jetzt du:</b> Nimm einen echten Bug aus deinem Projekt (oder bau einen kleinen ein). Gib Claude den Stacktrace und führ ihn bewusst durch alle fünf Phasen — lass ihn nach Phase 3 die Ursache erklären, bevor du den Fix freigibst. Beende mit einem grünen Verifizierungs-Test.</div>
+
+<div class="section-title">Checkliste</div>
+
+<div class="checklist">
+  <h3>5-Phasen-Debug Checkliste</h3>
+  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Bug zuverlässig reproduziert, Schritte dokumentiert</label></div>
+  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Auf die kleinste fehlerhafte Stelle isoliert</label></div>
+  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Hypothese zur Ursache von Claude erklären lassen</label></div>
+  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Minimalen Fix gemacht, keinen Rewrite</label></div>
+  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Mit grünem Test verifiziert, Test committed</label></div>
+</div>
+
+<div class="section-title">Wissens-Check</div>
+
+<div class="quiz">
+  <h3>3 Fragen zum Nachdenken</h3>
+  <ol>
+    <li>Warum kommt Reproduzieren vor dem Fix — was passiert ohne diese Reihenfolge?</li>
+    <li>Was gibst du Claude, damit er nicht raten muss?</li>
+    <li>Woran erkennst du, dass ein Fix nur das Symptom überklebt hat?</li>
+  </ol>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Einen Bug durch alle fünf Phasen geführt, die Ursache verstanden und mit einem grünen Test verifiziert.</span></div>
+
+<nav class="nav"><a href="M1-CC-15-Worktrees.html">← L15 Worktrees</a><span>Track 3 · L16 Debugging</span><a href="M1-CC-17-TDD.html">L17 TDD →</a></nav>
+
+</div>
+<script>
+document.querySelectorAll('.check-item input[type=checkbox]').forEach(cb=>{
+  const key='l16-debug-check-'+cb.id;
+  if(localStorage.getItem(key)==='1')cb.checked=true;
+  cb.addEventListener('change',()=>localStorage.setItem(key,cb.checked?'1':'0'));
+});
+</script>
+</body></html>

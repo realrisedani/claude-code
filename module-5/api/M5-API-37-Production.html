@@ -1,70 +1,246 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>L37 · Production Patterns</title>
-<style>
-:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#F1F5F9;--muted:#94A3B8;--border:#2D2D4E}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--white);font-family:-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L37 · Production Patterns</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
 .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
 .pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
 .dur{color:var(--muted);font-size:.85rem}
 h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
-.sub{color:var(--cyan);font-size:.95rem;margin-bottom:1.75rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
 .fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
 .fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
 .card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
 .card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
-.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
+.lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
+.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
+.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
+.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
+.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
+.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
+.mode-card ul li::before{content:'· '}
+.mode-card ul li b{color:var(--white)}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+.code-block .key{color:#a5f3fc}
+.code-block .str{color:#86efac}
+.code-block .cmd{color:#a5f3fc}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
 .box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
-.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}.outcome b{color:var(--cyan)}
-.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}.nav a{color:var(--cyan);text-decoration:none;font-weight:600}
-.hl{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
-.hl-card{border-radius:.6rem;padding:.7rem .8rem;text-align:center;font-size:.8rem}
-.hl-r{background:rgba(239,68,68,.1);border:1px solid var(--red)}.hl-r .hl-val{color:var(--red)}
-.hl-w{background:rgba(245,158,11,.1);border:1px solid var(--warn)}.hl-w .hl-val{color:var(--warn)}
-.hl-g{background:rgba(16,185,129,.1);border:1px solid var(--green)}.hl-g .hl-val{color:var(--green)}
-.hl-val{font-size:1.2rem;font-weight:800;margin-bottom:.15rem}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
+.box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600}
+td:nth-child(2){font-family:monospace;font-size:.78rem;color:var(--green)}
+td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
+.scenario-box{background:rgba(6,182,212,.06);border:2px solid rgba(6,182,212,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
+.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:.7rem}
+.scenario-steps{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
+.scenario-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.84rem;line-height:1.5}
+.s-num{background:var(--cyan);color:#06121a;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.1rem}
+.rule-box .rule-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.4rem}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.checklist h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
+.check-item{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(45,45,78,.4);cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-item input[type=checkbox]{appearance:none;width:1.1rem;height:1.1rem;border:2px solid var(--border);border-radius:.3rem;cursor:pointer;flex-shrink:0;position:relative;transition:all .15s}
+.check-item input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+.check-item input[type=checkbox]:checked::after{content:'✓';position:absolute;color:#fff;font-size:.7rem;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
+.check-item label{font-size:.84rem;cursor:pointer;line-height:1.4}
+.check-item input:checked + label{color:var(--muted);text-decoration:line-through}
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+.quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
+.quiz ol li{padding-left:.2rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+.inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
+
 <div class="meta"><span class="pill">Track 6 · L37</span><span class="dur">~25 Min</span></div>
 <h1>Production Patterns</h1>
-<p class="sub">Rate-Limits, Retry-Strategie, Logging — API-ready für Produktion</p>
+<p class="sub">Vom Prototyp zum stabilen System — Reliability, Cost, Security</p>
+
 <div class="facts">
-  <div class="fact"><div class="fact-val">Limits</div><div class="fact-lbl">Rate-Limits</div></div>
-  <div class="fact"><div class="fact-val">Backoff</div><div class="fact-lbl">Exponential Backoff</div></div>
-  <div class="fact"><div class="fact-val">12</div><div class="fact-lbl">Log-Felder</div></div>
-  <div class="fact"><div class="fact-val">10</div><div class="fact-lbl">Punkte-Checklist</div></div>
+  <div class="fact"><div class="fact-val">Retry</div><div class="fact-lbl">Backoff</div></div>
+  <div class="fact"><div class="fact-val">429</div><div class="fact-lbl">Rate-Limit</div></div>
+  <div class="fact"><div class="fact-val">usage</div><div class="fact-lbl">Monitoring</div></div>
+  <div class="fact"><div class="fact-val">Secrets</div><div class="fact-lbl">aus Env</div></div>
 </div>
-<div class="hl">
-  <div class="hl-card hl-r"><div class="hl-val">429</div>Rate-Limit</div>
-  <div class="hl-card hl-w"><div class="hl-val">Backoff</div>Retry-Strategie</div>
-  <div class="hl-card hl-g"><div class="hl-val">Fallback</div>Modell-Switch</div>
+
+<div class="lernziele">
+  <h3>Lernziele</h3>
+  <ul>
+    <li>Die drei Säulen produktiver KI-Systeme unterscheiden: Reliability, Cost, Security</li>
+    <li>Einen Retry-Wrapper mit Exponential Backoff für Rate-Limits und Server-Fehler bauen</li>
+    <li>Prinzipien für Monitoring, Kostenkontrolle und sicheren Umgang mit Secrets übertragen</li>
+  </ul>
 </div>
-<div class="grid">
-  <div class="card"><h3>Rate-Limits</h3><ul>
-    <li><b>x-ratelimit-limit/remaining</b> lesen</li>
-    <li><b>reset-requests</b> Header beachten</li>
-    <li>Vor Überschreitung <b>drosseln</b></li>
-  </ul></div>
-  <div class="card"><h3>Retry-Strategie</h3><ul>
-    <li><b>429/529</b> → warten</li>
-    <li><b>Math.pow(2,attempt)*1000</b> ms</li>
-    <li>→ retry bis <b>maxRetries</b></li>
-  </ul></div>
-  <div class="card"><h3>Logging-Felder</h3><ul>
-    <li><b>timestamp, requestId, model</b></li>
-    <li><b>inputTokens, outputTokens, cost</b></li>
-    <li><b>latencyMs, userId, cacheHit, errorCode</b></li>
-  </ul></div>
-  <div class="card"><h3>6 Key-Metrics</h3><ul>
-    <li><b>P95-Latenz,</b> Error-Rate</li>
-    <li><b>Cache-Hit-Rate,</b> Token-Usage</li>
-    <li><b>Cost/User,</b> Concurrent-Requests</li>
-  </ul></div>
+
+<div class="section-title">Konzept — Prototyp ist nicht Produktion</div>
+
+<div class="box box-cyan">💡 <b>Der Unterschied:</b> Ein Prototyp macht einen Call und hofft, dass er klappt. Ein Produktionssystem rechnet damit, dass Calls fehlschlagen, Limits greifen und Kosten explodieren — und fängt das ab. Diese Lektion ist Mindset, keine neue API.</div>
+
+<div class="mode-cards">
+  <div class="mode-card mc-g">
+    <h4>Reliability</h4>
+    <ul>
+      <li>Retries mit <b>Backoff</b></li>
+      <li>Rate-Limits (429) abfangen</li>
+      <li>Timeouts + Idempotenz</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-w">
+    <h4>Cost</h4>
+    <ul>
+      <li><b>usage</b> jedes Calls loggen</li>
+      <li>günstigeres Modell wählen</li>
+      <li>Caching + max_tokens-Limit</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-a">
+    <h4>Security</h4>
+    <ul>
+      <li>Key aus <b>Env</b>, nie im Code</li>
+      <li>User-Input nie blind vertrauen</li>
+      <li>Keys nie ins Frontend</li>
+    </ul>
+  </div>
 </div>
-<div class="box box-red"><b>🚨 Secrets:</b> ANTHROPIC_API_KEY nur in .env — NIE in Code, NIE in Git-History. Sofort rotieren wenn exposed.</div>
-<div class="outcome">🎯 <span><b>Lernziel:</b> API-Integration mit Retry + Logging + Rate-Limit-Awareness</span></div>
-<div class="nav"><a href="M5-API-36-Files-API.html">← L36 Files API</a><a href="M5-AGY-38-Client-Onboarding.html">Track 7 · L38 Onboarding →</a></div>
-</div></body></html>
+
+<div class="section-title">Reliability — Retry mit Exponential Backoff</div>
+
+<div class="box box-warn">🚫 <b>Falle:</b> Bei einem <span class="inline-code">429</span> (Rate-Limit) oder <span class="inline-code">529</span> (überlastet) sofort und stur neu zu feuern macht es schlimmer. Du musst warten — und mit jedem Versuch länger (exponentiell).</div>
+
+<div class="code-block">
+<span class="key">import</span> time, random<br>
+<span class="key">from</span> anthropic <span class="key">import</span> Anthropic, RateLimitError, APIStatusError<br>
+client = Anthropic()<br><br>
+<span class="key">def</span> create_with_retry(**kwargs):<br>
+&nbsp;&nbsp;<span class="key">for</span> attempt <span class="key">in</span> range(<span class="str">5</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">try</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">return</span> client.messages.create(**kwargs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">except</span> (RateLimitError, APIStatusError) <span class="key">as</span> e:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">if</span> attempt == <span class="str">4</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">raise</span>  <span class="comment"># nach 5 Versuchen aufgeben</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wait = (<span class="str">2</span> ** attempt) + random.random()  <span class="comment"># 1s, 2s, 4s, 8s + Jitter</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">print</span>(<span class="str">f"Retry in {wait:.1f}s ({e.__class__.__name__})"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.sleep(wait)<br><br>
+resp = create_with_retry(<br>
+&nbsp;&nbsp;model=<span class="str">"claude-sonnet-4-5"</span>, max_tokens=<span class="str">512</span>,<br>
+&nbsp;&nbsp;messages=[{<span class="key">"role"</span>: <span class="str">"user"</span>, <span class="key">"content"</span>: <span class="str">"Hallo!"</span>}],<br>
+)
+</div>
+
+<div class="box box-green">✅ <b>Drei Bausteine eines guten Retries:</b> exponentiell wachsende Wartezeit, ein zufälliger <span class="inline-code">Jitter</span> (verhindert, dass alle Clients gleichzeitig wiederkommen), und ein Limit an Versuchen, damit du nicht ewig hängst.</div>
+
+<div class="section-title">Cost & Security — Prinzipien als Code</div>
+
+<div class="code-block">
+<span class="key">import</span> os, logging<br><br>
+<span class="comment"># Security: Key NUR aus der Env, niemals hardcoden</span><br>
+client = Anthropic(api_key=os.environ[<span class="str">"ANTHROPIC_API_KEY"</span>])<br><br>
+resp = create_with_retry(<br>
+&nbsp;&nbsp;model=<span class="str">"claude-sonnet-4-5"</span>,<br>
+&nbsp;&nbsp;max_tokens=<span class="str">512</span>,  <span class="comment"># Cost: harte Obergrenze pro Antwort</span><br>
+&nbsp;&nbsp;messages=[{<span class="key">"role"</span>: <span class="str">"user"</span>, <span class="key">"content"</span>: <span class="str">"..."</span>}],<br>
+)<br><br>
+<span class="comment"># Cost: usage strukturiert loggen (Monitoring)</span><br>
+logging.info(<span class="str">"claude_call"</span>, extra={<br>
+&nbsp;&nbsp;<span class="str">"in"</span>: resp.usage.input_tokens,<br>
+&nbsp;&nbsp;<span class="str">"out"</span>: resp.usage.output_tokens,<br>
+&nbsp;&nbsp;<span class="str">"model"</span>: resp.model,<br>
+})
+</div>
+
+<div class="box box-red">🚫 <b>Tödlicher Fehler:</b> Den API-Key ins Frontend (JS im Browser) packen oder ins Git committen. Jeder kann ihn auslesen und auf deine Rechnung Calls feuern. Keys gehören ausschließlich serverseitig in Env-Variablen.</div>
+
+<div class="section-title">Die drei Säulen im Überblick</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Säule</th><th>Mittel</th><th>Zweck</th></tr></thead>
+    <tbody>
+      <tr><td>Reliability</td><td>retry + backoff</td><td>übersteht Fehler/Limits</td></tr>
+      <tr><td>Reliability</td><td>idempotenz</td><td>kein Doppel-Effekt</td></tr>
+      <tr><td>Cost</td><td>usage-log + caching</td><td>Ausgaben im Griff</td></tr>
+      <tr><td>Security</td><td>env-secrets</td><td>Key bleibt geheim</td></tr>
+      <tr><td>Security</td><td>input-validierung</td><td>kein Missbrauch</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section-title">Szenario — Vom Skript zum Service</div>
+
+<div class="scenario-box">
+  <h3>Szenario: Dein Bot geht von 10 auf 10.000 Nutzer</h3>
+  <div class="scenario-steps">
+    <div class="scenario-step"><div class="s-num">1</div><div>Reliability: Jeder Call läuft durch <span class="inline-code">create_with_retry</span> — 429/529 werden abgefangen</div></div>
+    <div class="scenario-step"><div class="s-num">2</div><div>Cost: <span class="inline-code">usage</span> jedes Calls wird geloggt, du siehst die Tagesausgaben in Echtzeit</div></div>
+    <div class="scenario-step"><div class="s-num">3</div><div>Cost: häufiger Kontext liegt im Cache (L32), <span class="inline-code">max_tokens</span> deckelt jede Antwort</div></div>
+    <div class="scenario-step"><div class="s-num">4</div><div>Security: Key kommt aus der Env, User-Input wird validiert, nichts läuft im Browser</div></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-label">Das Prinzip</div>
+    <div>Produktion heißt: mit Fehlern rechnen, Kosten messen, Geheimnisse schützen. Wer das von Anfang an einbaut, skaliert ohne böse Überraschungen.</div>
+  </div>
+</div>
+
+<div class="box box-cyan">💡 <b>Transfer:</b> Geh dein letztes API-Skript durch und frag für jede der drei Säulen: Was passiert bei einem 429? Wo sehe ich meine Kosten? Wo liegt mein Key? Jede Antwort, die "weiß nicht" lautet, ist deine nächste Aufgabe.</div>
+
+<div class="section-title">Checkliste</div>
+
+<div class="checklist">
+  <h3>Production Readiness</h3>
+  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Retry-Wrapper mit Exponential Backoff + Jitter im Einsatz</label></div>
+  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">429/529 abgefangen, Versuche begrenzt</label></div>
+  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">usage (input/output) jedes Calls geloggt</label></div>
+  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">max_tokens als Kosten-Obergrenze gesetzt</label></div>
+  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">API-Key nur aus Env, nie im Code/Frontend/Git</label></div>
+</div>
+
+<div class="section-title">Wissens-Check</div>
+
+<div class="quiz">
+  <h3>3 Fragen zum Nachdenken</h3>
+  <ol>
+    <li>Warum wartet ein guter Retry exponentiell länger und mischt einen Jitter dazu?</li>
+    <li>An welchen zwei Stellen hältst du deine API-Kosten im Griff — und wie misst du sie?</li>
+    <li>Warum darf der API-Key niemals ins Frontend oder ins Git-Repo?</li>
+  </ol>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Drei Säulen verstanden, Retry-Wrapper gebaut, Cost- und Security-Prinzipien auf eigene Projekte übertragen</span></div>
+
+<nav class="nav"><a href="M5-API-36-Files-API.html">← L36 Files API</a><span>Track 6 · L37 Production</span><a href="../agency/M5-AGY-38-Client-Onboarding.html">Track 7 · L38 Onboarding →</a></nav>
+
+</div>
+<script>
+document.querySelectorAll('.check-item input[type=checkbox]').forEach(cb=>{
+  const key='api37-check-'+cb.id;
+  if(localStorage.getItem(key)==='1')cb.checked=true;
+  cb.addEventListener('change',()=>localStorage.setItem(key,cb.checked?'1':'0'));
+});
+</script>
+</body></html>
