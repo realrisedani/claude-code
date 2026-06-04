@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RealRise — KI für dein Business</title>
+  <meta name="description" content="Daniel zeigt dir täglich wie du mit KI Zeit sparst, Geld verdienst und deinen Workflow automatisierst." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1343968131131688');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1343968131131688&ev=PageView&noscript=1"
+  /></noscript>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0F0F1A;
+      --card: #1A1A2E;
+      --border: #2D2D4E;
+      --accent: #7C3AED;
+      --accent-sec: #A855F7;
+      --blue: #4f8ef7;
+      --text: #E2E8F0;
+      --muted: #94A3B8;
+      --radius-card: 12px;
+      --radius-btn: 8px;
+      --shadow-card: 0 4px 24px rgba(124,58,237,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(15,15,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 10px 20px;
+      border-radius: var(--radius-btn);
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── SECTIONS ── */
+    section { padding: 96px 24px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 120px;
+      background: linear-gradient(160deg, var(--bg) 0%, var(--card) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+      top: -100px; right: -150px;
+      pointer-events: none;
+    }
+    #hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+      bottom: 0; left: -100px;
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; text-align: center; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.35);
+      color: var(--accent-sec);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .hero-badge span { width: 6px; height: 6px; background: var(--accent-sec); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+    h1 {
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    h1 .gradient-text {
+      background: linear-gradient(135deg, var(--accent-sec), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 36px;
+      border-radius: var(--radius-btn);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 32px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(124,58,237,0.45); }
+    .hero-handle {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .hero-handle strong { color: var(--accent-sec); }
+
+    /* ── STATS ── */
+    #stats { padding: 64px 24px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s;
+    }
+    .stat-card:hover { transform: translateY(-4px); }
+    .stat-number {
+      font-size: 2.4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .stat-label { color: var(--muted); font-size: 0.95rem; font-weight: 500; }
+
+    /* ── SECTION HEADERS ── */
+    .section-tag {
+      display: inline-block;
+      color: var(--accent-sec);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin-bottom: 56px;
+    }
+    .text-center { text-align: center; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+
+    /* ── CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 28px;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 18px;
+      display: block;
+    }
+    .card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .card p { color: var(--muted); font-size: 0.95rem; line-height: 1.65; }
+
+    /* ── STEPS ── */
+    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 20px; max-width: 680px; }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .step:hover { border-color: var(--accent); transform: translateX(4px); }
+    .step-num {
+      width: 42px; height: 42px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.95rem;
+      color: #fff;
+    }
+    .step-text h4 { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+    .step-text p { color: var(--muted); font-size: 0.9rem; }
+
+    /* ── GHL FORM ── */
+    #form-section {
+      background: linear-gradient(160deg, var(--bg) 0%, var(--card) 100%);
+    }
+    .form-wrapper {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 40px;
+      box-shadow: var(--shadow-card);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── TOOLS ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .tool-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .tool-emoji { font-size: 2.2rem; display: block; margin-bottom: 12px; }
+    .tool-name { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    .tool-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+    /* ── FAQ ── */
+    .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 760px; margin: 0 auto; }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item.open { border-color: var(--accent); }
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 22px 24px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .faq-question:hover { color: var(--accent-sec); }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      background: rgba(124,58,237,0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: transform 0.3s;
+      color: var(--accent-sec);
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.3s ease;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      padding: 0 24px;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; padding: 0 24px 22px; }
+
+    /* ── FINAL CTA ── */
+    #final-cta {
+      text-align: center;
+      background: linear-gradient(160deg, var(--card) 0%, var(--bg) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #final-cta::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .final-cta-inner { position: relative; z-index: 1; }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent-sec);
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 15px 36px;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(124,58,237,0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(124,58,237,0.25);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent-sec); }
+
+    /* ── SCROLL-TO-TOP ── */
+    #scroll-top {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-sec));
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 200;
+    }
+    #scroll-top.visible { opacity: 1; transform: translateY(0); }
+    #scroll-top:hover { transform: translateY(-3px); }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      section { padding: 72px 20px; }
+      .form-wrapper { padding: 24px 20px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .hero-badge { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo">RealRise</div>
+      <a class="nav-cta" href="https://instagram.com/daniel.realrise" target="_blank" rel="noopener">
+        @daniel.realrise folgen
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <span></span> KI · Business · Automatisierung
+      </div>
+      <h1>
+        KI hat mein Business<br />
+        <span class="gradient-text">verändert. Lass es auch<br />deins verändern.</span>
+      </h1>
+      <p class="hero-sub">
+        Ich zeige dir täglich wie du mit KI Zeit sparst, Geld verdienst und deinen Workflow automatisierst.
+      </p>
+      <a class="btn-primary" href="https://instagram.com/daniel.realrise" target="_blank" rel="noopener">
+        ✉️ Schreib mir KI per DM
+      </a>
+      <p class="hero-handle">Finde mich auf Instagram als <strong>@daniel.realrise</strong></p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card reveal">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Follower &amp; wachsend</span>
+        </div>
+        <div class="stat-card reveal reveal-delay-1">
+          <span class="stat-number">10+</span>
+          <span class="stat-label">KI-Tools getestet</span>
+        </div>
+        <div class="stat-card reveal reveal-delay-2">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Kostenloser Content</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- WAS DU BEKOMMST -->
+  <section id="benefits">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-tag">Was du bekommst</p>
+        <h2>Alles was du für deinen KI-Start brauchst</h2>
+        <p class="section-sub mx-auto">Kein Bullshit, kein Paywall. Nur echter Mehrwert — jeden Tag.</p>
+      </div>
+      <div class="cards-grid">
+        <div class="card reveal reveal-delay-1">
+          <span class="card-icon">🎬</span>
+          <h3>Tägliche KI-Reels</h3>
+          <p>Jeden Tag neuer Content über die besten KI-Tools — kurz, konkret und sofort umsetzbar für dein Business.</p>
+        </div>
+        <div class="card reveal reveal-delay-2">
+          <span class="card-icon">📩</span>
+          <h3>Exklusive DM-Ressourcen</h3>
+          <p>Schreib mir "KI" per DM und ich schick dir Templates, Checklisten und Tool-Empfehlungen direkt ins Postfach.</p>
+        </div>
+        <div class="card reveal reveal-delay-3">
+          <span class="card-icon">🚀</span>
+          <h3>Community Early Access</h3>
+          <p>Werde Teil der RealRise KI-Community — als einer der Ersten und sichere dir exklusive Vorteile.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- WIE ES FUNKTIONIERT -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-tag">Wie es funktioniert</p>
+        <h2>In 4 Schritten zu deinen ersten KI-Wins</h2>
+        <p class="section-sub">So einfach ist der Einstieg — du brauchst keine Vorkenntnisse.</p>
+      </div>
+      <ul class="steps-list">
+        <li class="step reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Folge mir auf Instagram</h4>
+            <p>@daniel.realrise — damit du keinen Reel verpasst.</p>
+          </div>
+        </li>
+        <li class="step reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Schau dir meine täglichen Reels an</h4>
+            <p>Jeden Tag neues KI-Wissen — komprimiert auf unter 60 Sekunden.</p>
+          </div>
+        </li>
+        <li class="step reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Schreib mir "KI" per DM</h4>
+            <p>Das magische Wort öffnet dir den Zugang zu allen Ressourcen.</p>
+          </div>
+        </li>
+        <li class="step reveal reveal-delay-4">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <h4>Erhalte exklusive Ressourcen &amp; Community-Zugang</h4>
+            <p>Templates, Checklisten, Tool-Empfehlungen und der direkte Draht zu mir.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- GHL FORM -->
+  <section id="form-section">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-tag">Jetzt starten</p>
+        <h2>Trag dich ein &amp; bleib informiert</h2>
+        <p class="section-sub mx-auto">Erhalte Neuigkeiten, Ressourcen und Community-Updates direkt in dein Postfach.</p>
+      </div>
+      <div class="form-wrapper reveal reveal-delay-1">
+        <iframe src="https://api.leadconnectorhq.com/widget/form/6c2P1RKOoHOCuCxMnBzh?source=daniel"
+          style="width:100%;border:none;border-radius:12px;"
+          scrolling="no"
+          id="msgsndr-6c2P1RKOoHOCuCxMnBzh"
+          data-layout="{'id':'LEGACY'}"
+          data-trigger-type="alwaysShow"
+          data-trigger-value=""
+          data-activation-type="alwaysActivated"
+          data-activation-value=""
+          data-deactivation-type="neverDeactivate"
+          data-deactivation-value=""
+          data-form-name="RealRise KI Funnel"
+          data-height="432"
+          data-layout-iframe-id="msgsndr-6c2P1RKOoHOCuCxMnBzh"
+          data-form-id="6c2P1RKOoHOCuCxMnBzh"
+          title="RealRise KI Funnel">
+        </iframe>
+        <script src="https://link.msgsndr.com/js/form_embed.js"></script>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- TOOLS -->
+  <section id="tools">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-tag">Mein Stack</p>
+        <h2>Tools die ich täglich nutze</h2>
+        <p class="section-sub mx-auto">Kein Hype — nur Tools die ich selbst getestet habe und die wirklich funktionieren.</p>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card reveal">
+          <span class="tool-emoji">🤖</span>
+          <div class="tool-name">ChatGPT</div>
+          <div class="tool-desc">Text, Ideen &amp; Automationen in Sekunden generieren</div>
+        </div>
+        <div class="tool-card reveal reveal-delay-1">
+          <span class="tool-emoji">🧠</span>
+          <div class="tool-name">Claude</div>
+          <div class="tool-desc">Tiefes Denken, Code &amp; komplexe Analysen</div>
+        </div>
+        <div class="tool-card reveal reveal-delay-2">
+          <span class="tool-emoji">🎥</span>
+          <div class="tool-name">Heygen</div>
+          <div class="tool-desc">KI-Avatar Videos ohne Kamera erstellen</div>
+        </div>
+        <div class="tool-card reveal reveal-delay-3">
+          <span class="tool-emoji">💬</span>
+          <div class="tool-name">ManyChat</div>
+          <div class="tool-desc">Instagram DM-Automationen auf Autopilot</div>
+        </div>
+        <div class="tool-card reveal reveal-delay-4">
+          <span class="tool-emoji">⚡</span>
+          <div class="tool-name">GoHighLevel</div>
+          <div class="tool-desc">CRM, Funnels &amp; E-Mail-Marketing alles in einem</div>
+        </div>
+        <div class="tool-card reveal reveal-delay-4">
+          <span class="tool-emoji">🕷️</span>
+          <div class="tool-name">Apify</div>
+          <div class="tool-desc">Web Scraping &amp; Daten-Research automatisiert</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-tag">FAQ</p>
+        <h2>Häufige Fragen</h2>
+        <p class="section-sub mx-auto">Alles was du wissen musst — direkt und ehrlich beantwortet.</p>
+      </div>
+      <ul class="faq-list reveal reveal-delay-1">
+        <li class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Ist das kostenlos?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Ja, mein Content ist 100% kostenlos. Kein Abo, kein versteckter Paywall. Ich teile mein Wissen weil ich will, dass du erfolgreich bist.
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Was bekomme ich per DM?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Templates, Checklisten, Tool-Empfehlungen und Community-Zugang. Schreib einfach "KI" in meine Instagram-DMs und ich kümmere mich um den Rest.
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Für wen ist das?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Für alle die KI im Business nutzen wollen — vom absoluten Anfänger bis zum Profi der seinen Stack optimieren will. Jeder ist willkommen.
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Wie oft postest du?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            Täglich ein Reel mit dem neuesten KI-Wissen. Kurz, konkret und immer direkt umsetzbar für dein Business.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FINAL CTA -->
+  <section id="final-cta">
+    <div class="container final-cta-inner">
+      <div class="reveal">
+        <p class="section-tag">Jetzt loslegen</p>
+        <h2>Bereit für deine KI-Reise?</h2>
+        <p class="section-sub mx-auto" style="margin-bottom:40px;">
+          Join über 500 Menschen die schon täglich mit mir KI lernen — kostenlos, direkt und ohne Bullshit.
+        </p>
+        <a class="btn-primary" href="https://instagram.com/daniel.realrise" target="_blank" rel="noopener">
+          📸 Jetzt auf Instagram folgen
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 <a href="https://instagram.com/daniel.realrise" target="_blank">@daniel.realrise</a> · RealRise · Alle Rechte vorbehalten</p>
+  </footer>
+
+  <!-- SCROLL TO TOP -->
+  <button id="scroll-top" title="Nach oben" aria-label="Nach oben scrollen">↑</button>
+
+  <!-- JS: Reveal + FAQ + Scroll-to-top -->
+  <script>
+    // ── Scroll Reveal ──
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    // ── FAQ Accordion ──
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const btn = item.querySelector('.faq-question');
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        // Close all
+        faqItems.forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+        // Toggle clicked
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // ── Scroll-to-top ──
+    const scrollBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
+      }
+    });
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

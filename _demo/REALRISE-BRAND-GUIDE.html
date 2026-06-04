@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealRise Brand Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* System Dark */
+      --bg:         #0F0F1A;
+      --card:       #1A1A2E;
+      --accent:     #7C3AED;
+      --secondary:  #A855F7;
+      --text:       #E2E8F0;
+      --muted:      #94A3B8;
+      --success:    #10B981;
+      --border-sys: rgba(124,58,237,0.25);
+
+      /* Brand Palette */
+      --cream:      #f5f0e8;
+      --white:      #ffffff;
+      --dark:       #141210;
+      --blau:       #4f8ef7;
+      --blau2:      #2a5fd6;
+      --grau:       #8a8780;
+      --border-br:  #e2ddd6;
+      --code-bg:    #1a1714;
+      --code-fg:    #f0ece4;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,15,26,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-sys);
+      padding: 0 2rem;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    section { padding: 6rem 0; }
+    section:nth-child(odd) { background: transparent; }
+    section:nth-child(even) { background: rgba(26,26,46,0.4); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 8rem 0 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--secondary);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 300;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .hero-title em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .hero-meta-item { }
+    .hero-meta-item .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .hero-meta-item .value {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border-sys);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .card-sm { padding: 1.25rem 1.5rem; }
+    .card-lg { padding: 2.5rem; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) {
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    /* ── COLOR PALETTE ── */
+    .swatch-group { margin-bottom: 2rem; }
+    .swatch-group-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .swatches { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .swatch {
+      flex: 1;
+      min-width: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .swatch-color {
+      height: 80px;
+      width: 100%;
+    }
+    .swatch-info {
+      background: var(--card);
+      padding: 0.75rem 1rem;
+    }
+    .swatch-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+    .swatch-hex {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .swatch-use {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      opacity: 0.7;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .type-specimen {
+      background: var(--card);
+      border: 1px solid var(--border-sys);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .type-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-sys);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .type-font-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+    .type-use-case {
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: rgba(124,58,237,0.15);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      border: 1px solid rgba(124,58,237,0.3);
+    }
+    .type-body { padding: 2rem 1.5rem; }
+
+    .specimen-cormorant .big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .specimen-cormorant .italic {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+    .specimen-cormorant .weights {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .specimen-cormorant .weight-item {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .specimen-dmmono .big {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .specimen-dmmono .sample {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--code-fg);
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      line-height: 1.7;
+    }
+
+    .specimen-dmsans .big {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .specimen-dmsans .body-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    /* ── CODE BLOCKS ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid rgba(240,236,228,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--code-fg);
+      overflow-x: auto;
+    }
+    .code-block .comment { color: #5a5550; }
+    .code-block .key { color: #a78bfa; }
+    .code-block .value { color: var(--success); }
+    .code-block .string { color: #f59e0b; }
+    .code-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── FUNNEL DIAGRAM ── */
+    .funnel-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      position: relative;
+    }
+    .funnel-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 1.5rem;
+      top: 3.5rem;
+      width: 2px;
+      height: calc(100% + 1.5rem);
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      opacity: 0.3;
+    }
+    .funnel-num {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    }
+    .funnel-content { flex: 1; padding-bottom: 2rem; }
+    .funnel-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+    .funnel-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+    .funnel-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: var(--secondary);
+    }
+
+    /* ── RULES ── */
+    .rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .rule-item:last-child { border-bottom: none; }
+    .rule-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 500;
+      min-width: 2rem;
+      padding-top: 0.05rem;
+    }
+    .rule-text { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+    .rule-text strong { color: #ef4444; }
+    .rule-text code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      background: rgba(255,255,255,0.07);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      color: var(--code-fg);
+    }
+
+    /* ── CTA BLOCK ── */
+    .cta-block {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.15));
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+    }
+    .cta-phrase {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 500;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .cta-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── STACK TABLE ── */
+    .stack-item {
+      display: grid;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .stack-item:last-child { border-bottom: none; }
+    .stack-name { font-weight: 600; font-size: 0.9rem; }
+    .stack-detail {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .stack-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .badge-live { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-active { background: rgba(124,58,237,0.15); color: var(--secondary); border: 1px solid rgba(124,58,237,0.3); }
+    .badge-pixel { background: rgba(79,142,247,0.15); color: #4f8ef7; border: 1px solid rgba(79,142,247,0.3); }
+
+    /* ── FILE STRUCTURE ── */
+    .file-tree {
+      background: var(--code-bg);
+      border: 1px solid rgba(240,236,228,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 2;
+      color: var(--code-fg);
+    }
+    .file-tree .dir { color: var(--blau); }
+    .file-tree .file { color: var(--code-fg); }
+    .file-tree .comment { color: #5a5550; }
+    .file-tree .warn { color: #f59e0b; }
+
+    /* ── DEPLOY STEPS ── */
+    .deploy-step {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .deploy-step:last-child { border-bottom: none; }
+    .deploy-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 10px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .deploy-content { flex: 1; }
+    .deploy-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .deploy-desc { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── QUICK REF ── */
+    .ref-card {
+      background: linear-gradient(135deg, var(--card), rgba(26,26,46,0.8));
+      border: 1px solid var(--border-sys);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+    .ref-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .ref-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .ref-row:last-child { border-bottom: none; }
+    .ref-key { font-size: 0.82rem; color: var(--muted); }
+    .ref-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+      text-align: right;
+    }
+
+    /* ── VOICE TRAITS ── */
+    .trait-card {
+      background: var(--card);
+      border: 1px solid var(--border-sys);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .trait-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .trait-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .trait-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border-sys);
+      padding: 2rem 0;
+      text-align: center;
+    }
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-sys), transparent);
+      margin: 0;
+    }
+
+    /* ── TAG ── */
+    .tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 100px;
+      color: var(--muted);
+      background: rgba(148,163,184,0.1);
+      border: 1px solid rgba(148,163,184,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">RealRise — Brand Guide</span>
+    <ul class="nav-links">
+      <li><a href="#colors">Colors</a></li>
+      <li><a href="#typography">Type</a></li>
+      <li><a href="#voice">Voice</a></li>
+      <li><a href="#funnel">Funnel</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#rules">Rules</a></li>
+      <li><a href="#deploy">Deploy</a></li>
+      <li><a href="#quickref">Quick Ref</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════ HERO ══════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span>◆</span> Official Brand Reference — Version 1.0
+    </div>
+    <h1 class="hero-title">
+      RealRise<br><em>Brand Guide</em>
+    </h1>
+    <p class="hero-sub">
+      Das vollständige Design-System, Voice-Framework und technische Regelwerk für alle @daniel.realrise Funnel-Pages und KI-Content.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="label">Brand</div>
+        <div class="value">@daniel.realrise</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Domain</div>
+        <div class="value">ki.realrise-agency.com</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Audience</div>
+        <div class="value">DACH — German Speaking</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Positioning</div>
+        <div class="value">KI Reseller + Automation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ COLORS ══════════════════════════════════ -->
+<section id="colors">
+  <div class="container">
+    <div class="section-label">01 — Color System</div>
+    <h2 class="section-title">Farbpalette</h2>
+    <p class="section-desc">Alle Brand-Farben inkl. ihrer Verwendungszwecke. Niemals andere Farben in Funnel-Pages verwenden.</p>
+
+    <!-- Brand Colors -->
+    <div class="swatch-group">
+      <div class="swatch-group-title">Brand Core — Funnel Pages</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#f5f0e8;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cream</div>
+            <div class="swatch-hex">#f5f0e8</div>
+            <div class="swatch-use">Page Background</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#ffffff; border-bottom: 1px solid #e0e0e0;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">White</div>
+            <div class="swatch-hex">#ffffff</div>
+            <div class="swatch-use">Card Surfaces</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#141210;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Dark</div>
+            <div class="swatch-hex">#141210</div>
+            <div class="swatch-use">Headlines, Primary Text</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#4f8ef7;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Blau</div>
+            <div class="swatch-hex">#4f8ef7</div>
+            <div class="swatch-use">Accent / Highlights</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#2a5fd6;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Blau 2</div>
+            <div class="swatch-hex">#2a5fd6</div>
+            <div class="swatch-use">CTA Buttons</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#8a8780;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Grau</div>
+            <div class="swatch-hex">#8a8780</div>
+            <div class="swatch-use">Subtext, Muted</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <div class="swatch-group-title">UI & Code — Supporting</div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#e2ddd6; border-bottom: 1px solid #ccc;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Border</div>
+            <div class="swatch-hex">#e2ddd6</div>
+            <div class="swatch-use">Dividers, Card Borders</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1a1714;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Code BG</div>
+            <div class="swatch-hex">#1a1714</div>
+            <div class="swatch-use">Code Block Background</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#f0ece4;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Code FG</div>
+            <div class="swatch-hex">#f0ece4</div>
+            <div class="swatch-use">Code Block Text</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSS Variables -->
+    <div style="margin-top: 2rem;">
+      <div class="code-label">CSS Custom Properties</div>
+      <div class="code-block">
+<span class="comment">/* RealRise Brand — CSS Variables */</span>
+<span class="key">:root</span> {
+  <span class="comment">/* Core Brand */</span>
+  --cream:     <span class="value">#f5f0e8</span>;   <span class="comment">/* Page background */</span>
+  --white:     <span class="value">#ffffff</span>;   <span class="comment">/* Card surface */</span>
+  --dark:      <span class="value">#141210</span>;   <span class="comment">/* Headlines */</span>
+  --blau:      <span class="value">#4f8ef7</span>;   <span class="comment">/* Accent color */</span>
+  --blau2:     <span class="value">#2a5fd6</span>;   <span class="comment">/* CTA buttons */</span>
+  --grau:      <span class="value">#8a8780</span>;   <span class="comment">/* Muted text */</span>
+
+  <span class="comment">/* Supporting */</span>
+  --border:    <span class="value">#e2ddd6</span>;   <span class="comment">/* Dividers */</span>
+  --code-bg:   <span class="value">#1a1714</span>;   <span class="comment">/* Code blocks */</span>
+  --code-fg:   <span class="value">#f0ece4</span>;   <span class="comment">/* Code text */</span>
+}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ TYPOGRAPHY ══════════════════════════════════ -->
+<section id="typography">
+  <div class="container">
+    <div class="section-label">02 — Typography</div>
+    <h2 class="section-title">Schrift-System</h2>
+    <p class="section-desc">Drei Schriften — jede mit klar definierter Rolle. Niemals mixen oder ersetzen.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+      <!-- Cormorant -->
+      <div class="type-specimen">
+        <div class="type-header">
+          <span class="type-font-name">Cormorant Garamond</span>
+          <span class="type-use-case">Headlines — Elegant &amp; Editorial</span>
+        </div>
+        <div class="type-body specimen-cormorant">
+          <div class="big">KI verändert<br>alles.</div>
+          <div class="italic">Die Frage ist: Bist du dabei?</div>
+          <div class="weights">
+            <span class="weight-item" style="font-weight:300;">Light 300</span>
+            <span class="weight-item" style="font-weight:400;">Regular 400</span>
+            <span class="weight-item" style="font-weight:500;">Medium 500</span>
+            <span class="weight-item" style="font-weight:600;">SemiBold 600</span>
+            <span class="weight-item" style="font-weight:700;">Bold 700</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DM Mono -->
+      <div class="type-specimen">
+        <div class="type-header">
+          <span class="type-font-name">DM Mono</span>
+          <span class="type-use-case">Labels, Code, Technical — Precision</span>
+        </div>
+        <div class="type-body specimen-dmmono">
+          <div class="big">01 — KI RESELLER</div>
+          <div class="sample">
+/* Labels, Tags, Badges, Code-Snippets */<br>
+Meta Pixel: 1343968131131688<br>
+Domain:     ki.realrise-agency.com<br>
+Keyword:    KI → ManyChat Trigger<br>
+Deploy:     ZIP → Netlify drag&amp;drop
+          </div>
+        </div>
+      </div>
+
+      <!-- DM Sans -->
+      <div class="type-specimen">
+        <div class="type-header">
+          <span class="type-font-name">DM Sans</span>
+          <span class="type-use-case">Body Text — Clean &amp; Readable</span>
+        </div>
+        <div class="type-body specimen-dmsans">
+          <div class="big">Fließtext &amp; Beschreibungen</div>
+          <div class="body-text">
+            DM Sans ist die Arbeitsschrift — sauber lesbar, modern ohne übertrieben zu wirken. Ideal für längere Erklärtexte, Bulletpoints, Formular-Labels und alle UI-Elemente unterhalb der Headline-Ebene. Die Schrift funktioniert auf allen Bildschirmgrößen und in allen Gewichtsstufen von 300 bis 700.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Fonts Import -->
+    <div style="margin-top: 2rem;">
+      <div class="code-label">Google Fonts Import — immer so einbinden</div>
+      <div class="code-block">
+<span class="comment">&lt;!-- In &lt;head&gt; — Reihenfolge beibehalten --&gt;</span>
+&lt;<span class="key">link</span> rel=<span class="string">"preconnect"</span> href=<span class="string">"https://fonts.googleapis.com"</span>&gt;
+&lt;<span class="key">link</span> rel=<span class="string">"preconnect"</span> href=<span class="string">"https://fonts.gstatic.com"</span> crossorigin&gt;
+&lt;<span class="key">link</span> href=<span class="string">"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"</span> rel=<span class="string">"stylesheet"</span>&gt;
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ VOICE ══════════════════════════════════ -->
+<section id="voice">
+  <div class="container">
+    <div class="section-label">03 — Voice &amp; Tone</div>
+    <h2 class="section-title">Stimme &amp; Ton</h2>
+    <p class="section-desc">Authentisch, direkt, persönlich — nie corporate. Immer auf Deutsch für die DACH-Audience.</p>
+
+    <div class="grid-3" style="margin-bottom: 3rem;">
+      <div class="trait-card">
+        <div class="trait-icon">◆</div>
+        <div class="trait-title">Authentisch &amp; Direkt</div>
+        <div class="trait-desc">Keine Agentur-Sprache. Daniel spricht wie ein Freund der es wirklich weiß — nicht wie ein Berater der eine Pitch-Deck liest.</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">▲</div>
+        <div class="trait-title">Persönliche Brand</div>
+        <div class="trait-desc">@daniel.realrise — nicht RealRise Agency GmbH. Ich-Perspektive, persönliche Erfahrungen, echte Resultate.</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">●</div>
+        <div class="trait-title">KI Educator</div>
+        <div class="trait-desc">KI-Automation erklären wie man einem Freund erklärt warum Bitcoin 2013 interessant war. Einfach, konkret, mit FOMO-Einschlag.</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">▼</div>
+        <div class="trait-title">Urgency ohne Druck</div>
+        <div class="trait-desc">Der Zug fährt ab — aber ich zeige dir die Tür. Nie manipulativ, immer wertbasiert. Die Dringlichkeit entsteht durch den Content selbst.</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">★</div>
+        <div class="trait-title">DM-First Strategie</div>
+        <div class="trait-desc">Kein Link in der Bio-Chaos. Der Move ist: Reel → Keyword-DM → Funnel. Persönlich, skalierbar, konvertierend.</div>
+      </div>
+      <div class="trait-card">
+        <div class="trait-icon">◇</div>
+        <div class="trait-title">DACH Fokus</div>
+        <div class="trait-desc">Inhalte auf Deutsch. Begriffe wie „KI", „Automatisierung", „Reseller" — keine anglisierten Buzzwords ohne Erklärung.</div>
+      </div>
+    </div>
+
+    <!-- Do / Don't -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-label" style="color: var(--success); margin-bottom: 1rem;">DO — So klingt es richtig</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+          <li style="font-size: 0.9rem; color: var(--text); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:var(--success);">✓</span>
+            „Ich nutze KI täglich — und jetzt kannst du es auch."
+          </li>
+          <li style="font-size: 0.9rem; color: var(--text); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:var(--success);">✓</span>
+            „Schreib mir KI per DM — ich schick dir alles was du brauchst."
+          </li>
+          <li style="font-size: 0.9rem; color: var(--text); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:var(--success);">✓</span>
+            „Das hier ist der einfachste Weg rein — ich zeig dir wie."
+          </li>
+          <li style="font-size: 0.9rem; color: var(--text); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:var(--success);">✓</span>
+            Erste Person, konkrete Zahlen, klare nächste Schritte
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-label" style="color: #ef4444; margin-bottom: 1rem;">DON'T — Das vermeiden</div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+          <li style="font-size: 0.9rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:#ef4444;">✗</span>
+            „Unsere KI-Lösungen transformieren Ihren Workflow nachhaltig."
+          </li>
+          <li style="font-size: 0.9rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:#ef4444;">✗</span>
+            „Jetzt kostenlos registrieren und von exklusiven Benefits profitieren."
+          </li>
+          <li style="font-size: 0.9rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:#ef4444;">✗</span>
+            Passive Sprache, Corporate Speak, anglisierte Buzzwords ohne Kontext
+          </li>
+          <li style="font-size: 0.9rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+            <span style="position:absolute; left:0; color:#ef4444;">✗</span>
+            Dritter Person, Wir-Sprache statt Ich-Perspektive
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ FUNNEL ══════════════════════════════════ -->
+<section id="funnel">
+  <div class="container">
+    <div class="section-label">04 — Funnel Architecture</div>
+    <h2 class="section-title">Funnel-Architektur</h2>
+    <p class="section-desc">Der vollständige Conversion-Pfad — von Instagram Reel bis GHL Community-Anmeldung.</p>
+
+    <div class="grid-2" style="gap: 3rem; align-items: start;">
+      <div>
+        <div class="funnel-step">
+          <div class="funnel-num">1</div>
+          <div class="funnel-content">
+            <div class="funnel-title">Instagram Reel</div>
+            <div class="funnel-desc">Short-Form Video mit starkem Hook in den ersten 2 Sekunden. Erklärt KI-Konzept, baut Vertrauen auf, endet mit konkretem CTA: „Schreib mir KI"</div>
+            <div class="funnel-tag">@daniel.realrise — Instagram</div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">2</div>
+          <div class="funnel-content">
+            <div class="funnel-title">ManyChat DM Automation</div>
+            <div class="funnel-desc">Keyword-Trigger: Wort „KI" im DM löst automatische Antwort aus. Persönlich wirkende Message mit direktem Funnel-Page-Link. Skalierbar, 24/7 aktiv.</div>
+            <div class="funnel-tag">Keyword: KI — ManyChat Flow</div>
+          </div>
+        </div>
+        <div class="funnel-step">
+          <div class="funnel-num">3</div>
+          <div class="funnel-content">
+            <div class="funnel-title">Unique HTML Funnel Page</div>
+            <div class="funnel-desc">Pro Thema eine eigene, handgecraftete HTML-Seite auf ki.realrise-agency.com/daniel/[thema]. Flat file — keine Unterordner. Immer Cormorant + DM Mono + DM Sans.</div>
+            <div class="funnel-tag">ki.realrise-agency.com/daniel/[thema]</div>
+          </div>
+        </div>
+        <div class="funnel-step" style="margin-bottom:0;">
+          <div class="funnel-num">4</div>
+          <div class="funnel-content" style="padding-bottom: 0;">
+            <div class="funnel-title">GHL Community Early Access</div>
+            <div class="funnel-desc">Embedded GHL Form für Community-Anmeldung. Form ID niemals ändern. ?source=daniel als Affiliate-Parameter. Meta Pixel trackt alle Conversions.</div>
+            <div class="funnel-tag">GHL Form ID: 6c2P1RKOoHOCuCxMnBzh</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="card">
+          <div class="section-label" style="margin-bottom: 0.75rem;">GHL Form URL</div>
+          <div class="code-block" style="font-size: 0.75rem; padding: 1rem;">
+https://api.leadconnectorhq.com/widget/form/<span class="value">6c2P1RKOoHOCuCxMnBzh</span>?source=<span class="string">daniel</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--muted); margin-top: 0.75rem;">Form ID ist fix — niemals ändern. ?source= variiert je nach Affiliate (daniel / regina)</p>
+        </div>
+
+        <div class="card">
+          <div class="section-label" style="margin-bottom: 0.75rem;">Meta Pixel</div>
+          <div class="code-block" style="font-size: 0.75rem; padding: 1rem;">
+<span class="comment">// Pixel ID — nie ändern</span>
+fbq(<span class="string">'init'</span>, <span class="value">'1343968131131688'</span>);
+fbq(<span class="string">'track'</span>, <span class="value">'PageView'</span>);
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label" style="margin-bottom: 0.75rem;">URL-Struktur</div>
+          <div class="code-block" style="font-size: 0.75rem; padding: 1rem; line-height: 2;">
+<span class="comment"># RICHTIG ✓</span>
+/daniel/<span class="value">ki-reseller.html</span>
+
+<span class="comment"># FALSCH ✗ (bricht Netlify ZIP)</span>
+/daniel/ki-reseller/<span class="warn">index.html</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ STACK ══════════════════════════════════ -->
+<section id="stack">
+  <div class="container">
+    <div class="section-label">05 — Technical Stack</div>
+    <h2 class="section-title">Tech-Stack</h2>
+    <p class="section-desc">Alle Live-URLs, IDs und technischen Konfigurationen an einem Ort.</p>
+
+    <div class="card card-lg" style="margin-bottom: 2rem;">
+      <div class="stack-item">
+        <div class="stack-name">Main Domain</div>
+        <div class="stack-detail">ki.realrise-agency.com</div>
+        <div class="stack-badge badge-live">LIVE</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Netlify Hub</div>
+        <div class="stack-detail">resonant-toffee-7c1841.netlify.app</div>
+        <div class="stack-badge badge-live">LIVE</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Daniel Subdomain</div>
+        <div class="stack-detail">daniel-realrise.netlify.app</div>
+        <div class="stack-badge badge-live">LIVE</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">GHL Form</div>
+        <div class="stack-detail">api.leadconnectorhq.com/widget/form/6c2P1RKOoHOCuCxMnBzh</div>
+        <div class="stack-badge badge-active">ACTIVE</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Meta Pixel ID</div>
+        <div class="stack-detail">1343968131131688</div>
+        <div class="stack-badge badge-pixel">TRACKING</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">ManyChat Keyword</div>
+        <div class="stack-detail">KI — triggers automated DM flow</div>
+        <div class="stack-badge badge-active">ACTIVE</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Affiliate Params</div>
+        <div class="stack-detail">?source=daniel | ?source=regina</div>
+        <div class="stack-badge badge-active">ACTIVE</div>
+      </div>
+      <div class="stack-item" style="border-bottom: none;">
+        <div class="stack-name">Deploy Method</div>
+        <div class="stack-detail">ZIP drag&amp;drop on Netlify — NOT browse files</div>
+        <div class="stack-badge badge-active">CRITICAL</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="code-label">Fonts in jede Funnel-Page</div>
+        <div class="code-block">
+<span class="key">font-family</span>: <span class="value">'Cormorant Garamond'</span>, serif;   <span class="comment">/* Headlines */</span>
+<span class="key">font-family</span>: <span class="value">'DM Mono'</span>, monospace;         <span class="comment">/* Labels/Code */</span>
+<span class="key">font-family</span>: <span class="value">'DM Sans'</span>, sans-serif;        <span class="comment">/* Body Text */</span>
+        </div>
+      </div>
+      <div>
+        <div class="code-label">_redirects Eintrag (nach jedem neuen Thema)</div>
+        <div class="code-block">
+<span class="comment"># Netlify _redirects — immer erweitern</span>
+<span class="value">/daniel/ki-reseller</span>  /daniel/ki-reseller.html  <span class="string">200</span>
+<span class="value">/daniel/[neues-thema]</span>  /daniel/[neues-thema].html  <span class="string">200</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ CTA ══════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">06 — CTA &amp; Messaging</div>
+    <h2 class="section-title">Call-to-Action</h2>
+    <p class="section-desc">Ein CTA. Immer derselbe. Exakt dieser Wortlaut — keine Variationen.</p>
+
+    <div class="cta-block" style="margin-bottom: 2rem;">
+      <div class="cta-phrase">
+        „Schreib mir KI per DM —<br>ich schick dir alles was du brauchst"
+      </div>
+      <div class="cta-note">EXAKTER WORTLAUT — NIEMALS ÄNDERN</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card card-sm">
+        <div class="section-label" style="margin-bottom: 0.5rem;">Warum genau so?</div>
+        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.6;">Das Keyword „KI" triggert den ManyChat-Flow. Ohne das exakte Wort funktioniert die Automation nicht.</p>
+      </div>
+      <div class="card card-sm">
+        <div class="section-label" style="margin-bottom: 0.5rem;">Platzierung</div>
+        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.6;">Am Ende jedes Reels (gesprochen + als Text-Overlay), auf jeder Funnel-Page als primärer Button/CTA.</p>
+      </div>
+      <div class="card card-sm">
+        <div class="section-label" style="margin-bottom: 0.5rem;">Tone</div>
+        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.6;">Hilfreich, nicht verkäuferisch. „Ich schick dir" = persönliches Versprechen, kein generischer Button-Text.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ RULES ══════════════════════════════════ -->
+<section id="rules">
+  <div class="container">
+    <div class="section-label">07 — Critical Rules</div>
+    <h2 class="section-title">11 Fehler die du vermeidest</h2>
+    <p class="section-desc">Diese Regeln existieren aus Erfahrung. Jede davon wurde durch einen echten Fehler gelernt.</p>
+
+    <div class="card card-lg">
+      <div class="rule-item">
+        <div class="rule-num">01</div>
+        <div class="rule-text"><strong>NIEMALS</strong> Unterordner in <code>04_Daniel_Pages/</code> verwenden — Netlify ZIP bricht bei Subfolders. Alles flat in einem Verzeichnis.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">02</div>
+        <div class="rule-text"><strong>NIEMALS</strong> die GHL Form ID ändern. Sie ist hardcoded in jedem Funnel eingebettet. Änderungen brechen alle bestehenden Formulare.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">03</div>
+        <div class="rule-text"><strong>NIEMALS</strong> <code>settings.local.json</code> committen. Die Datei enthält API-Tokens und ist immer in <code>.gitignore</code> einzutragen.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">04</div>
+        <div class="rule-text"><strong>NIEMALS</strong> die Meta Pixel ID ändern: <code>1343968131131688</code> — alle Tracking-Daten und Custom Audiences sind an diese ID gebunden.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">05</div>
+        <div class="rule-text"><strong>IMMER</strong> Flat-Struktur verwenden: <code>/thema.html</code> — nicht <code>/thema/index.html</code>. Netlify ZIP verarbeitet nur flache Strukturen korrekt.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">06</div>
+        <div class="rule-text"><strong>IMMER</strong> <code>_redirects</code> erweitern bei neuen Themen: <code>/thema  /thema.html  200</code> — sonst 404 auf Clean URLs.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">07</div>
+        <div class="rule-text"><strong>IMMER</strong> korrekten Affiliate-Parameter verwenden: <code>?source=daniel</code> oder <code>?source=regina</code> — nie andere Werte, nie weglassen.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">08</div>
+        <div class="rule-text"><strong>IMMER</strong> die 3 exakten Schriften verwenden: Cormorant Garamond (Headlines), DM Mono (Labels/Code), DM Sans (Body). Kein Inter, kein Roboto.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">09</div>
+        <div class="rule-text">Der CTA muss <strong>immer exakt</strong> diesen Wortlaut haben: „Schreib mir KI per DM — ich schick dir alles was du brauchst". Keine Variationen, keine Abkürzungen.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">10</div>
+        <div class="rule-text">Deployment via <strong>ZIP drag&amp;drop</strong> auf Netlify — nicht über „Browse Files". Der Browse-Files-Upload erzeugt keine korrekten Redirects.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">11</div>
+        <div class="rule-text"><strong>Spec-Driven:</strong> Master Prompt und Template immer lesen bevor etwas gebaut wird. Niemals blind implementieren — immer Kontext verstehen.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ FILE STRUCTURE ══════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="section-label">08 — File Structure</div>
+    <h2 class="section-title">Dateistruktur</h2>
+    <p class="section-desc">So ist das Projekt aufgebaut — immer diese Konvention einhalten.</p>
+
+    <div class="grid-2" style="gap: 2rem;">
+      <div>
+        <div class="code-label">Projekt-Ordnerstruktur</div>
+        <div class="file-tree">
+<span class="dir">ki.realrise-agency.com/</span>
+<span class="comment">│</span>
+<span class="comment">├── 01_Templates/</span>          <span class="comment"># Base templates</span>
+<span class="comment">│   └── </span><span class="file">_template.html</span>
+<span class="comment">│</span>
+<span class="comment">├── 02_Shared/</span>             <span class="comment"># Shared assets</span>
+<span class="comment">│   ├── </span><span class="file">_redirects</span>
+<span class="comment">│   └── </span><span class="file">_headers</span>
+<span class="comment">│</span>
+<span class="comment">├── 03_Regina_Pages/</span>       <span class="comment"># ?source=regina</span>
+<span class="comment">│   └── </span><span class="file">thema.html</span>         <span class="warn"># FLAT — kein Unterordner!</span>
+<span class="comment">│</span>
+<span class="comment">├── 04_Daniel_Pages/</span>       <span class="comment"># ?source=daniel</span>
+<span class="comment">│   ├── </span><span class="file">ki-reseller.html</span>   <span class="warn"># FLAT — kein Unterordner!</span>
+<span class="comment">│   ├── </span><span class="file">chatbot.html</span>
+<span class="comment">│   └── </span><span class="file">[neues-thema].html</span>
+<span class="comment">│</span>
+<span class="comment">└── </span><span class="warn">settings.local.json</span>   <span class="warn"># NIEMALS committen!</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="code-label">_redirects Datei (Beispiel)</div>
+        <div class="file-tree">
+<span class="comment"># Netlify Redirects — immer erweitern</span>
+
+<span class="comment"># Daniel Pages</span>
+<span class="value">/daniel/ki-reseller</span>
+  → /daniel/ki-reseller.html 200
+
+<span class="value">/daniel/chatbot</span>
+  → /daniel/chatbot.html 200
+
+<span class="value">/daniel/[neues-thema]</span>
+  → /daniel/[neues-thema].html 200
+
+<span class="comment"># Regina Pages</span>
+<span class="value">/regina/[thema]</span>
+  → /regina/[thema].html 200
+
+<span class="comment"># Default</span>
+<span class="value">/*</span>  → /index.html 200
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div class="code-label">Neue Seite anlegen — Checkliste</div>
+          <div class="card card-sm">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> Thema.html in 04_Daniel_Pages/ anlegen (flat!)
+              </label>
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> 3 Fonts korrekt eingebunden (preconnect + link)
+              </label>
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> Meta Pixel Code eingefügt (ID: 1343968131131688)
+              </label>
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> GHL Form mit ?source=daniel eingebettet
+              </label>
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> _redirects um neuen Eintrag erweitert
+              </label>
+              <label style="display: flex; gap: 0.75rem; font-size: 0.85rem; align-items: center;">
+                <span style="color: var(--success);">□</span> ZIP erstellt und via drag&amp;drop deployed
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ DEPLOY ══════════════════════════════════ -->
+<section id="deploy">
+  <div class="container">
+    <div class="section-label">09 — Deploy Workflow</div>
+    <h2 class="section-title">Deploy-Prozess</h2>
+    <p class="section-desc">Schritt für Schritt — jedes Mal gleich. Kein Abweichen vom Prozess.</p>
+
+    <div class="grid-2" style="gap: 2rem;">
+      <div class="card card-lg">
+        <div class="deploy-step">
+          <div class="deploy-icon">1</div>
+          <div class="deploy-content">
+            <div class="deploy-title">HTML-Datei erstellen</div>
+            <div class="deploy-desc">Neue Datei in <code style="font-family: DM Mono; font-size: 0.8rem; background: rgba(255,255,255,0.07); padding: 0.1rem 0.4rem; border-radius: 4px;">04_Daniel_Pages/</code> anlegen. Name = Thema (lowercase, kebab-case). Kein Unterordner.</div>
+          </div>
+        </div>
+        <div class="deploy-step">
+          <div class="deploy-icon">2</div>
+          <div class="deploy-content">
+            <div class="deploy-title">_redirects aktualisieren</div>
+            <div class="deploy-desc">Neuen Redirect-Eintrag hinzufügen. Format: <code style="font-family: DM Mono; font-size: 0.8rem; background: rgba(255,255,255,0.07); padding: 0.1rem 0.4rem; border-radius: 4px;">/thema  /thema.html  200</code></div>
+          </div>
+        </div>
+        <div class="deploy-step">
+          <div class="deploy-icon">3</div>
+          <div class="deploy-content">
+            <div class="deploy-title">ZIP-Archiv erstellen</div>
+            <div class="deploy-desc">Den gesamten Deploy-Ordner als ZIP komprimieren. Alle Dateien müssen auf der obersten Ebene des ZIPs liegen.</div>
+          </div>
+        </div>
+        <div class="deploy-step">
+          <div class="deploy-icon">4</div>
+          <div class="deploy-content">
+            <div class="deploy-title">Netlify — ZIP drag&amp;drop</div>
+            <div class="deploy-desc">Auf Netlify Site öffnen → Deploys Tab → ZIP-Datei in den Drop-Bereich ziehen. NICHT „Browse Files" klicken.</div>
+          </div>
+        </div>
+        <div class="deploy-step" style="border-bottom: none;">
+          <div class="deploy-icon" style="color: var(--success); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1);">✓</div>
+          <div class="deploy-content">
+            <div class="deploy-title" style="color: var(--success);">Verify &amp; Test</div>
+            <div class="deploy-desc">Clean URL testen (/thema), Form-Submission prüfen, Meta Pixel im Browser-Dev-Tools bestätigen.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="card">
+          <div class="section-label" style="margin-bottom: 0.75rem;">Nach dem Deploy testen</div>
+          <div class="code-block" style="font-size: 0.78rem; padding: 1rem; line-height: 2;">
+<span class="comment"># Clean URL (nicht .html)</span>
+ki.realrise-agency.com/daniel/<span class="value">thema</span>
+
+<span class="comment"># Form-Parameter prüfen</span>
+?source=<span class="string">daniel</span>  ← muss in URL sein
+
+<span class="comment"># Pixel Debugger</span>
+Facebook Events Manager →
+Verify Events → URL eingeben
+          </div>
+        </div>
+
+        <div class="card" style="background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.2);">
+          <div class="section-label" style="color: #ef4444; margin-bottom: 0.75rem;">Häufige Fehler</div>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem;">
+            <li style="font-size: 0.82rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+              <span style="position:absolute; left:0; color:#ef4444;">!</span>
+              „Browse Files" statt drag&amp;drop → Redirects funktionieren nicht
+            </li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+              <span style="position:absolute; left:0; color:#ef4444;">!</span>
+              Unterordner im ZIP → 404 auf allen Seiten
+            </li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+              <span style="position:absolute; left:0; color:#ef4444;">!</span>
+              _redirects vergessen → Clean URL gibt 404
+            </li>
+            <li style="font-size: 0.82rem; color: var(--muted); padding-left: 1.25rem; position: relative;">
+              <span style="position:absolute; left:0; color:#ef4444;">!</span>
+              ?source= fehlt → Affiliate-Tracking bricht
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="section-label" style="margin-bottom: 0.75rem;">Git nach Deploy</div>
+          <div class="code-block" style="font-size: 0.78rem; padding: 1rem; line-height: 2;">
+git add <span class="value">04_Daniel_Pages/thema.html</span>
+git add <span class="value">_redirects</span>
+git commit -m <span class="string">"neue Funnel-Page: [thema]"</span>
+git push
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════ QUICK REF ══════════════════════════════════ -->
+<section id="quickref">
+  <div class="container">
+    <div class="section-label">10 — Quick Reference</div>
+    <h2 class="section-title">Quick Reference Card</h2>
+    <p class="section-desc">Alle kritischen Werte auf einen Blick. Screenshot-worthy.</p>
+
+    <div class="grid-3" style="margin-bottom: 2rem;">
+      <div class="ref-card">
+        <div class="ref-title">Domains</div>
+        <div class="ref-row">
+          <div class="ref-key">Main</div>
+          <div class="ref-val">ki.realrise-agency.com</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Hub</div>
+          <div class="ref-val">resonant-toffee-7c1841</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Daniel</div>
+          <div class="ref-val">daniel-realrise.netlify.app</div>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-title">IDs &amp; Tracking</div>
+        <div class="ref-row">
+          <div class="ref-key">GHL Form</div>
+          <div class="ref-val">6c2P1RKOoHOCuCxMnBzh</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Meta Pixel</div>
+          <div class="ref-val">1343968131131688</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">ManyChat KW</div>
+          <div class="ref-val">KI</div>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-title">Affiliates</div>
+        <div class="ref-row">
+          <div class="ref-key">Daniel</div>
+          <div class="ref-val">?source=daniel</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Regina</div>
+          <div class="ref-val">?source=regina</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Deploy</div>
+          <div class="ref-val">ZIP drag&amp;drop</div>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-title">Farben</div>
+        <div class="ref-row">
+          <div class="ref-key">Background</div>
+          <div class="ref-val">#f5f0e8</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Headline</div>
+          <div class="ref-val">#141210</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">CTA Button</div>
+          <div class="ref-val">#2a5fd6</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Accent</div>
+          <div class="ref-val">#4f8ef7</div>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-title">Schriften</div>
+        <div class="ref-row">
+          <div class="ref-key">Headlines</div>
+          <div class="ref-val">Cormorant Garamond</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Labels</div>
+          <div class="ref-val">DM Mono</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Body</div>
+          <div class="ref-val">DM Sans</div>
+        </div>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-title">Instagram</div>
+        <div class="ref-row">
+          <div class="ref-key">Account</div>
+          <div class="ref-val">@daniel.realrise</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Format</div>
+          <div class="ref-val">Reels (Short-Form)</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-key">Language</div>
+          <div class="ref-val">Deutsch (DACH)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Final -->
+    <div class="cta-block">
+      <div style="font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 1.5rem;">IMMER — AUF JEDER SEITE — OHNE AUSNAHME</div>
+      <div class="cta-phrase">
+        „Schreib mir <em style="font-style: normal; background: linear-gradient(135deg, var(--accent), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">KI</em> per DM —<br>ich schick dir alles was du brauchst"
+      </div>
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <span class="tag">@daniel.realrise</span>
+        <span class="tag">Instagram DM</span>
+        <span class="tag">ManyChat Trigger: KI</span>
+        <span class="tag">DACH Audience</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>RealRise Brand Guide — @daniel.realrise — ki.realrise-agency.com</p>
+    <p style="margin-top: 0.5rem; opacity: 0.5;">Intern. Alle Werte, IDs und Regeln sind verbindlich.</p>
+  </div>
+</footer>
+
+</body>
+</html>
