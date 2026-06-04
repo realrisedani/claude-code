@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L3 Permission Praxis</title><style>
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L3 Permissions</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 :root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,6 +19,20 @@ h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;marg
 .card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
 .card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
+.lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
+.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
+.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
+.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
+.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
+.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
+.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
+.mode-card ul li::before{content:'· '}
+.mode-card ul li b{color:var(--white)}
 .code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
 .code-block .comment{color:var(--muted)}
 .code-block .key{color:#a5f3fc}
@@ -57,28 +71,74 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 .quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
 .quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
 .quiz ol li{padding-left:.2rem}
-.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
 .outcome b{color:var(--secondary)}
 .nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
 .nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+.inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
 
-<div class="meta"><span class="pill">Track 1 · L3</span><span class="dur">~20 Min</span></div>
-<h1>Permission Praxis</h1>
-<p class="sub">Permissions committen, Modi sicher wechseln, git-Disziplin einhalten</p>
+<div class="meta"><span class="pill">Track 1 · L3</span><span class="dur">~25 Min</span></div>
+<h1>Permissions</h1>
+<p class="sub">3 Modi bewusst wählen, Permissions committen, git-Disziplin einhalten</p>
 
 <div class="facts">
-  <div class="fact"><div class="fact-val">1</div><div class="fact-lbl">Datei committen</div></div>
-  <div class="fact"><div class="fact-val">1</div><div class="fact-lbl">Datei NICHT committen</div></div>
-  <div class="fact"><div class="fact-val">4</div><div class="fact-lbl">Modi im Überblick</div></div>
+  <div class="fact"><div class="fact-val">3</div><div class="fact-lbl">Modi</div></div>
+  <div class="fact"><div class="fact-val">settings.json</div><div class="fact-lbl">Allow/Deny</div></div>
+  <div class="fact"><div class="fact-val">git status</div><div class="fact-lbl">Schutz-Strategie</div></div>
   <div class="fact"><div class="fact-val">5</div><div class="fact-lbl">Checkliste</div></div>
 </div>
 
-<div class="section-title">Abschnitt 1 — Permissions ins Projekt committen</div>
+<div class="lernziele">
+  <h3>Lernziele</h3>
+  <ul>
+    <li>Die 3 Permission-Modi kennen und bewusst wählen</li>
+    <li>Permissions per <span class="inline-code">.claude/settings.json</span> festlegen und ins Repo committen</li>
+    <li>git-Disziplin als Schutz gegen Datenverlust beim Einsatz von Accept Edits verstehen</li>
+  </ul>
+</div>
+
+<div class="section-title">Konzept — Die 3 Permission-Modi</div>
+
+<div class="mode-cards">
+  <div class="mode-card mc-g">
+    <h4>Default</h4>
+    <ul>
+      <li>Fragt bei jeder Aktion nach</li>
+      <li>Sicher, aber etwas langsamer</li>
+      <li><b>Ideal für Produktiv-Code</b></li>
+      <li>Standard beim Start — immer safe</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-w">
+    <h4>Accept Edits</h4>
+    <ul>
+      <li>Schreibt ohne Rückfrage direkt</li>
+      <li><b>NUR mit sauberem git status!</b></li>
+      <li>Für Feature-Branches + Experimente</li>
+      <li>Niemals auf .env oder Auth-Files</li>
+    </ul>
+  </div>
+  <div class="mode-card mc-a">
+    <h4>Plan Mode (Shift+Tab)</h4>
+    <ul>
+      <li>Nur lesen, <b>nie schreiben</b></li>
+      <li>Perfekt für Architektur-Sessions</li>
+      <li>Claude erklärt was er tun würde</li>
+      <li>Gut zum Review vor Accept Edits</li>
+    </ul>
+  </div>
+</div>
+
+<div class="box box-cyan">💡 <b>Feinsteuerung per settings.json:</b> Mit <span class="inline-code">allow</span> (z. B. <code style="font-family:monospace">["Edit(src/**)","Bash(npm run *)"]</code>) und <span class="inline-code">deny</span> (z. B. <code style="font-family:monospace">["Edit(.env*)","Bash(rm -rf*)"]</code>) steuerst du Berechtigungen ohne Modus-Wechsel — committed gilt das team-weit.</div>
+
+<div class="box box-red">🚫 <b>5 Rote Linien — NIE auf Accept Edits:</b> .env | Prod-DB-Config | Deploy-Scripts | Auth-Files | Shared Infra</div>
+
+<div class="section-title">Praxis — Permissions ins Projekt committen</div>
 
 <div class="box box-cyan">💡 <b>Warum:</b> Ohne committed permissions muss jedes Teammitglied (oder du selbst nach einer Neuinstallation) alle Berechtigungen neu bestätigen. Einmal festgelegt — für alle gültig.</div>
 
-<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Datei anlegen: <code style="font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem">.claude/settings.json</code></p>
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Datei anlegen: <span class="inline-code">.claude/settings.json</span></p>
 
 <div class="code-block">
 {<br>
@@ -100,7 +160,7 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 <span class="cmd">git commit -m "claude: permissions für dieses projekt"</span>
 </div>
 
-<div class="box box-red">⛔ <b>NIEMALS committen:</b> <code style="font-family:monospace">.claude/settings.local.json</code> — diese Datei enthält deine persönlichen Secrets und API-Tokens.</div>
+<div class="box box-red">⛔ <b>NIEMALS committen:</b> <span class="inline-code">.claude/settings.local.json</span> — diese Datei enthält deine persönlichen Secrets und API-Tokens.</div>
 
 <div class="code-block">
 <span class="comment"># settings.local.json dauerhaft aus git ausschließen</span><br>
@@ -108,7 +168,7 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 <span class="cmd">git add .gitignore && git commit -m "gitignore: claude local settings"</span>
 </div>
 
-<div class="section-title">Abschnitt 2 — Modi wechseln auf Befehl</div>
+<div class="section-title">Modi wechseln auf Befehl</div>
 
 <div class="table-wrap">
   <table>
@@ -140,7 +200,7 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
   </table>
 </div>
 
-<div class="section-title">Abschnitt 3 — Warum Accept Edits ohne sauberen git GEFÄHRLICH ist</div>
+<div class="section-title">Warum Accept Edits ohne sauberen git GEFÄHRLICH ist</div>
 
 <div class="scenario-box">
   <h3>Szenario: Was passiert wenn git-Stand nicht sauber ist</h3>
@@ -162,7 +222,7 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 
 <div class="box box-green">✅ <b>Goldene Regel:</b> Sauberer git-Stand ist die einzige Absicherung gegen Datenverlust beim Einsatz von Accept Edits oder Auto Mode.</div>
 
-<div class="section-title">Abschnitt 4 — Checkliste</div>
+<div class="section-title">Checkliste</div>
 
 <div class="checklist">
   <h3>Permission Setup Checkliste</h3>
@@ -184,9 +244,9 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
   </ol>
 </div>
 
-<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Permissions committed, Modi sicher gewechselt, git-Disziplin als Schutz verstanden</span></div>
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> 3 Modi bewusst gewählt, Permissions committed, Modi sicher gewechselt, git-Disziplin als Schutz verstanden</span></div>
 
-<nav class="nav"><a href="M1-CC-02-Phasen-Kontrolle.html">← L2 Phasen-Kontrolle</a><span>Track 1 · L3 Permission Praxis</span><a href="M1-CC-04-Slash-Commands.html">L4 Slash Commands →</a></nav>
+<nav class="nav"><a href="M1-CC-02-Mental-Model-Phasen.html">← L2 Mental Model &amp; Phasen</a><span>Track 1 · L3 Permissions</span><a href="M1-CC-04-Slash-Commands.html">L4 Slash Commands →</a></nav>
 
 </div>
 <script>

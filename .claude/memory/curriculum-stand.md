@@ -11,12 +11,12 @@ metadata:
 T0-02 bis T0-10 + Praxis (alle in track-0-onramp/)
 
 ## Track 1 — Status
-| Lektion | Datei | Status |
-|---------|-------|--------|
-| L01 | M1-CC-01-Installation.html | 🔨 in Bau |
-| L02 | M1-CC-02-Phasen-Kontrolle.html | 🔨 in Bau |
-| L03 | M1-CC-03-Permission-Praxis.html | 🔨 in Bau |
-| L04+ | M1-CC-02 bis M1-CC-29 (alte Nummerierung) | ✅ fertig |
+Saubere Nummerierung 01–29, keine Dopplungen. Zwei Paare wurden gemerged
+(Konzept + Praxis je in einem File):
+- L02 = Mental-Model + Phasen-Kontrolle → M1-CC-02-Mental-Model-Phasen.html
+- L03 = Permission-Discipline + Permission-Praxis → M1-CC-03-Permissions.html
+
+Alle 29 HTML-Lektionen vorhanden. Aufnahme-Plan: _kurs-produktion/track-1-aufnahme-plan.md
 
 ## Module 5 — Fertig ✅
 API: 30-37 | Agency: 38-44
