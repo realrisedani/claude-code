@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(zip *)",
+      "Bash(open *)",
+      "Read",
+      "Write",
+      "Edit"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "echo \"[$(date '+%Y-%m-%d %H:%M')] Session gestartet\" >> .claude/memory/session-log.md 2>/dev/null || true",
+        "async": true
+      }]
+    }]
+  }
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L1 Installation</title><style>
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.perm-card{border-radius:.6rem;padding:1rem;border:2px solid}
+.perm-green{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.4)}
+.perm-warn{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.4)}
+.perm-red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.4)}
+.perm-icon{font-size:1.4rem;margin-bottom:.4rem}
+.perm-name{font-size:.95rem;font-weight:800;margin-bottom:.2rem}
+.perm-green .perm-name{color:var(--green)}
+.perm-warn .perm-name{color:var(--warn)}
+.perm-red .perm-name{color:var(--red)}
+.perm-cmd{font-family:monospace;font-size:.72rem;background:rgba(0,0,0,.3);padding:.2rem .5rem;border-radius:.3rem;color:var(--muted);margin-bottom:.6rem;display:inline-block}
+.perm-desc{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;line-height:1.5}
+.perm-when{font-size:.75rem;font-weight:600;margin-bottom:.3rem}
+.perm-green .perm-when{color:var(--green)}
+.perm-warn .perm-when{color:var(--warn)}
+.perm-red .perm-when{color:var(--red)}
+.merksatz{font-size:.8rem;font-style:italic;margin-bottom:.5rem}
+.warn-inline{font-size:.72rem;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:.3rem;padding:.3rem .6rem;color:var(--red);margin-top:.5rem}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.7;margin-bottom:.65rem;overflow-x:auto}
+.code-block .comment{color:var(--muted)}
+.code-block .cmd{color:#a5f3fc}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
+.box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.steps{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.65rem}
+.step{display:flex;align-items:flex-start;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .9rem}
+.step-num{background:var(--accent);color:#fff;font-size:.72rem;font-weight:800;width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+.step-body{font-size:.85rem;line-height:1.5}
+.step-body code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
+.success-box{background:rgba(16,185,129,.1);border:1px solid var(--green);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem;display:flex;align-items:center;gap:.7rem;font-size:.9rem;font-weight:600;color:var(--green)}
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.quiz h3{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+.quiz ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.85rem;color:var(--white)}
+.quiz ol li{padding-left:.2rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+</style></head><body><div class="wrap">
+
+<div class="meta"><span class="pill">Track 1 · L1</span><span class="dur">~15 Min</span></div>
+<h1>Installation & Erste Schritte</h1>
+<p class="sub">Von null zu erstem Output — Claude Code sauber einrichten</p>
+
+<div class="facts">
+  <div class="fact"><div class="fact-val">4</div><div class="fact-lbl">Setup-Schritte</div></div>
+  <div class="fact"><div class="fact-val">3</div><div class="fact-lbl">Permission-Modi</div></div>
+  <div class="fact"><div class="fact-val">1</div><div class="fact-lbl">Hands-on Übung</div></div>
+  <div class="fact"><div class="fact-val">v18+</div><div class="fact-lbl">Node.js Minimum</div></div>
+</div>
+
+<div class="section-title">Abschnitt 1 — Installation (5 Min)</div>
+
+<div class="code-block">
+<span class="comment"># 1. Node.js prüfen (min v18)</span><br>
+<span class="cmd">node --version</span><br><br>
+<span class="comment"># 2. Claude Code installieren</span><br>
+<span class="cmd">npm install -g @anthropic-ai/claude-code</span><br><br>
+<span class="comment"># 3. Authentifizieren</span><br>
+<span class="cmd">claude</span><br>
+<span class="comment"># → Browser öffnet sich → mit Anthropic-Account einloggen</span><br><br>
+<span class="comment"># 4. Verifizieren</span><br>
+<span class="cmd">claude --version</span>
+</div>
+
+<div class="box box-warn">💡 <b>Falls npm fehlt:</b> Node.js von <b>nodejs.org</b> installieren — wähle die LTS-Version (v18 oder höher)</div>
+
+<div class="section-title">Abschnitt 2 — Die 3 Permission-Modi</div>
+
+<div class="grid-3">
+  <div class="perm-card perm-green">
+    <div class="perm-icon">🟢</div>
+    <div class="perm-name">Default</div>
+    <div class="perm-cmd">(Standard, kein Flag)</div>
+    <div class="perm-desc">Claude fragt bei jeder Datei-Änderung und jedem Bash-Befehl nach. Du behältst volle Kontrolle.</div>
+    <div class="perm-when">Wann nutzen:</div>
+    <div class="perm-desc">Immer am Anfang, bei unbekannten Projekten, wenn du neu bist.</div>
+    <div class="merksatz">"Sicher aber langsam"</div>
+  </div>
+  <div class="perm-card perm-warn">
+    <div class="perm-icon">🟡</div>
+    <div class="perm-name">Accept Edits</div>
+    <div class="perm-cmd">Shift+Tab (toggle)</div>
+    <div class="perm-desc">Datei-Änderungen werden automatisch akzeptiert. Bash-Befehle werden noch gefragt.</div>
+    <div class="perm-when">Wann nutzen:</div>
+    <div class="perm-desc">Wenn du dem Projekt vertraust und der git-Stand sauber ist.</div>
+    <div class="merksatz">"Schnell aber nur mit sauberem git"</div>
+    <div class="warn-inline">⚠ NIEMALS ohne: git status zeigt 0 Änderungen</div>
+  </div>
+  <div class="perm-card perm-red">
+    <div class="perm-icon">🔴</div>
+    <div class="perm-name">Auto / YOLO</div>
+    <div class="perm-cmd">claude --dangerously-skip-permissions</div>
+    <div class="perm-desc">Alles automatisch — kein Nachfragen bei Dateien oder Befehlen.</div>
+    <div class="perm-when">Wann nutzen:</div>
+    <div class="perm-desc">Nur für Wegwerf-Projekte oder wenn du genau weißt was passiert.</div>
+    <div class="warn-inline">⚠ Kann dein Projekt überschreiben. Immer git commit vorher.</div>
+  </div>
+</div>
+
+<div class="section-title">Abschnitt 3 — Erste Datei erstellen (Hands-on)</div>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-body">Terminal öffnen und in einen Ordner navigieren:<br><code>cd ~/Desktop && mkdir mein-projekt && cd mein-projekt</code></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-body">Claude Code starten:<br><code>claude</code> eingeben → Enter</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-body">Erste Aufgabe eingeben:<br><code>Erstelle eine hallo.html mit 'Hallo Welt' als Überschrift</code></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-body">Claude zeigt eine Vorschau der geplanten Datei → <b>Enter</b> zum Bestätigen</div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-body">Datei öffnen und Ergebnis sehen:<br><code>open hallo.html</code> (Mac) oder <code>start hallo.html</code> (Windows)</div></div>
+</div>
+
+<div class="success-box">✅ Du hast Claude Code installiert und deine erste Datei erstellt!</div>
+
+<div class="section-title">Wissens-Check</div>
+
+<div class="quiz">
+  <h3>3 Fragen zum Nachdenken</h3>
+  <ol>
+    <li>Was ist der Unterschied zwischen Default und Accept Edits Mode — was wird noch gefragt, was nicht?</li>
+    <li>Wann ist es gefährlich, Accept Edits zu aktivieren, und warum?</li>
+    <li>Welcher Befehl startet Claude Code im Terminal?</li>
+  </ol>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Claude Code installiert, die 3 Permission-Modi verstanden und erste Datei erstellt</span></div>
+
+<nav class="nav"><span style="color:var(--muted)">← Kurs-Übersicht</span><span>Track 1 · L1 Installation</span><a href="M1-CC-02-Mental-Model.html">L2 Mental Model →</a></nav>
+
+</div></body></html>

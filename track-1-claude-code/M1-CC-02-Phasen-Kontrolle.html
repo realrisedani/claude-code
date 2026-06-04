@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>L2 Phasen-Kontrolle</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+:root{--bg:#0F0F1A;--card:#1A1A2E;--accent:#7C3AED;--secondary:#A855F7;--cyan:#06B6D4;--green:#10B981;--warn:#F59E0B;--red:#EF4444;--white:#E2E8F0;--muted:#94A3B8;--border:#2D2D4E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.dur{color:var(--muted);font-size:.85rem}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
+.sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.5rem}
+.fact{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.7rem .8rem;text-align:center}
+.fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
+.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
+.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:.65rem}
+.phase-flow{display:flex;align-items:center;gap:0;margin-bottom:1rem}
+.phase-box{flex:1;text-align:center;padding:.7rem .4rem;border-radius:.5rem;font-weight:700;font-size:.82rem}
+.phase-arrow{color:var(--muted);font-size:1.1rem;padding:0 .3rem;flex-shrink:0}
+.ph-c{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.35);color:var(--cyan)}
+.ph-a{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.35);color:var(--secondary)}
+.ph-g{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:var(--green)}
+.ph-w{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);color:var(--warn)}
+.phase-sub{font-size:.65rem;font-weight:400;opacity:.8;margin-top:.2rem}
+.phase-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.65rem}
+.phase-card{border-radius:.6rem;padding:.75rem .7rem;border:1px solid}
+.phase-card.pc-c{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.3)}
+.phase-card.pc-a{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.3)}
+.phase-card.pc-g{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.3)}
+.phase-card.pc-w{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
+.phase-card h4{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.45rem}
+.pc-c h4{color:var(--cyan)}.pc-a h4{color:var(--secondary)}.pc-g h4{color:var(--green)}.pc-w h4{color:var(--warn)}
+.phase-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.76rem;color:var(--muted)}
+.phase-card ul li::before{content:'· '}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-family:monospace;color:var(--cyan);font-size:.78rem}
+td:last-child{font-weight:600}
+.td-verstehen{color:var(--cyan)}.td-planen{color:var(--secondary)}.td-impl{color:var(--green)}.td-verify{color:var(--warn)}
+.box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
+.box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
+.box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
+.box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.cmd-cards{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.65rem}
+.cmd-card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.75rem 1rem;display:flex;align-items:flex-start;gap:.9rem}
+.cmd-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);min-width:7rem;margin-top:.1rem}
+.cmd-quote{font-size:.85rem;font-style:italic;color:var(--white);border-left:2px solid var(--accent);padding-left:.7rem;line-height:1.5}
+.praxis-box{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
+.praxis-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--secondary);margin-bottom:.6rem}
+.praxis-box p{font-size:.85rem;line-height:1.6;color:var(--white)}
+.praxis-box code{font-family:monospace;background:rgba(124,58,237,.2);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
+.outcome{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06));border:1px solid var(--accent);border-radius:.6rem;padding:.85rem 1rem;font-size:.85rem;display:flex;align-items:center;gap:.7rem}
+.outcome b{color:var(--secondary)}
+.nav{display:flex;justify-content:space-between;margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.nav a{color:var(--secondary);text-decoration:none;font-weight:600}
+</style></head><body><div class="wrap">
+
+<div class="meta"><span class="pill">Track 1 · L2</span><span class="dur">~20 Min</span></div>
+<h1>Phasen-Kontrolle</h1>
+<p class="sub">Übersprungene Phasen erkennen und Claude aktiv in die richtige Richtung steuern</p>
+
+<div class="facts">
+  <div class="fact"><div class="fact-val">4</div><div class="fact-lbl">Phasen im Loop</div></div>
+  <div class="fact"><div class="fact-val">1</div><div class="fact-lbl">häufiger Fehler</div></div>
+  <div class="fact"><div class="fact-val">3</div><div class="fact-lbl">Korrektur-Prompts</div></div>
+  <div class="fact"><div class="fact-val">/plan</div><div class="fact-lbl">Plan Mode</div></div>
+</div>
+
+<div class="section-title">Abschnitt 1 — Die 4 Phasen von Claude</div>
+
+<div class="phase-flow">
+  <div class="phase-box ph-c">Verstehen<div class="phase-sub">lesen & fragen</div></div>
+  <div class="phase-arrow">→</div>
+  <div class="phase-box ph-a">Planen<div class="phase-sub">beschreiben</div></div>
+  <div class="phase-arrow">→</div>
+  <div class="phase-box ph-g">Implementieren<div class="phase-sub">schreiben & ändern</div></div>
+  <div class="phase-arrow">→</div>
+  <div class="phase-box ph-w">Verifizieren<div class="phase-sub">testen & prüfen</div></div>
+</div>
+
+<div class="phase-cards">
+  <div class="phase-card pc-c">
+    <h4>Verstehen</h4>
+    <ul>
+      <li>Claude liest Code</li>
+      <li>Stellt Fragen</li>
+      <li>Sammelt Kontext</li>
+      <li>Keine Änderungen</li>
+    </ul>
+  </div>
+  <div class="phase-card pc-a">
+    <h4>Planen</h4>
+    <ul>
+      <li>Beschreibt Vorgehen</li>
+      <li>Noch kein Code</li>
+      <li>Bestätigung möglich</li>
+      <li>Korrekturen hier</li>
+    </ul>
+  </div>
+  <div class="phase-card pc-g">
+    <h4>Implementieren</h4>
+    <ul>
+      <li>Schreibt Dateien</li>
+      <li>Edit/Write-Tools</li>
+      <li>Ändert Code aktiv</li>
+      <li>Nach Plan-OK</li>
+    </ul>
+  </div>
+  <div class="phase-card pc-w">
+    <h4>Verifizieren</h4>
+    <ul>
+      <li>Führt Tests aus</li>
+      <li>Bash-Befehle</li>
+      <li>Prüft Ergebnis</li>
+      <li>Bestätigt Status</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-title">Abschnitt 2 — Phasen erkennen</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Was siehst du in Claude's Ausgabe?</th><th>Claude ist in Phase…</th></tr></thead>
+    <tbody>
+      <tr><td>"Ich lese die Datei..."</td><td class="td-verstehen">Verstehen</td></tr>
+      <tr><td>"Lass mich zuerst den Code analysieren..."</td><td class="td-verstehen">Verstehen</td></tr>
+      <tr><td>"Hier ist mein Plan..."</td><td class="td-planen">Planen</td></tr>
+      <tr><td>"Ich würde folgendermaßen vorgehen..."</td><td class="td-planen">Planen</td></tr>
+      <tr><td>Edit / Write Tools feuern in der Sidebar</td><td class="td-impl">Implementieren</td></tr>
+      <tr><td>Datei-Änderungen erscheinen</td><td class="td-impl">Implementieren</td></tr>
+      <tr><td>"Ich teste jetzt..."</td><td class="td-verify">Verifizieren</td></tr>
+      <tr><td>Bash-Befehle wie npm test, pytest...</td><td class="td-verify">Verifizieren</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="box box-red">⚠ <b>Häufiger Fehler:</b> Claude überspringt Verstehen + Planen und implementiert sofort. Das führt zu falschen Ergebnissen, weil er keine echte Grundlage hat — er rät statt zu verstehen.</div>
+
+<div class="section-title">Abschnitt 3 — Aktiv steuern</div>
+
+<div class="cmd-cards">
+  <div class="cmd-card">
+    <div class="cmd-label">Zu früh implementiert</div>
+    <div class="cmd-quote">"Stop — erkläre mir erst deinen Plan bevor du anfängst"</div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-label">Zu viel geändert</div>
+    <div class="cmd-quote">"Zu weit — mach nur X, nicht Y"</div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-label">Falsche Richtung</div>
+    <div class="cmd-quote">"Das ist falsch. Lass uns von vorne. Lies erst [Datei] und erkläre was du siehst"</div>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-label">Plan Mode</div>
+    <div class="cmd-quote"><code>/plan</code> eintippen → Claude wechselt in Planungs-Modus und implementiert nicht</div>
+  </div>
+</div>
+
+<div class="box box-cyan">💡 <b>Profi-Tipp:</b> Bei jeder größeren Aufgabe zuerst fragen: <i>"Welche Files liest du? Was ist dein Plan? Wie verifizierst du?"</i> — das erzwingt alle 4 Phasen.</div>
+
+<div class="section-title">Abschnitt 4 — Praxis-Übung</div>
+
+<div class="praxis-box">
+  <h3>Aufgabe</h3>
+  <p>Öffne Claude Code mit <code>claude</code> und gib eine komplexe Aufgabe ein — zum Beispiel "Baue eine Todo-App mit LocalStorage". Benutze dann <code>/plan</code> um sicherzustellen, dass Claude erst einen Plan erstellt bevor er implementiert. Beobachte welche Phasen er durchläuft und wo du eingreifen müsstest.</p>
+</div>
+
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> Übersprungene Phasen erkannt, aktive Steuerung per Prompt und /plan beherrscht</span></div>
+
+<nav class="nav"><a href="M1-CC-01-Installation.html">← L1 Installation</a><span>Track 1 · L2 Phasen-Kontrolle</span><a href="M1-CC-03-Permission-Praxis.html">L3 Permission Praxis →</a></nav>
+
+</div></body></html>
