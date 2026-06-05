@@ -1,0 +1,16 @@
+{
+  "name": "kpi-dashboard",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "KPI Dashboard for Sales & Affiliate Partners",
+  "scripts": {
+    "test":       "vitest run",
+    "test:watch": "vitest",
+    "test:ui":    "vitest --ui",
+    "test:cover": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "@vitest/coverage-v8": "^2.1.8"
+  }
+}

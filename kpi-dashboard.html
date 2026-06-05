@@ -1714,7 +1714,7 @@ function advKpi(label, value, cls) {
 }
 
 function closeRateClass(rate) {
-  if (!rate || isNaN(rate)) return 'muted';
+  if (rate === null || rate === undefined || isNaN(rate)) return 'muted';
   return rate >= 30 ? 'green' : rate >= 15 ? 'warn' : 'red';
 }
 
