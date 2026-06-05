@@ -1,18 +1,9 @@
 [build]
-  publish = "."
+  command = "mkdir -p _deploy && cp kpi-dashboard.html _deploy/index.html && cp sw.js manifest.json _deploy/ && cp -r icons _deploy/ && mkdir -p _deploy/supabase && cp supabase/kpi-data.js _deploy/supabase/"
+  publish = "_deploy"
 
 [functions]
   directory = "netlify/functions"
-
-[[redirects]]
-  from = "/"
-  to = "/kpi-dashboard.html"
-  status = 200
-
-[[redirects]]
-  from = "/kpi-dashboard"
-  to = "/kpi-dashboard.html"
-  status = 200
 
 [[headers]]
   for = "/*"

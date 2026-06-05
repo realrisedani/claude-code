@@ -5,3 +5,4 @@ node_modules/
 
 # Supabase credentials — never commit
 kpi-config.js
+_deploy/
