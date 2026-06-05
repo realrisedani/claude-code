@@ -13,7 +13,7 @@ const mockFetch = vi.fn();
 beforeEach(async () => {
   vi.stubGlobal('fetch', mockFetch);
   vi.resetModules();
-  handlerModule = await import('./send-alert.js');
+  handlerModule = await import('../functions/send-alert.js');
 });
 
 afterEach(() => {

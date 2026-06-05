@@ -75,7 +75,7 @@ beforeEach(async () => {
   // Kein DIGISTORE24_API_KEY gesetzt → Hash-Check wird übersprungen (warn)
 
   // Modul dynamisch importieren (jedes Mal frisch wegen ESM-Cache)
-  const mod = await import('./webhook-receiver.js?t=' + Date.now());
+  const mod = await import('../functions/webhook-receiver.js?t=' + Date.now());
   handler = mod.handler;
 
   fetchMock.mockReset();
