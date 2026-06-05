@@ -16,10 +16,10 @@ import {
   closeRateClass, benchmarkStatus,
   DEFAULT_BENCHMARKS, mergeBenchmarks,
   validateEntry,
-  parseCalendlyEvent, parseStripeEvent, parseDigistore24IPN,
   mergePartnerData, slugIsUnique,
   calcDelta,
 } from './kpi-logic.js';
+import { parseCalendlyEvent, parseStripeEvent, parseDigistore24IPN } from './kpi-webhooks.js';
 
 // ─── FORMATIERUNG ──────────────────────────────────────────────
 
