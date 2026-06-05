@@ -1108,6 +1108,37 @@
         </div>
       </div>
 
+      <!-- TAB: Google Sheets -->
+      <div id="tabSheets" class="modal-tab-pane">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">
+          Trage hier deine Google Sheets Zugangsdaten ein. Das Dashboard liest dann automatisch alle 5 Minuten neue Daten. Das Sheet muss <strong style="color:var(--white)">öffentlich geteilt</strong> sein (Viewer-Zugriff), der API Key braucht nur Lesezugriff.
+        </p>
+        <div class="form-grid full">
+          <div class="form-group">
+            <label>Spreadsheet ID</label>
+            <input type="text" id="s_spreadsheetId" placeholder="z.B. 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
+            <div class="form-hint">Die ID aus der Google Sheets URL: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</div>
+          </div>
+          <div class="form-group">
+            <label>Google API Key</label>
+            <input type="text" id="s_apiKey" placeholder="AIzaSy...">
+            <div class="form-hint">Read-only Key aus der Google Cloud Console (Sheets API aktivieren)</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;padding:.85rem 1rem;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);border-radius:.6rem">
+          <div style="font-size:.75rem;font-weight:700;color:var(--cyan);margin-bottom:.4rem">Sheet-Struktur — Tab "KPI-Daten", Zeile 1 = Überschriften, ab Zeile 2 Daten:</div>
+          <div style="font-size:.72rem;color:var(--muted);line-height:1.7;font-family:monospace">
+            A: Partner &nbsp;|&nbsp; B: Typ (sales/affiliate) &nbsp;|&nbsp; C: Periode &nbsp;|&nbsp; D: PeriodTyp (week/month/day)<br>
+            E: Reach &nbsp;|&nbsp; F: Klicks &nbsp;|&nbsp; G: Leads &nbsp;|&nbsp; H: CallsGebucht<br>
+            I: CallsErschienen &nbsp;|&nbsp; J: Abschlüsse &nbsp;|&nbsp; K: Umsatz &nbsp;|&nbsp; L: AdSpend &nbsp;|&nbsp; M: Provision
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="testSheetsConnection()">Verbindung testen</button>
+          <span id="sheetsTestResult" style="font-size:.78rem;color:var(--muted)"></span>
+        </div>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal()">Abbrechen</button>
@@ -1795,10 +1826,25 @@ function closeModal() {
 function switchTab(tab) {
   activeTab = tab;
   document.querySelectorAll('.modal-tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && tab === 'entry') || (i === 1 && tab === 'partner'));
+    t.classList.toggle('active',
+      (i === 0 && tab === 'entry') ||
+      (i === 1 && tab === 'partner') ||
+      (i === 2 && tab === 'sheets')
+    );
   });
   document.getElementById('tabEntry').classList.toggle('active', tab === 'entry');
   document.getElementById('tabPartner').classList.toggle('active', tab === 'partner');
+  document.getElementById('tabSheets').classList.toggle('active', tab === 'sheets');
+
+  // Wenn Sheets-Tab geöffnet: gespeicherte Werte vorladen
+  if (tab === 'sheets') {
+    try {
+      const saved = JSON.parse(localStorage.getItem('kpi-sheets-config') || '{}');
+      document.getElementById('s_spreadsheetId').value = saved.spreadsheetId || '';
+      document.getElementById('s_apiKey').value         = saved.apiKey || '';
+    } catch (e) {}
+    document.getElementById('sheetsTestResult').textContent = '';
+  }
 }
 
 function updatePeriodField() {
@@ -1825,6 +1871,24 @@ function updatePeriodField() {
 
 function saveModal() {
   const data = getData();
+
+  // Sheets-Tab speichern
+  if (activeTab === 'sheets') {
+    const id  = document.getElementById('s_spreadsheetId').value.trim();
+    const key = document.getElementById('s_apiKey').value.trim();
+    localStorage.setItem('kpi-sheets-config', JSON.stringify({ spreadsheetId: id, apiKey: key }));
+    SHEETS_CONFIG.spreadsheetId = id;
+    SHEETS_CONFIG.apiKey        = key;
+    closeModal();
+    showToast('Google Sheets Konfiguration gespeichert');
+    if (id && key) {
+      updateSheetsBadge('syncing');
+      syncFromSheets();
+    } else {
+      updateSheetsBadge('off');
+    }
+    return;
+  }
 
   if (activeTab === 'partner') {
     const name = document.getElementById('p_name').value.trim();
@@ -2524,6 +2588,143 @@ function openReport() {
   }
 }
 
+// ─── GOOGLE SHEETS SYNC ───────────────────────────────────────
+
+function updateSheetsBadge(state) {
+  const badge = document.getElementById('sheetsBadge');
+  if (!badge) return;
+  if (state === 'off' || !SHEETS_CONFIG.spreadsheetId) {
+    badge.style.display = 'none';
+    return;
+  }
+  badge.style.display = 'inline';
+  if (state === 'ok') {
+    badge.style.background = 'rgba(16,185,129,.12)';
+    badge.style.borderColor = 'rgba(16,185,129,.3)';
+    badge.style.color = '#10B981';
+    badge.textContent = 'Sheets: Synced';
+  } else if (state === 'err') {
+    badge.style.background = 'rgba(239,68,68,.1)';
+    badge.style.borderColor = 'rgba(239,68,68,.3)';
+    badge.style.color = '#EF4444';
+    badge.textContent = 'Sheets: Fehler';
+  } else {
+    // syncing
+    badge.style.background = 'rgba(245,158,11,.1)';
+    badge.style.borderColor = 'rgba(245,158,11,.3)';
+    badge.style.color = '#F59E0B';
+    badge.textContent = 'Sheets: Syncing...';
+  }
+}
+
+async function syncFromSheets() {
+  const { spreadsheetId, apiKey, range } = SHEETS_CONFIG;
+  if (!spreadsheetId || !apiKey) return; // Feature deaktiviert
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
+
+  let rows;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    rows = json.values || [];
+  } catch (err) {
+    console.warn('[Sheets Sync] Fehler beim Laden:', err);
+    updateSheetsBadge('err');
+    return;
+  }
+
+  if (rows.length === 0) {
+    updateSheetsBadge('ok');
+    return;
+  }
+
+  const data = getData();
+
+  rows.forEach(row => {
+    // Spalten: A=Partner B=Typ C=Periode D=PeriodTyp E=Reach F=Klicks G=Leads
+    //          H=CallsGebucht I=CallsErschienen J=Abschlüsse K=Umsatz L=AdSpend M=Provision
+    const partnerName = (row[0] || '').trim();
+    const partnerType = (row[1] || 'sales').trim().toLowerCase();
+    const periode     = (row[2] || '').trim();
+    const periodType  = (row[3] || 'week').trim();
+
+    if (!partnerName || !periode) return; // Ungültige Zeile überspringen
+
+    const n = s => parseFloat((s || '').replace(',', '.')) || 0;
+    const entry = {
+      period:      periode,
+      periodType:  periodType,
+      reach:       n(row[4]),
+      clicks:      n(row[5]),
+      leads:       n(row[6]),
+      callsBooked: n(row[7]),
+      callsShown:  n(row[8]),
+      closes:      n(row[9]),
+      revenue:     n(row[10]),
+      adSpend:     n(row[11]),
+      commission:  n(row[12]),
+      _fromSheets: true
+    };
+
+    // Partner finden oder anlegen
+    let partner = data.partners.find(p => p.name.toLowerCase() === partnerName.toLowerCase());
+    if (!partner) {
+      partner = {
+        id:      'sheets-' + partnerName.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now(),
+        name:    partnerName,
+        type:    partnerType === 'affiliate' ? 'affiliate' : 'sales',
+        email:   '',
+        note:    'Via Google Sheets',
+        entries: []
+      };
+      data.partners.push(partner);
+    }
+    if (!partner.entries) partner.entries = [];
+
+    // Bestehenden Eintrag für diese Periode suchen (Sheet-Daten gewinnen)
+    const existingIdx = partner.entries.findIndex(e => e.period === periode);
+    if (existingIdx >= 0) {
+      // Sheet überschreibt bei Konflikten
+      partner.entries[existingIdx] = entry;
+    } else {
+      partner.entries.push(entry);
+    }
+  });
+
+  saveData(data);
+  updateSheetsBadge('ok');
+  render();
+}
+
+async function testSheetsConnection() {
+  const id  = document.getElementById('s_spreadsheetId').value.trim();
+  const key = document.getElementById('s_apiKey').value.trim();
+  const res = document.getElementById('sheetsTestResult');
+
+  if (!id || !key) {
+    res.style.color = '#EF4444';
+    res.textContent = 'Bitte beide Felder ausfüllen.';
+    return;
+  }
+  res.style.color = '#F59E0B';
+  res.textContent = 'Verbinde...';
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(SHEETS_CONFIG.range)}?key=${key}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    const count = (json.values || []).length;
+    res.style.color = '#10B981';
+    res.textContent = `Verbindung OK — ${count} Datenzeile(n) gefunden`;
+  } catch (err) {
+    res.style.color = '#EF4444';
+    res.textContent = `Fehler: ${err.message} — Spreadsheet-ID, API Key und Sheet-Namen prüfen`;
+  }
+}
+
 // ─── INIT ─────────────────────────────────────────────────────
 // Seed default PIN (2612) on first ever load
 (async () => {
@@ -2554,6 +2755,13 @@ function openReport() {
 
 initFromUrl();
 render();
+
+// Google Sheets: Badge initial setzen + Auto-Sync starten
+updateSheetsBadge(SHEETS_CONFIG.spreadsheetId ? 'syncing' : 'off');
+if (SHEETS_CONFIG.spreadsheetId && SHEETS_CONFIG.apiKey) {
+  syncFromSheets();
+  setInterval(syncFromSheets, SHEETS_CONFIG.syncInterval);
+}
 </script>
 
 <script>
