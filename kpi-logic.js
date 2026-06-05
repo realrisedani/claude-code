@@ -47,24 +47,36 @@ export function latestEntry(partner) {
 
 // ─── KPI-BERECHNUNGEN (alle return null wenn Daten fehlen) ─────
 
+/** Interne Hilfsfunktion: a/b*100 — gibt null zurück wenn b fehlt oder ≤ 0 */
+function safePercent(numerator, denominator) {
+  if (!denominator || denominator <= 0) return null;
+  return (numerator / denominator) * 100;
+}
+
+/** Interne Hilfsfunktion: a/b — gibt null zurück wenn a oder b fehlt oder ≤ 0 */
+function safeDiv(numerator, denominator) {
+  if (!numerator || numerator <= 0 || !denominator || denominator <= 0) return null;
+  return numerator / denominator;
+}
+
 export function calcCloseRate(entry) {
-  if (!entry || !entry.callsShown || entry.callsShown <= 0) return null;
-  return (entry.closes / entry.callsShown) * 100;
+  if (!entry) return null;
+  return safePercent(entry.closes, entry.callsShown);
 }
 
 export function calcShowRate(entry) {
-  if (!entry || !entry.callsBooked || entry.callsBooked <= 0) return null;
-  return (entry.callsShown / entry.callsBooked) * 100;
+  if (!entry) return null;
+  return safePercent(entry.callsShown, entry.callsBooked);
 }
 
 export function calcCTR(entry) {
-  if (!entry || !entry.reach || entry.reach <= 0) return null;
-  return (entry.clicks / entry.reach) * 100;
+  if (!entry) return null;
+  return safePercent(entry.clicks, entry.reach);
 }
 
 export function calcOptinRate(entry) {
-  if (!entry || !entry.clicks || entry.clicks <= 0) return null;
-  return (entry.leads / entry.clicks) * 100;
+  if (!entry) return null;
+  return safePercent(entry.leads, entry.clicks);
 }
 
 export function calcROI(entry) {
@@ -73,13 +85,13 @@ export function calcROI(entry) {
 }
 
 export function calcCPL(entry) {
-  if (!entry || !entry.adSpend || entry.adSpend <= 0 || !entry.leads || entry.leads <= 0) return null;
-  return entry.adSpend / entry.leads;
+  if (!entry) return null;
+  return safeDiv(entry.adSpend, entry.leads);
 }
 
 export function calcCostPerClose(entry) {
-  if (!entry || !entry.adSpend || entry.adSpend <= 0 || !entry.closes || entry.closes <= 0) return null;
-  return entry.adSpend / entry.closes;
+  if (!entry) return null;
+  return safeDiv(entry.adSpend, entry.closes);
 }
 
 export function calcRevPerLead(entry) {
