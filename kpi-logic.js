@@ -288,21 +288,21 @@ export function slugIsUnique(name, partners, excludeId = null) {
 // ─── PERIODEN-VERGLEICH ────────────────────────────────────────
 
 /**
- * calcDelta — berechnet die Differenz zwischen zwei Werten
+ * calcDelta — berechnet die Differenz zwischen zwei Periodenwerten
  *
- * @param {number|null} a - Wert Periode A (neuere Periode)
- * @param {number|null} b - Wert Periode B (ältere Periode / Basis)
- * @param {'percent'|'pp'} [mode='percent'] - 'percent' für %-Änderung, 'pp' für Prozentpunkt-Differenz
+ * @param {number|null} current  - Wert der neueren Periode (Periode A)
+ * @param {number|null} baseline - Wert der älteren Periode als Vergleichsbasis (Periode B)
+ * @param {'percent'|'pp'} [unit='percent'] - 'percent' für prozentuale Änderung, 'pp' für Prozentpunkt-Differenz
  * @returns {{ value: number|null, formatted: string, direction: 'up'|'down'|'neutral' }}
  */
-export function calcDelta(a, b, mode = 'percent') {
-  if (a === null || a === undefined || b === null || b === undefined) {
+export function calcDelta(current, baseline, unit = 'percent') {
+  if (current === null || current === undefined || baseline === null || baseline === undefined) {
     return { value: null, formatted: '–', direction: 'neutral' };
   }
 
-  if (mode === 'pp') {
-    // Prozentpunkt-Differenz (z.B. Close Rate 34.1% vs 32.0% → +2.1pp)
-    const diff = a - b;
+  if (unit === 'pp') {
+    // Prozentpunkt-Differenz (z.B. Close Rate 34.1% → 32.0% = +2.1pp)
+    const diff = current - baseline;
     const direction = diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral';
     return {
       value: diff,
@@ -312,12 +312,12 @@ export function calcDelta(a, b, mode = 'percent') {
   }
 
   // Prozentuale Veränderung (Standard)
-  if (b === 0) {
-    if (a === 0) return { value: 0, formatted: '0%', direction: 'neutral' };
+  if (baseline === 0) {
+    if (current === 0) return { value: 0, formatted: '0%', direction: 'neutral' };
     return { value: null, formatted: '–', direction: 'neutral' };
   }
 
-  const pct = ((a - b) / Math.abs(b)) * 100;
+  const pct = ((current - baseline) / Math.abs(baseline)) * 100;
   const direction = pct > 0 ? 'up' : pct < 0 ? 'down' : 'neutral';
   return {
     value: pct,
