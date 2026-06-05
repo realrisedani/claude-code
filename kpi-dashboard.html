@@ -1313,11 +1313,15 @@ function getTip(name, val) {
 function openModal() {
   rebuildPartnerSelect(getData());
   updatePeriodField();
+  // Always start on 'entry' tab; if no partners exist, start on 'partner' tab
+  const hasPartners = getData().partners.length > 0;
+  switchTab(hasPartners ? 'entry' : 'partner');
   document.getElementById('modal').classList.remove('hidden');
 }
 
 function closeModal() {
   document.getElementById('modal').classList.add('hidden');
+  activeTab = 'entry';
   resetForm();
 }
 
@@ -1369,8 +1373,14 @@ function saveModal() {
     data.partners.push(partner);
     selectedPartnerId = partner.id;
     saveData(data);
-    showToast('Partner angelegt');
-    closeModal();
+    // Don't close — switch to entry tab so user can immediately add data
+    resetForm();
+    rebuildPartnerSelect(getData());
+    const ep = document.getElementById('entryPartner');
+    if (ep) ep.value = partner.id;
+    updatePeriodField();
+    switchTab('entry');
+    showToast('✓ Partner angelegt — jetzt Daten erfassen');
     render();
     return;
   }
