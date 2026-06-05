@@ -7,6 +7,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
 .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
 .pill{background:var(--accent);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:999px}
+.pill-tool{background:rgba(6,182,212,.15);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
 .dur{color:var(--muted);font-size:.85rem}
 h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.4rem}
 .sub{color:var(--secondary);font-size:.95rem;margin-bottom:1.75rem}
@@ -15,49 +16,66 @@ h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;letter-spacing:-.02em;marg
 .fact-val{font-size:1rem;font-weight:800}.fact-lbl{font-size:.68rem;color:var(--muted);margin-top:.1rem}
 .section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
-.card h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
-.card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.85rem}
-.card ul li::before{content:'▸ ';color:var(--accent)}.card ul li b{color:var(--cyan)}
 .lernziele{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;margin-bottom:.65rem}
 .lernziele h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
 .lernziele ul{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:.86rem}
 .lernziele ul li::before{content:'✓ ';color:var(--green);font-weight:800}
-.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.65rem}
-.mode-card{border-radius:.6rem;padding:.85rem .9rem;border:1px solid}
-.mc-g{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4)}
-.mc-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4)}
-.mc-a{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.4)}
-.mode-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
-.mc-g h4{color:var(--green)}.mc-w h4{color:var(--warn)}.mc-a h4{color:var(--secondary)}
-.mode-card ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;color:var(--muted)}
-.mode-card ul li::before{content:'· '}
-.mode-card ul li b{color:var(--white)}
-.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto}
-.code-block .comment{color:var(--muted)}
-.code-block .key{color:#a5f3fc}
-.code-block .str{color:#86efac}
-.code-block .cmd{color:#a5f3fc}
 .box{border-radius:.6rem;padding:.75rem 1rem;margin-bottom:.65rem;border-left:3px solid;font-size:.85rem;line-height:1.6}
 .box-red{background:rgba(239,68,68,.08);border-color:var(--red)}.box-red b{color:var(--red)}
 .box-green{background:rgba(16,185,129,.08);border-color:var(--green)}.box-green b{color:var(--green)}
 .box-warn{background:rgba(245,158,11,.08);border-color:var(--warn)}.box-warn b{color:var(--warn)}
 .box-cyan{background:rgba(6,182,212,.08);border-color:var(--cyan)}.box-cyan b{color:var(--cyan)}
+.box-accent{background:rgba(124,58,237,.08);border-color:var(--accent)}.box-accent b{color:var(--secondary)}
+.code-block{background:#0a0a14;border:1px solid var(--border);border-radius:.6rem;padding:.85rem 1rem;font-family:monospace;font-size:.82rem;line-height:1.8;margin-bottom:.65rem;overflow-x:auto;white-space:pre}
+.code-block .comment{color:var(--muted)}
+.code-block .key{color:#a5f3fc}
+.code-block .str{color:#86efac}
+.code-block .cmd{color:var(--warn)}
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;margin-bottom:.65rem}
 table{width:100%;border-collapse:collapse}
 th{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:.6rem 1rem;background:rgba(0,0,0,.2);text-align:left;border-bottom:1px solid var(--border)}
-td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5)}
+td{padding:.55rem 1rem;font-size:.82rem;border-bottom:1px solid rgba(45,45,78,.5);vertical-align:top}
 tr:last-child td{border-bottom:none}
-td:first-child{font-weight:600}
-td:nth-child(2){font-family:monospace;font-size:.78rem;color:var(--green)}
-td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
-.scenario-box{background:rgba(239,68,68,.06);border:2px solid rgba(239,68,68,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
-.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:.7rem}
+td:first-child{font-weight:700}
+.server-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
+@media(max-width:640px){.server-grid{grid-template-columns:1fr}}
+.server-card{border-radius:.6rem;padding:.9rem 1rem;border:1px solid}
+.sc-github{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.35)}
+.sc-fs{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.35)}
+.sc-notion{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.35)}
+.sc-linear{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.35)}
+.sc-memory{background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.35)}
+.sc-browser{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.35)}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.sc-name{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.sc-github .sc-name{color:var(--green)}
+.sc-fs .sc-name{color:var(--cyan)}
+.sc-notion .sc-name{color:var(--warn)}
+.sc-linear .sc-name{color:var(--secondary)}
+.sc-memory .sc-name{color:#c084fc}
+.sc-browser .sc-name{color:var(--red)}
+.sc-badge{font-size:.65rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted)}
+.sc-uses{list-style:none;display:flex;flex-direction:column;gap:.25rem;font-size:.8rem;color:var(--muted);margin-bottom:.65rem}
+.sc-uses li::before{content:'▸ ';color:rgba(255,255,255,.2)}
+.sc-uses li b{color:var(--white)}
+.sc-cmd{font-family:monospace;font-size:.72rem;background:rgba(0,0,0,.3);padding:.45rem .65rem;border-radius:.35rem;color:var(--green);word-break:break-all;line-height:1.5;margin-bottom:.45rem}
+.sc-token{font-size:.7rem;display:flex;align-items:center;gap:.4rem;color:var(--muted)}
+.sc-token .tk{font-family:monospace;background:rgba(255,255,255,.06);padding:.15rem .45rem;border-radius:.25rem;color:var(--warn)}
+.scenario-box{background:rgba(6,182,212,.06);border:2px solid rgba(6,182,212,.4);border-radius:.6rem;padding:1rem 1.1rem;margin-bottom:.65rem}
+.scenario-box h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:.7rem}
 .scenario-steps{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem}
 .scenario-step{display:flex;align-items:flex-start;gap:.65rem;font-size:.84rem;line-height:1.5}
-.s-num{background:var(--red);color:#fff;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
-.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.1rem}
+.s-num{background:var(--cyan);color:#06121a;font-size:.7rem;font-weight:800;width:1.4rem;height:1.4rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.rule-box{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:.5rem;padding:.75rem 1rem;margin-top:.5rem}
 .rule-box .rule-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.4rem}
+.perm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.65rem}
+@media(max-width:640px){.perm-grid{grid-template-columns:1fr}}
+.perm-card{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:.75rem .85rem}
+.perm-card h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem}
+.perm-card ul{list-style:none;display:flex;flex-direction:column;gap:.25rem;font-size:.78rem}
+.perm-card ul li{display:flex;align-items:center;gap:.4rem}
+.perm-dot{width:.5rem;height:.5rem;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green)}.dot-warn{background:var(--warn)}.dot-red{background:var(--red)}
 .checklist{background:var(--card);border:1px solid var(--border);border-radius:.6rem;padding:1rem;margin-bottom:.65rem}
 .checklist h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
 .check-item{display:flex;align-items:center;gap:.75rem;padding:.45rem 0;border-bottom:1px solid rgba(45,45,78,.4);cursor:pointer;user-select:none}
@@ -78,142 +96,281 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 .inline-code{font-family:monospace;background:rgba(124,58,237,.15);color:var(--secondary);padding:.1rem .35rem;border-radius:.25rem;font-size:.8rem}
 </style></head><body><div class="wrap">
 
-<div class="meta"><span class="pill">Track 4 · L20</span><span class="dur">~25 Min</span></div>
+<div class="meta">
+  <span class="pill">Track 4 · L20</span>
+  <span class="pill pill-tool">🔵 TOOL</span>
+  <span class="dur">~25 Min</span>
+</div>
 <h1>MCP Must-Haves</h1>
-<p class="sub">Die Server, die jede Agentur braucht — live angeschlossen</p>
+<p class="sub">6 essentielle Server für jede Agentur — Setup, Use-Cases, Permissions</p>
 
 <div class="facts">
-  <div class="fact"><div class="fact-val">4 Server</div><div class="fact-lbl">Must-Have</div></div>
-  <div class="fact"><div class="fact-val">GitHub</div><div class="fact-lbl">Code &amp; Issues</div></div>
-  <div class="fact"><div class="fact-val">env</div><div class="fact-lbl">für Tokens</div></div>
-  <div class="fact"><div class="fact-val">settings.local</div><div class="fact-lbl">Tokens hier</div></div>
+  <div class="fact"><div class="fact-val">6 Server</div><div class="fact-lbl">Agentur-Standard</div></div>
+  <div class="fact"><div class="fact-val">1 Config</div><div class="fact-lbl">settings.json</div></div>
+  <div class="fact"><div class="fact-val">Permissions</div><div class="fact-lbl">minimal-sufficient</div></div>
+  <div class="fact"><div class="fact-val">2 Live-Demos</div><div class="fact-lbl">heute</div></div>
 </div>
 
 <div class="lernziele">
   <h3>Lernziele</h3>
   <ul>
-    <li>Die 4 Must-Have-Server kennen: GitHub, Filesystem, Web-Search, Apify</li>
-    <li>Mehrere Server in einer <span class="inline-code">settings.json</span> sauber konfigurieren</li>
-    <li>Tokens sicher in <span class="inline-code">env</span> ablegen — getrennt vom committed Repo</li>
+    <li>Die 6 Must-Have-Server kennen — und für jeden 2–3 echte Use-Cases</li>
+    <li>Alle 6 in einer <span class="inline-code">settings.json</span> nach Agentur-Standard konfigurieren</li>
+    <li>Permissions-Disziplin verstehen: was minimal-sufficient heißt und warum es wichtig ist</li>
+    <li>MCPs sauber in <span class="inline-code">CLAUDE.md</span> dokumentieren, damit das ganze Team davon profitiert</li>
   </ul>
 </div>
 
-<div class="section-title">Die 4 Must-Have-Server</div>
+<div class="section-title">Konzept — Warum genau diese 6?</div>
+
+<div class="box box-cyan">💡 <b>Ohne MCP kann Claude Code nur lokale Dateien lesen und Terminal-Befehle ausführen.</b> Mit diesen 6 Servern deckt eine Agentur alles ab: Versionierung, Dateisystem, Projektmanagement, Wissen, Browser und persistentes Gedächtnis. Jeder Server öffnet eine neue Dimension.</div>
+
+<div class="section-title">Die 6 Server im Detail</div>
+
+<div class="server-grid">
+
+  <div class="server-card sc-github">
+    <div class="sc-head">
+      <span class="sc-name">GitHub</span>
+      <span class="sc-badge">PAT-Token</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Issues + PRs <b>direkt aus Claude</b> öffnen &amp; steuern</li>
+      <li>Code-Review über <b>mehrere Repos</b> ohne Browser</li>
+      <li>CI-Status abfragen, <b>Branch-Vergleiche</b>, Release-Notes</li>
+    </ul>
+    <div class="sc-cmd">npx -y @modelcontextprotocol/server-github</div>
+    <div class="sc-token">Token: <span class="tk">GITHUB_PERSONAL_ACCESS_TOKEN</span></div>
+  </div>
+
+  <div class="server-card sc-fs">
+    <div class="sc-head">
+      <span class="sc-name">Filesystem</span>
+      <span class="sc-badge">kein Token</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Auf Ordner <b>außerhalb</b> des aktiven Projekts zugreifen</li>
+      <li>Analyse über <b>mehrere Kundenprojekte</b> gleichzeitig</li>
+      <li>Templates, Snippets, <b>globale Configs</b> lesen &amp; schreiben</li>
+    </ul>
+    <div class="sc-cmd">npx -y @modelcontextprotocol/server-filesystem /Users/dani</div>
+    <div class="sc-token">Pfad: <span class="tk">/Users/dani</span> — schränke ihn ein!</div>
+  </div>
+
+  <div class="server-card sc-notion">
+    <div class="sc-head">
+      <span class="sc-name">Notion</span>
+      <span class="sc-badge">Integration-Token</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Pages <b>lesen &amp; schreiben</b> — Briefs, Specs, Docs</li>
+      <li>Databases abfragen: <b>Content-Kalender</b>, Leads, Kunden</li>
+      <li>Automatisiert <b>Meeting-Notes</b> oder Reports anlegen</li>
+    </ul>
+    <div class="sc-cmd">npx -y @notionhq/notion-mcp-server</div>
+    <div class="sc-token">Token: <span class="tk">OPENAI_API_KEY</span> → <span class="tk">NOTION_API_KEY</span></div>
+  </div>
+
+  <div class="server-card sc-linear">
+    <div class="sc-head">
+      <span class="sc-name">Linear / Jira</span>
+      <span class="sc-badge">API-Key</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Tickets + Sprints <b>aus Claude heraus</b> anlegen</li>
+      <li>Aufwand schätzen, <b>Sprint planen</b>, Status updaten</li>
+      <li>Tech-Debt als Issues <b>automatisch dokumentieren</b></li>
+    </ul>
+    <div class="sc-cmd">npx -y @linear/mcp</div>
+    <div class="sc-token">Token: <span class="tk">LINEAR_API_KEY</span></div>
+  </div>
+
+  <div class="server-card sc-memory">
+    <div class="sc-head">
+      <span class="sc-name">Memory</span>
+      <span class="sc-badge">kein Token</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Wissen <b>persistent speichern</b> — über Sessions hinweg</li>
+      <li>Kunden-Kontext, <b>Entscheidungen</b>, Präferenzen merken</li>
+      <li>Knowledge-Graph: <b>Verknüpfte Entitäten</b> abrufbar</li>
+    </ul>
+    <div class="sc-cmd">npx -y @modelcontextprotocol/server-memory</div>
+    <div class="sc-token">Speichert lokal in <span class="tk">~/.mcp-memory/</span></div>
+  </div>
+
+  <div class="server-card sc-browser">
+    <div class="sc-head">
+      <span class="sc-name">Browser / Playwright</span>
+      <span class="sc-badge">kein Token</span>
+    </div>
+    <ul class="sc-uses">
+      <li>Screenshots von <b>jeder URL</b> direkt in Claude</li>
+      <li>Formulare ausfüllen, <b>E2E-Tests</b> automatisieren</li>
+      <li>PDFs erzeugen, <b>Web-Inhalte</b> scrapen ohne API</li>
+    </ul>
+    <div class="sc-cmd">npx -y @executeautomation/playwright-mcp-server</div>
+    <div class="sc-token">Braucht <span class="tk">playwright install chromium</span></div>
+  </div>
+
+</div>
+
+<div class="section-title">Vollständiges Konfig-Recipe (settings.json)</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.6rem">Alle 6 Server in einer Datei. <b>Struktur</b> darf committed werden — <b>Tokens</b> gehören in <span class="inline-code">settings.local.json</span>:</p>
+
+<div class="code-block"><span class="comment">// ~/.claude/settings.json  — Struktur (commitbar)</span>
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"github"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],
+      <span class="key">"env"</span>: { <span class="key">"GITHUB_PERSONAL_ACCESS_TOKEN"</span>: <span class="str">"ghp_..."</span> }
+    },
+    <span class="key">"filesystem"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-filesystem"</span>, <span class="str">"/Users/dani/projekte"</span>]
+    },
+    <span class="key">"notion"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@notionhq/notion-mcp-server"</span>],
+      <span class="key">"env"</span>: { <span class="key">"NOTION_API_KEY"</span>: <span class="str">"secret_..."</span> }
+    },
+    <span class="key">"linear"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@linear/mcp"</span>],
+      <span class="key">"env"</span>: { <span class="key">"LINEAR_API_KEY"</span>: <span class="str">"lin_api_..."</span> }
+    },
+    <span class="key">"memory"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-memory"</span>]
+    },
+    <span class="key">"playwright"</span>: {
+      <span class="key">"type"</span>: <span class="str">"stdio"</span>,
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@executeautomation/playwright-mcp-server"</span>]
+    }
+  }
+}</div>
+
+<div class="box box-red">🚫 <b>Tokens niemals ins Repo:</b> Alle <span class="inline-code">env</span>-Werte mit echten Tokens gehören in <span class="inline-code">.claude/settings.local.json</span> — diese Datei muss in <span class="inline-code">.gitignore</span> stehen. Wer das Repo klont, sieht die Struktur, aber keine Secrets.</div>
+
+<div class="section-title">Server verbinden &amp; prüfen</div>
+
+<div class="code-block"><span class="comment"># settings.local.json absichern</span>
+<span class="cmd">echo ".claude/settings.local.json" >> .gitignore</span>
+
+<span class="comment"># Alle verbundenen Server anzeigen</span>
+<span class="cmd">claude mcp list</span>
+
+<span class="comment"># Einzelnen Server testen (Beispiel GitHub)</span>
+<span class="cmd">claude "Zeig mir meine letzten 5 offenen GitHub Issues"</span></div>
+
+<div class="section-title">Permissions-Disziplin</div>
+
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.7rem"><b>Minimal-sufficient</b> bedeutet: jeder Server bekommt nur die Rechte, die er wirklich braucht. Kein Server soll schreiben dürfen, der nur lesen muss.</p>
+
+<div class="perm-grid">
+  <div class="perm-card">
+    <h4>Read-only Server</h4>
+    <ul>
+      <li><span class="perm-dot dot-green"></span> GitHub (Analyse)</li>
+      <li><span class="perm-dot dot-green"></span> Memory (nur lesen)</li>
+      <li><span class="perm-dot dot-green"></span> Linear (Issues einsehen)</li>
+    </ul>
+  </div>
+  <div class="perm-card">
+    <h4>Read + Write</h4>
+    <ul>
+      <li><span class="perm-dot dot-warn"></span> Filesystem (bewusst!)</li>
+      <li><span class="perm-dot dot-warn"></span> Notion (Pages anlegen)</li>
+      <li><span class="perm-dot dot-warn"></span> Memory (speichern)</li>
+    </ul>
+  </div>
+  <div class="perm-card">
+    <h4>Gefährlich — prüfen</h4>
+    <ul>
+      <li><span class="perm-dot dot-red"></span> GitHub (PRs mergen)</li>
+      <li><span class="perm-dot dot-red"></span> Filesystem (/)</li>
+      <li><span class="perm-dot dot-red"></span> Browser (Formulare)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="box box-warn">⚠ <b>Filesystem-Pfad einschränken:</b> Gib nie <span class="inline-code">/</span> oder <span class="inline-code">/Users</span> als Root an — immer den spezifischsten Pfad, z. B. <span class="inline-code">/Users/dani/projekte</span>. Sonst kann Claude theoretisch jede Datei auf dem System lesen oder verändern.</div>
 
 <div class="table-wrap">
   <table>
-    <thead>
-      <tr><th>Server</th><th>npm-Paket</th><th>Zweck</th></tr>
-    </thead>
+    <thead><tr><th>Server</th><th>Scope einschränken mit</th><th>Beispiel</th></tr></thead>
     <tbody>
-      <tr><td>GitHub</td><td>@modelcontextprotocol/server-github</td><td>Repos, Issues, PRs</td></tr>
-      <tr><td>Filesystem</td><td>@modelcontextprotocol/server-filesystem</td><td>Datei-Zugriff</td></tr>
-      <tr><td>Brave Search</td><td>@modelcontextprotocol/server-brave-search</td><td>Web-Recherche</td></tr>
-      <tr><td>Apify</td><td>@apify/actors-mcp-server</td><td>Scraping</td></tr>
+      <tr><td>Filesystem</td><td>Pfad-Argument</td><td><span class="inline-code">/Users/dani/projekte</span></td></tr>
+      <tr><td>GitHub</td><td>PAT-Scopes beim Erstellen</td><td>nur <span class="inline-code">repo</span>, kein <span class="inline-code">admin</span></td></tr>
+      <tr><td>Notion</td><td>Integration auf Workspace beschränken</td><td>nur freigegebene Pages</td></tr>
+      <tr><td>Browser</td><td>Domains via Allowlist</td><td>nur <span class="inline-code">*.notion.so</span></td></tr>
     </tbody>
   </table>
 </div>
 
-<div class="mode-cards">
-  <div class="mode-card mc-g">
-    <h4>GitHub</h4>
-    <ul>
-      <li>Issues + PRs aus Claude steuern</li>
-      <li>Code-Review <b>ohne Browser</b></li>
-      <li>Cross-Repo-Analyse</li>
-      <li>Braucht <b>PAT-Token</b></li>
-    </ul>
-  </div>
-  <div class="mode-card mc-w">
-    <h4>Web-Search</h4>
-    <ul>
-      <li>Aktuelle Infos <b>live</b> abrufen</li>
-      <li>Konkurrenz + Markt recherchieren</li>
-      <li>Quellen direkt verarbeiten</li>
-      <li>Braucht <b>API-Key</b></li>
-    </ul>
-  </div>
-  <div class="mode-card mc-a">
-    <h4>Apify</h4>
-    <ul>
-      <li>Instagram + Web <b>scrapen</b></li>
-      <li>Reels + Profile analysieren</li>
-      <li>Daten direkt in Claude</li>
-      <li>Braucht <b>APIFY_TOKEN</b></li>
-    </ul>
-  </div>
-</div>
+<div class="section-title">CLAUDE.md Integration</div>
 
-<div class="section-title">Praxis — Mehrere Server in einer settings.json</div>
+<p style="font-size:.85rem;color:var(--muted);margin-bottom:.6rem">Dokumentiere deine MCPs in der <span class="inline-code">CLAUDE.md</span> — jedes Teammitglied sieht sofort, welche Server verfügbar sind und was sie dürfen:</p>
 
-<p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Alle Server stehen im selben <span class="inline-code">mcpServers</span>-Block. Tokens kommen in <span class="inline-code">env</span> — und dieser ganze Block gehört in <span class="inline-code">.claude/settings.local.json</span>, nicht ins Repo:</p>
+<div class="code-block"><span class="comment">## MCP Server (global verfügbar)</span>
 
-<div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="key">"mcpServers"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"github"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"command"</span>: <span class="str">"npx"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"env"</span>: { <span class="key">"GITHUB_PERSONAL_ACCESS_TOKEN"</span>: <span class="str">"ghp_xxx"</span> }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"filesystem"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"command"</span>: <span class="str">"npx"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-filesystem"</span>, <span class="str">"/Users/dani/projekte"</span>]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"brave-search"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"command"</span>: <span class="str">"npx"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-brave-search"</span>],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"env"</span>: { <span class="key">"BRAVE_API_KEY"</span>: <span class="str">"BSA_xxx"</span> }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"apify"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"command"</span>: <span class="str">"npx"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@apify/actors-mcp-server"</span>],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"env"</span>: { <span class="key">"APIFY_TOKEN"</span>: <span class="str">"apify_api_xxx"</span> }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-}
-</div>
+<span class="str">| Server     | Typ    | Zugriff                        | Token in              |</span>
+<span class="str">|------------|--------|--------------------------------|-----------------------|</span>
+<span class="str">| github     | stdio  | Repos, Issues, PRs             | settings.local.json   |</span>
+<span class="str">| filesystem | stdio  | /Users/dani/projekte (rw)      | kein Token            |</span>
+<span class="str">| notion     | stdio  | Team-Workspace (rw)            | settings.local.json   |</span>
+<span class="str">| linear     | stdio  | alle Projekte (r)              | settings.local.json   |</span>
+<span class="str">| memory     | stdio  | persistent Knowledge-Graph     | kein Token            |</span>
+<span class="str">| playwright | stdio  | Headless Chrome (Vorsicht!)    | kein Token            |</span>
 
-<div class="box box-red">🚫 <b>Tokens nie ins Repo:</b> Dieser komplette Block enthält 3 echte Tokens. Liegt er in der committed <span class="inline-code">settings.json</span>, sieht ihn jeder, der das Repo klont — und kann auf deine GitHub-, Brave- und Apify-Konten zugreifen. Tokens gehören <b>ausschließlich</b> in <span class="inline-code">.claude/settings.local.json</span>.</div>
+<span class="comment">## Wichtige Regeln</span>
+<span class="str">- Tokens NIEMALS in settings.json (nur in settings.local.json)</span>
+<span class="str">- Filesystem: nur /Users/dani/projekte — kein Slash-Root</span>
+<span class="str">- Playwright nur für explizit genehmigte Aufgaben nutzen</span></div>
 
-<div class="code-block">
-<span class="comment"># local-settings dauerhaft aus git ausschließen</span><br>
-<span class="cmd">echo ".claude/settings.local.json" >> .gitignore</span><br>
-<span class="cmd">git add .gitignore && git commit -m "gitignore: claude local settings"</span><br>
-<br>
-<span class="comment"># prüfen, dass die Server stehen</span><br>
-<span class="cmd">claude mcp list</span>
-</div>
+<div class="box box-green">✅ <b>Warum das wichtig ist:</b> In 3 Monaten weißt du nicht mehr, welcher Server welche Rechte hat. Das Team noch weniger. Eine saubere CLAUDE.md-Dokumentation ist die einzige verlässliche Quelle — nicht das Gedächtnis.</div>
 
-<div class="box box-green">✅ <b>Regel:</b> Server-<b>Struktur</b> (welche Server, welche args) darf ins Repo, damit das Team sie kennt. Server-<b>Secrets</b> (env-Tokens) niemals. Trenne beides sauber.</div>
-
-<div class="section-title">Use-Case — Recherche-zu-Code in einem Flow</div>
+<div class="section-title">Live-Szenario — Agentur-Workflow mit 3 Servern</div>
 
 <div class="scenario-box">
-  <h3>Szenario: Wettbewerber-Reels analysieren und ins Repo dokumentieren</h3>
+  <h3>Szenario: Kunden-Brief zu Linear-Ticket zu GitHub-PR</h3>
   <div class="scenario-steps">
-    <div class="scenario-step"><div class="s-num">1</div><div>Du bittest Claude, mit <b>Apify</b> die letzten 20 Reels eines Konkurrenz-Profils zu scrapen</div></div>
-    <div class="scenario-step"><div class="s-num">2</div><div>Claude nutzt <b>Web-Search</b>, um Trends rund um die Top-Hooks zu prüfen</div></div>
-    <div class="scenario-step"><div class="s-num">3</div><div>Claude schreibt die Analyse als Markdown ins Projekt — über den <b>Filesystem</b>-Server</div></div>
-    <div class="scenario-step"><div class="s-num">4</div><div>Per <b>GitHub</b>-Server öffnet Claude direkt ein Issue mit den nächsten Content-Ideen</div></div>
+    <div class="scenario-step"><div class="s-num">1</div><div>Claude liest via <b>Notion</b>-MCP den aktuellen Kunden-Brief aus dem Workspace</div></div>
+    <div class="scenario-step"><div class="s-num">2</div><div>Auf Basis des Briefs öffnet Claude via <b>Linear</b>-MCP direkt die Tickets mit Aufwandsschätzung</div></div>
+    <div class="scenario-step"><div class="s-num">3</div><div>Claude erstellt via <b>GitHub</b>-MCP den Feature-Branch und die erste Commit-Struktur</div></div>
+    <div class="scenario-step"><div class="s-num">4</div><div>Alle Entscheidungen werden via <b>Memory</b>-MCP persistent für spätere Sessions gespeichert</div></div>
   </div>
   <div class="rule-box">
     <div class="rule-label">Das Ergebnis</div>
-    <div style="font-size:.84rem;line-height:1.6">Vier Tools, ein durchgehender Flow, kein einziger Browser-Wechsel. Genau das macht die Server zu Must-Haves für eine Agentur.</div>
+    <div style="font-size:.84rem;line-height:1.6">Vom Kunden-Brief zum laufenden Branch in einem einzigen Claude-Prompt — ohne Browser-Wechsel. Das ist der Unterschied zwischen einem netten Chat-Tool und einer echten Agentur-Infrastruktur.</div>
   </div>
 </div>
 
-<div class="box box-cyan">💡 <b>Jetzt du:</b> Hol dir ein GitHub <b>Personal Access Token</b> (Settings → Developer settings → Tokens). Trage den <b>github</b>-Server mit dem Token in <span class="inline-code">.claude/settings.local.json</span> ein. Prüfe mit <span class="inline-code">claude mcp list</span>, dass er <b>connected</b> ist, und bitte Claude, deine offenen Issues aufzulisten.</div>
+<div class="section-title">Deine Live-Übung heute</div>
+
+<div class="box box-accent">🛠 <b>Übung 1 — GitHub live:</b> Hol dir ein Personal Access Token (GitHub → Settings → Developer settings → Tokens → fine-grained). Trag den GitHub-Server in <span class="inline-code">settings.local.json</span> ein. Starte Claude neu, prüfe mit <span class="inline-code">claude mcp list</span> und bitte Claude: <b>"Zeig mir meine letzten 3 Repos mit offenen Issues."</b></div>
+
+<div class="box box-accent">🛠 <b>Übung 2 — Memory live:</b> Trag den Memory-Server ein (kein Token nötig). Sage Claude in einem Prompt: <b>"Speichere, dass mein Kunden-Standardpreis 1.500 € pro Monat ist."</b> Schließe Claude, öffne neu, frag: <b>"Was ist mein Kunden-Standardpreis?"</b> — er soll es noch wissen.</div>
 
 <div class="section-title">Checkliste</div>
 
 <div class="checklist">
-  <h3>Must-Have-Server Checkliste</h3>
-  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Die 4 Must-Have-Server und ihre npm-Pakete kenne ich</label></div>
-  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">GitHub Personal Access Token erstellt</label></div>
-  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Server mit Tokens in settings.local.json eingetragen (nicht settings.json)</label></div>
-  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">.gitignore schützt settings.local.json</label></div>
-  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">GitHub-MCP connected, ein echter Use-Case durchgespielt</label></div>
+  <h3>MCP Must-Haves Checkliste</h3>
+  <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Alle 6 Server und ihre Use-Cases kenne ich</label></div>
+  <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Konfig-Recipe in settings.json angelegt (Struktur ohne Tokens)</label></div>
+  <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Tokens in settings.local.json, .gitignore schützt die Datei</label></div>
+  <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Permissions-Prinzip verstanden: Filesystem-Pfad eingeschränkt</label></div>
+  <div class="check-item"><input type="checkbox" id="c5"><label for="c5">MCPs in CLAUDE.md dokumentiert</label></div>
+  <div class="check-item"><input type="checkbox" id="c6"><label for="c6">GitHub-MCP live: offene Issues aus Claude abgerufen</label></div>
+  <div class="check-item"><input type="checkbox" id="c7"><label for="c7">Memory-MCP live: Wissen gespeichert und nach Neustart abgerufen</label></div>
 </div>
 
 <div class="section-title">Wissens-Check</div>
@@ -221,20 +378,24 @@ td:nth-child(3){font-family:monospace;font-size:.78rem;color:var(--muted)}
 <div class="quiz">
   <h3>3 Fragen zum Nachdenken</h3>
   <ol>
-    <li>Welche 4 Server gehören in eine Agentur-Grundausstattung — und wofür jeweils?</li>
-    <li>Welcher Teil der Server-Konfiguration darf ins Repo, welcher niemals?</li>
-    <li>Wie schützt du deine Tokens technisch davor, versehentlich committed zu werden?</li>
+    <li>Welche 3 der 6 Server würdest du als erstes für ein neues Kundenprojekt einrichten — und warum genau diese?</li>
+    <li>Warum ist ein eingeschränkter Filesystem-Pfad sicherer als <span class="inline-code">/Users</span> — was kann im schlimmsten Fall passieren?</li>
+    <li>Was passiert, wenn du die MCP-Konfiguration nicht in <span class="inline-code">CLAUDE.md</span> dokumentierst, aber 3 Monate später ein Teammitglied das Repo klont?</li>
   </ol>
 </div>
 
-<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> 4 Must-Have-Server kennengelernt, mehrere in einer settings.local.json konfiguriert, Tokens sicher getrennt, GitHub-MCP live angeschlossen</span></div>
+<div class="outcome">🎯 <span><b>Lernziel erreicht:</b> 6 Must-Have-Server kennen, Agentur-Konfig aufgebaut, Permissions-Disziplin verstanden, MCPs in CLAUDE.md dokumentiert, 2 Server live durchgespielt</span></div>
 
-<div class="nav"><span>← <a href="M1-CC-19-MCP-Intro.html">L19 MCP Intro</a></span><span><a href="M1-CC-21-Skills.html">L21 Skills</a> →</span></div>
+<nav class="nav">
+  <span>← <a href="M1-CC-19-MCP-Intro.html">L19 MCP Intro</a></span>
+  <span>Track 4 · L20 von 29</span>
+  <span><a href="M1-CC-21-Skills.html">L21 Skills</a> →</span>
+</nav>
 
 </div>
 <script>
 document.querySelectorAll('.check-item input[type=checkbox]').forEach(cb=>{
-  const key='mcpmust-check-'+cb.id;
+  const key='cc20-check-'+cb.id;
   if(localStorage.getItem(key)==='1')cb.checked=true;
   cb.addEventListener('change',()=>localStorage.setItem(key,cb.checked?'1':'0'));
 });
