@@ -1371,6 +1371,10 @@ function sortAdmin(key) {
 
 function drillDown(id) {
   selectedPartnerId = id;
+  // Vergleich-Modus beim Partner-Wechsel zurücksetzen
+  compareMode = false;
+  comparePeriodA = null;
+  comparePeriodB = null;
   setMode('partner');
 }
 
@@ -1603,6 +1607,139 @@ function getTip(name, val) {
   if (name.includes('Show')) return `Show-Rate von ${val?.toFixed(1)}% verliert Leads. Reminder-System aktivieren und Kalender-Bestätigung automatisieren.`;
   if (name.includes('Close')) return `Close Rate von ${val?.toFixed(1)}% hat Potenzial. Qualifizierende Fragen vor dem Call, Einwände gezielt vorbereiten.`;
   return 'Diesen Schritt im Funnel genauer analysieren und gezielt optimieren.';
+}
+
+// ─── PERIODEN-VERGLEICH ───────────────────────────────────────
+
+/**
+ * calcDelta — inline-Version (kpi-logic.js wird als <script> eingebunden, kein ES-Import)
+ * Berechnet die Differenz zwischen zwei Werten.
+ */
+function calcDelta(a, b, mode) {
+  mode = mode || 'percent';
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return { value: null, formatted: '–', direction: 'neutral' };
+  }
+  if (mode === 'pp') {
+    var diff = a - b;
+    var direction = diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral';
+    return { value: diff, formatted: (diff > 0 ? '+' : '') + diff.toFixed(1) + 'pp', direction: direction };
+  }
+  if (b === 0) {
+    if (a === 0) return { value: 0, formatted: '0%', direction: 'neutral' };
+    return { value: null, formatted: '–', direction: 'neutral' };
+  }
+  var pct = ((a - b) / Math.abs(b)) * 100;
+  var dir = pct > 0 ? 'up' : pct < 0 ? 'down' : 'neutral';
+  return { value: pct, formatted: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%', direction: dir };
+}
+
+function deltaCell(delta) {
+  var cls = delta.direction === 'up' ? 'delta-up' : delta.direction === 'down' ? 'delta-down' : 'delta-neu';
+  var arrow = delta.direction === 'up' ? '↑' : delta.direction === 'down' ? '↓' : '';
+  return '<span class="' + cls + '">' + (arrow ? arrow + ' ' : '') + delta.formatted + '</span>';
+}
+
+function toggleCompareMode() {
+  compareMode = !compareMode;
+  if (!compareMode) {
+    comparePeriodA = null;
+    comparePeriodB = null;
+  }
+  render();
+}
+
+function applyCompare() {
+  var selA = document.getElementById('compareSelA');
+  var selB = document.getElementById('compareSelB');
+  if (selA) comparePeriodA = parseInt(selA.value, 10);
+  if (selB) comparePeriodB = parseInt(selB.value, 10);
+  render();
+}
+
+function renderCompareSection(partner, entries) {
+  var hasEnough = entries.length >= 2;
+  var btnLabel = compareMode ? 'Vergleich schließen' : 'Perioden vergleichen';
+  var disabledAttr = hasEnough ? '' : 'disabled title="Mindestens 2 Perioden nötig"';
+
+  var html = '<div class="compare-toggle-bar">' +
+    '<div style="font-size:.75rem;color:var(--muted)">' +
+    (hasEnough
+      ? entries.length + ' Perioden verfügbar'
+      : '<span style="color:var(--warn)">Mindestens 2 Perioden für Vergleich erforderlich</span>') +
+    '</div>' +
+    '<button class="btn btn-outline btn-sm" onclick="toggleCompareMode()" ' + disabledAttr + '>' + btnLabel + '</button>' +
+    '</div>';
+
+  if (!compareMode || !hasEnough) return html;
+
+  var lastIdx = entries.length - 1;
+  var idxA = (comparePeriodA !== null && comparePeriodA < entries.length) ? comparePeriodA : lastIdx;
+  var idxB = (comparePeriodB !== null && comparePeriodB < entries.length) ? comparePeriodB : lastIdx - 1;
+
+  html += '<div class="compare-selector">' +
+    '<div><label>Periode A</label><select id="compareSelA" onchange="applyCompare()">' +
+    entries.map(function(en, i) { return '<option value="' + i + '"' + (i === idxA ? ' selected' : '') + '>' + esc(en.period) + '</option>'; }).join('') +
+    '</select></div>' +
+    '<div style="color:var(--muted);font-size:1.2rem;padding-top:1.2rem">vs.</div>' +
+    '<div><label>Periode B</label><select id="compareSelB" onchange="applyCompare()">' +
+    entries.map(function(en, i) { return '<option value="' + i + '"' + (i === idxB ? ' selected' : '') + '>' + esc(en.period) + '</option>'; }).join('') +
+    '</select></div>' +
+    '</div>';
+
+  html += renderCompareGrid(entries[idxA], entries[idxB], entries[idxA].period, entries[idxB].period, partner.type);
+  return html;
+}
+
+function renderCompareGrid(entryA, entryB, periodA, periodB, type) {
+  var crA  = entryA.callsShown > 0  ? (entryA.closes / entryA.callsShown) * 100 : null;
+  var srA  = entryA.callsBooked > 0 ? (entryA.callsShown / entryA.callsBooked) * 100 : null;
+  var roiA = entryA.adSpend > 0     ? ((entryA.revenue - entryA.adSpend) / entryA.adSpend) * 100 : null;
+  var cplA = (entryA.adSpend > 0 && entryA.leads > 0) ? entryA.adSpend / entryA.leads : null;
+
+  var crB  = entryB.callsShown > 0  ? (entryB.closes / entryB.callsShown) * 100 : null;
+  var srB  = entryB.callsBooked > 0 ? (entryB.callsShown / entryB.callsBooked) * 100 : null;
+  var roiB = entryB.adSpend > 0     ? ((entryB.revenue - entryB.adSpend) / entryB.adSpend) * 100 : null;
+  var cplB = (entryB.adSpend > 0 && entryB.leads > 0) ? entryB.adSpend / entryB.leads : null;
+
+  // CPL: niedriger ist besser — Pfeilrichtung invertieren
+  var cplDeltaRaw = calcDelta(cplA, cplB, 'percent');
+  var cplDelta = {
+    value: cplDeltaRaw.value,
+    formatted: cplDeltaRaw.formatted,
+    direction: cplDeltaRaw.direction === 'up' ? 'down' : cplDeltaRaw.direction === 'down' ? 'up' : 'neutral'
+  };
+
+  var rows = [
+    { label: 'Leads',      valA: fmt(entryA.leads),   valB: fmt(entryB.leads),   delta: calcDelta(entryA.leads, entryB.leads) },
+    { label: 'Abschlüsse', valA: fmt(entryA.closes),  valB: fmt(entryB.closes),  delta: calcDelta(entryA.closes, entryB.closes) },
+    { label: 'Close Rate', valA: crA !== null ? crA.toFixed(1) + '%' : '–', valB: crB !== null ? crB.toFixed(1) + '%' : '–', delta: calcDelta(crA, crB, 'pp') },
+    { label: 'Show-Rate',  valA: srA !== null ? srA.toFixed(1) + '%' : '–', valB: srB !== null ? srB.toFixed(1) + '%' : '–', delta: calcDelta(srA, srB, 'pp') },
+    { label: 'Umsatz',     valA: fmtEur(entryA.revenue), valB: fmtEur(entryB.revenue), delta: calcDelta(entryA.revenue, entryB.revenue) },
+    { label: 'Ad-Spend',   valA: fmtEur(entryA.adSpend), valB: fmtEur(entryB.adSpend), delta: calcDelta(entryA.adSpend, entryB.adSpend) },
+    { label: 'ROI',        valA: roiA !== null ? roiA.toFixed(0) + '%' : '–', valB: roiB !== null ? roiB.toFixed(0) + '%' : '–', delta: calcDelta(roiA, roiB, 'pp') },
+    { label: 'CPL',        valA: cplA !== null ? '€' + cplA.toFixed(2) : '–', valB: cplB !== null ? '€' + cplB.toFixed(2) : '–', delta: cplDelta },
+  ];
+
+  if (type === 'affiliate') {
+    rows.push({ label: 'Provision', valA: fmtEur(entryA.commission), valB: fmtEur(entryB.commission), delta: calcDelta(entryA.commission, entryB.commission) });
+  }
+
+  return '<div class="compare-grid-wrap">' +
+    '<div class="compare-grid-head"><span class="compare-grid-title">Perioden-Vergleich <span class="badge badge-accent">Side-by-Side</span></span></div>' +
+    '<div style="overflow-x:auto"><table class="compare-table">' +
+    '<thead><tr>' +
+    '<th>Metrik</th><th>' + esc(periodA) + '</th><th>' + esc(periodB) + '</th><th>Differenz &Delta;</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(function(r) {
+      return '<tr>' +
+        '<td>' + r.label + '</td>' +
+        '<td style="color:var(--white);font-weight:600">' + r.valA + '</td>' +
+        '<td style="color:var(--muted)">' + r.valB + '</td>' +
+        '<td>' + deltaCell(r.delta) + '</td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table></div></div>';
 }
 
 // ─── MODAL ────────────────────────────────────────────────────

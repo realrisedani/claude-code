@@ -18,6 +18,7 @@ import {
   validateEntry,
   parseCalendlyEvent, parseStripeEvent, parseDigistore24IPN,
   mergePartnerData, slugIsUnique,
+  calcDelta,
 } from './kpi-logic.js';
 
 // ─── FORMATIERUNG ──────────────────────────────────────────────
@@ -456,6 +457,67 @@ describe('mergePartnerData — Lokale + Remote Daten', () => {
     const p2 = result.find(p => p.id === 'p-2');
     expect(p2).toBeDefined();
     expect(p2.name).toBe('Anna Schmidt');
+  });
+});
+
+// ─── PERIODEN-VERGLEICH ────────────────────────────────────────
+
+describe('calcDelta — Perioden-Vergleich', () => {
+  it('berechnet positive prozentuale Änderung korrekt (110 → 138 = +25.5%)', () => {
+    const result = calcDelta(138, 110);
+    expect(result.value).toBeCloseTo(25.45, 1);
+    expect(result.direction).toBe('up');
+    expect(result.formatted).toContain('+');
+  });
+
+  it('berechnet negative prozentuale Änderung korrekt (150 → 120 = -20%)', () => {
+    const result = calcDelta(120, 150);
+    expect(result.value).toBeCloseTo(-20, 1);
+    expect(result.direction).toBe('down');
+  });
+
+  it('berechnet Prozentpunkt-Differenz im pp-Modus (34.1 - 32.0 = +2.1pp)', () => {
+    const result = calcDelta(34.1, 32.0, 'pp');
+    expect(result.value).toBeCloseTo(2.1, 1);
+    expect(result.formatted).toContain('pp');
+    expect(result.direction).toBe('up');
+  });
+
+  it('gibt neutral zurück wenn beide Werte identisch sind', () => {
+    const result = calcDelta(100, 100);
+    expect(result.value).toBe(0);
+    expect(result.direction).toBe('neutral');
+  });
+
+  it('gibt neutral zurück wenn ein Wert null ist', () => {
+    const result = calcDelta(null, 100);
+    expect(result.value).toBeNull();
+    expect(result.direction).toBe('neutral');
+    expect(result.formatted).toBe('–');
+  });
+
+  it('gibt neutral zurück wenn beide Werte null sind', () => {
+    const result = calcDelta(null, null);
+    expect(result.direction).toBe('neutral');
+    expect(result.formatted).toBe('–');
+  });
+
+  it('gibt neutral zurück wenn Basiswert 0 und aktueller Wert positiv (Division durch 0)', () => {
+    const result = calcDelta(50, 0);
+    expect(result.value).toBeNull();
+    expect(result.direction).toBe('neutral');
+  });
+
+  it('gibt 0% zurück wenn beide Werte 0 sind', () => {
+    const result = calcDelta(0, 0);
+    expect(result.value).toBe(0);
+    expect(result.direction).toBe('neutral');
+  });
+
+  it('berechnet negative pp-Differenz korrekt (CPL verbessert sich: 6.16 vs 7.27 → -1.11pp)', () => {
+    const result = calcDelta(6.16, 7.27, 'pp');
+    expect(result.value).toBeCloseTo(-1.11, 1);
+    expect(result.direction).toBe('down');
   });
 });
 

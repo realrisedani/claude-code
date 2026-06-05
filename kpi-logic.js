@@ -272,3 +272,44 @@ export function slugIsUnique(name, partners, excludeId = null) {
   const slug = toSlug(name);
   return !partners.some(p => p.id !== excludeId && toSlug(p.name) === slug);
 }
+
+// ─── PERIODEN-VERGLEICH ────────────────────────────────────────
+
+/**
+ * calcDelta — berechnet die Differenz zwischen zwei Werten
+ *
+ * @param {number|null} a - Wert Periode A (neuere Periode)
+ * @param {number|null} b - Wert Periode B (ältere Periode / Basis)
+ * @param {'percent'|'pp'} [mode='percent'] - 'percent' für %-Änderung, 'pp' für Prozentpunkt-Differenz
+ * @returns {{ value: number|null, formatted: string, direction: 'up'|'down'|'neutral' }}
+ */
+export function calcDelta(a, b, mode = 'percent') {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return { value: null, formatted: '–', direction: 'neutral' };
+  }
+
+  if (mode === 'pp') {
+    // Prozentpunkt-Differenz (z.B. Close Rate 34.1% vs 32.0% → +2.1pp)
+    const diff = a - b;
+    const direction = diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral';
+    return {
+      value: diff,
+      formatted: (diff > 0 ? '+' : '') + diff.toFixed(1) + 'pp',
+      direction,
+    };
+  }
+
+  // Prozentuale Veränderung (Standard)
+  if (b === 0) {
+    if (a === 0) return { value: 0, formatted: '0%', direction: 'neutral' };
+    return { value: null, formatted: '–', direction: 'neutral' };
+  }
+
+  const pct = ((a - b) / Math.abs(b)) * 100;
+  const direction = pct > 0 ? 'up' : pct < 0 ? 'down' : 'neutral';
+  return {
+    value: pct,
+    formatted: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%',
+    direction,
+  };
+}
