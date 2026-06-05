@@ -1,5 +1,5 @@
 [build]
-  command = "mkdir -p _deploy && cp kpi-dashboard.html _deploy/index.html && cp sw.js manifest.json _deploy/ && cp -r icons _deploy/ && mkdir -p _deploy/supabase && cp supabase/kpi-data.js _deploy/supabase/"
+  command = "mkdir -p _deploy && cp kpi-dashboard.html _deploy/index.html && cp sw.js manifest.json _deploy/ && cp -r icons _deploy/ && mkdir -p _deploy/supabase && cp supabase/kpi-data.js _deploy/supabase/ && echo \"const SUPABASE_URL = '$SUPABASE_URL'; const SUPABASE_ANON_KEY = '$SUPABASE_ANON_KEY';\" > _deploy/kpi-config.js"
   publish = "_deploy"
 
 [functions]
