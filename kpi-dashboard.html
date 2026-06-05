@@ -659,7 +659,90 @@
     @media (max-width: 480px) {
       .kpi-grid { grid-template-columns: 1fr; }
     }
+    /* ─── TREND CHART ─── */
+    .chart-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .chart-toggles { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .chart-toggle-btn {
+      padding: .3rem .75rem;
+      border-radius: .4rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: .75rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .chart-toggle-btn.active { background: var(--accent); border-color: var(--accent); color: var(--white); }
+    .chart-canvas-wrap { position: relative; height: 220px; }
+
+    /* ─── ALERT BANNER ─── */
+    .alert-banner {
+      border-radius: .75rem;
+      padding: .85rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      border: 1px solid;
+      animation: slideIn .3s ease;
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+    .alert-banner.warn  { background: rgba(245,158,11,.08); border-color: var(--warn); }
+    .alert-banner.crit  { background: rgba(239,68,68,.08);  border-color: var(--red); }
+    .alert-banner-icon  { font-size: 1.2rem; flex-shrink: 0; margin-top: .1rem; }
+    .alert-banner-body  { flex: 1; }
+    .alert-banner-title { font-weight: 700; font-size: .85rem; margin-bottom: .2rem; }
+    .alert-banner-desc  { font-size: .8rem; color: var(--muted); }
+
+    /* ─── BENCHMARK MODAL ─── */
+    .bench-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 300;
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .bench-modal-overlay.hidden { display: none; }
+    .bench-modal {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 2rem; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+    }
+    .bench-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; margin: 1rem 0; }
+    .bench-grid label { font-size: .75rem; color: var(--muted); display: block; margin-bottom: .25rem; }
+    .bench-grid input { width: 100%; padding: .4rem .6rem; background: var(--bg); border: 1px solid var(--border); border-radius: .4rem; color: var(--white); font-size: .85rem; }
+    .bench-row { margin-bottom: .75rem; }
+    .bench-row-title { font-size: .8rem; font-weight: 600; color: var(--white); margin-bottom: .4rem; border-bottom: 1px solid var(--border); padding-bottom: .3rem; }
+    .slack-row { margin-top: 1rem; }
+    .slack-row input { width: 100%; padding: .5rem .75rem; background: var(--bg); border: 1px solid var(--border); border-radius: .4rem; color: var(--white); font-size: .85rem; }
+    .bench-actions { display: flex; gap: .75rem; margin-top: 1.5rem; justify-content: flex-end; }
+
+    /* ─── PRINT / PDF ─── */
+    @media print {
+      body { background: white !important; color: black !important; }
+      header, .header-actions, .mode-toggle, .btn, .del-btn, .copy-link-btn,
+      #modal, #benchModal, #pinModal, #toast, .chart-section { display: none !important; }
+      .print-only { display: block !important; }
+      .report-header { text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #7C3AED; padding-bottom: 1rem; }
+      .report-header h1 { color: #7C3AED; font-size: 1.8rem; margin-bottom: .3rem; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+      th, td { padding: .5rem .75rem; border: 1px solid #ddd; font-size: .8rem; }
+      th { background: #f0f0f0; font-weight: 700; }
+      .kpi-grid, .adv-kpi-grid { display: none; }
+    }
+
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -678,6 +761,8 @@
       <select id="partnerSelect" class="partner-select" onchange="onPartnerChange()" style="display:none"></select>
       <button class="btn btn-primary" onclick="openModal()">+ Daten erfassen</button>
       <button class="btn btn-outline" onclick="exportData()">Export JSON</button>
+      <button class="btn btn-outline" onclick="openReport()">Wochenbericht</button>
+      <button class="btn btn-ghost btn-sm" onclick="openBenchmarkSettings()" title="Alert-Schwellen konfigurieren">⚙ Schwellen</button>
       <button class="btn btn-ghost btn-sm" onclick="loadDemo()" title="Demo-Daten laden">Demo</button>
     </div>
   </div>
@@ -739,6 +824,9 @@
     </div>
 
     <div id="partnerContent">
+      <!-- Alert Banner -->
+      <div id="alertBanner"></div>
+
       <!-- Period Info -->
       <div class="period-info" id="periodInfo"></div>
 
@@ -747,6 +835,22 @@
 
       <!-- Advanced KPIs -->
       <div class="adv-kpi-grid" id="advKpiGrid"></div>
+
+      <!-- Trend Chart -->
+      <div class="chart-section">
+        <div class="chart-header">
+          <span class="section-title">Trend-Verlauf <span class="badge badge-cyan">Alle Perioden</span></span>
+          <div class="chart-toggles">
+            <button class="chart-toggle-btn active" data-mode="leads" onclick="setChartMode('leads')">Leads</button>
+            <button class="chart-toggle-btn" data-mode="closes" onclick="setChartMode('closes')">Abschlüsse</button>
+            <button class="chart-toggle-btn" data-mode="revenue" onclick="setChartMode('revenue')">Umsatz</button>
+            <button class="chart-toggle-btn" data-mode="all" onclick="setChartMode('all')">Alle</button>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
 
       <!-- Funnel -->
       <div class="funnel-card">
@@ -892,6 +996,67 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal()">Abbrechen</button>
       <button class="btn btn-primary" onclick="saveModal()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── BENCHMARK SETTINGS MODAL ─── -->
+<div id="benchModal" class="bench-modal-overlay hidden" onclick="if(event.target===this)closeBenchmarkSettings()">
+  <div class="bench-modal">
+    <div class="modal-header" style="margin-bottom:1.25rem">
+      <h2>Alert-Schwellen konfigurieren</h2>
+      <button class="modal-close" onclick="closeBenchmarkSettings()">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Definiere Warn- und Kritisch-Schwellen für automatische Alerts. Werte in Prozent.</p>
+
+    <div class="bench-row">
+      <div class="bench-row-title">Close Rate (%)</div>
+      <div class="bench-grid">
+        <div><label>Warnung unter</label><input type="number" id="b_closeWarn" value="20" min="0" max="100"></div>
+        <div><label>Kritisch unter</label><input type="number" id="b_closeCrit" value="10" min="0" max="100"></div>
+        <div><label>Ziel (grün)</label><input type="number" id="b_closeGood" value="30" min="0" max="100"></div>
+      </div>
+    </div>
+
+    <div class="bench-row">
+      <div class="bench-row-title">Show-Rate (%)</div>
+      <div class="bench-grid">
+        <div><label>Warnung unter</label><input type="number" id="b_showWarn" value="40" min="0" max="100"></div>
+        <div><label>Kritisch unter</label><input type="number" id="b_showCrit" value="25" min="0" max="100"></div>
+        <div><label>Ziel (grün)</label><input type="number" id="b_showGood" value="60" min="0" max="100"></div>
+      </div>
+    </div>
+
+    <div class="bench-row">
+      <div class="bench-row-title">Opt-in Rate (%)</div>
+      <div class="bench-grid">
+        <div><label>Warnung unter</label><input type="number" id="b_optinWarn" value="5" min="0" max="100"></div>
+        <div><label>Kritisch unter</label><input type="number" id="b_optinCrit" value="2" min="0" max="100"></div>
+        <div><label>Ziel (grün)</label><input type="number" id="b_optinGood" value="10" min="0" max="100"></div>
+      </div>
+    </div>
+
+    <div class="bench-row">
+      <div class="bench-row-title">ROI (%)</div>
+      <div class="bench-grid">
+        <div><label>Warnung unter</label><input type="number" id="b_roiWarn" value="0" min="-200" max="1000"></div>
+        <div><label>Kritisch unter</label><input type="number" id="b_roiCrit" value="-50" min="-200" max="1000"></div>
+        <div><label>Ziel (grün)</label><input type="number" id="b_roiGood" value="200" min="-200" max="1000"></div>
+      </div>
+    </div>
+
+    <div class="slack-row">
+      <div class="bench-row-title">Slack Webhook URL (optional)</div>
+      <input type="url" id="b_slackUrl" placeholder="https://hooks.slack.com/services/..." style="margin-top:.4rem">
+      <div style="margin-top:.5rem;display:flex;gap:.5rem;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="testSlack()">Test senden</button>
+        <span style="font-size:.75rem;color:var(--muted)">Sendet eine Test-Nachricht an deinen Slack-Kanal</span>
+      </div>
+    </div>
+
+    <div class="bench-actions">
+      <button class="btn btn-ghost" onclick="closeBenchmarkSettings()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveBenchmarkSettings()">Speichern</button>
     </div>
   </div>
 </div>
@@ -1160,6 +1325,12 @@ function renderPartner(data) {
 
   // Tips
   renderTips(e, partner.type, showRate, ctr, optinRate, closeRate);
+
+  // Alerts (P4)
+  renderAlerts(e, partner);
+
+  // Trend Chart (P3)
+  renderChart(partner);
 
   // History
   document.getElementById('historyCount').textContent = entries.length + ' Einträge';
@@ -1686,6 +1857,278 @@ function initFromUrl() {
     document.getElementById('adminView').classList.remove('active');
     document.getElementById('partnerView').classList.add('active');
     document.getElementById('partnerSelect').style.display = '';
+  }
+}
+
+// ─── TREND CHART (P3) ─────────────────────────────────────────
+let activeChart = null;
+let chartMode = 'leads';
+
+function getCssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function destroyChart() {
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+}
+
+function setChartMode(mode) {
+  chartMode = mode;
+  document.querySelectorAll('.chart-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  const data = getData();
+  const partner = data.partners.find(p => p.id === selectedPartnerId);
+  if (partner) renderChart(partner);
+}
+
+function renderChart(partner) {
+  destroyChart();
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+  const entries = [...(partner.entries || [])].sort((a, b) => a.period.localeCompare(b.period));
+  if (entries.length < 2) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.parentElement.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:.85rem;padding-top:2rem">Mindestens 2 Einträge für Trend-Chart erforderlich</p>`;
+    return;
+  }
+  // Restore canvas if it was replaced
+  const wrap = canvas.parentElement || document.querySelector('.chart-canvas-wrap');
+  if (!document.getElementById('trendChart')) {
+    wrap.innerHTML = '<canvas id="trendChart"></canvas>';
+  }
+  const labels = entries.map(e => e.period);
+  const accent  = '#7C3AED';
+  const green   = '#10B981';
+  const cyan    = '#06B6D4';
+
+  const datasets = [];
+  if (chartMode === 'leads' || chartMode === 'all') {
+    datasets.push({ label: 'Leads', data: entries.map(e => e.leads || 0), borderColor: cyan, backgroundColor: cyan + '22', tension: .35, fill: true, pointRadius: 4 });
+  }
+  if (chartMode === 'closes' || chartMode === 'all') {
+    datasets.push({ label: 'Abschlüsse', data: entries.map(e => e.closes || 0), borderColor: green, backgroundColor: green + '22', tension: .35, fill: true, pointRadius: 4 });
+  }
+  if (chartMode === 'revenue' || chartMode === 'all') {
+    datasets.push({ label: 'Umsatz (€)', data: entries.map(e => e.revenue || 0), borderColor: accent, backgroundColor: accent + '22', tension: .35, fill: true, pointRadius: 4, yAxisID: chartMode === 'all' ? 'y1' : 'y' });
+  }
+
+  const scales = {
+    x: { ticks: { color: '#94A3B8', font: { size: 11 } }, grid: { color: '#2D2D4E' } },
+    y: { ticks: { color: '#94A3B8', font: { size: 11 } }, grid: { color: '#2D2D4E' } }
+  };
+  if (chartMode === 'all') {
+    scales.y1 = { position: 'right', ticks: { color: accent, font: { size: 10 }, callback: v => '€' + v.toLocaleString('de') }, grid: { drawOnChartArea: false } };
+  }
+
+  activeChart = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#F1F5F9', font: { size: 12 } } } },
+      scales
+    }
+  });
+}
+
+// ─── CONFIGURABLE ALERTS (P4) ─────────────────────────────────
+const BENCH_KEY = 'kpi-benchmarks';
+const SLACK_KEY = 'kpi-slack-url';
+
+function loadBenchmarks() {
+  const defaults = { closeWarn:20, closeCrit:10, closeGood:30, showWarn:40, showCrit:25, showGood:60, optinWarn:5, optinCrit:2, optinGood:10, roiWarn:0, roiCrit:-50, roiGood:200 };
+  try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(BENCH_KEY) || '{}')); }
+  catch { return defaults; }
+}
+
+function saveBenchmarks(b) { localStorage.setItem(BENCH_KEY, JSON.stringify(b)); }
+
+function openBenchmarkSettings() {
+  const b = loadBenchmarks();
+  document.getElementById('b_closeWarn').value = b.closeWarn;
+  document.getElementById('b_closeCrit').value = b.closeCrit;
+  document.getElementById('b_closeGood').value = b.closeGood;
+  document.getElementById('b_showWarn').value  = b.showWarn;
+  document.getElementById('b_showCrit').value  = b.showCrit;
+  document.getElementById('b_showGood').value  = b.showGood;
+  document.getElementById('b_optinWarn').value = b.optinWarn;
+  document.getElementById('b_optinCrit').value = b.optinCrit;
+  document.getElementById('b_optinGood').value = b.optinGood;
+  document.getElementById('b_roiWarn').value   = b.roiWarn;
+  document.getElementById('b_roiCrit').value   = b.roiCrit;
+  document.getElementById('b_roiGood').value   = b.roiGood;
+  document.getElementById('b_slackUrl').value  = localStorage.getItem(SLACK_KEY) || '';
+  document.getElementById('benchModal').classList.remove('hidden');
+}
+
+function closeBenchmarkSettings() { document.getElementById('benchModal').classList.add('hidden'); }
+
+function saveBenchmarkSettings() {
+  const b = {
+    closeWarn: +document.getElementById('b_closeWarn').value,
+    closeCrit: +document.getElementById('b_closeCrit').value,
+    closeGood: +document.getElementById('b_closeGood').value,
+    showWarn:  +document.getElementById('b_showWarn').value,
+    showCrit:  +document.getElementById('b_showCrit').value,
+    showGood:  +document.getElementById('b_showGood').value,
+    optinWarn: +document.getElementById('b_optinWarn').value,
+    optinCrit: +document.getElementById('b_optinCrit').value,
+    optinGood: +document.getElementById('b_optinGood').value,
+    roiWarn:   +document.getElementById('b_roiWarn').value,
+    roiCrit:   +document.getElementById('b_roiCrit').value,
+    roiGood:   +document.getElementById('b_roiGood').value,
+  };
+  saveBenchmarks(b);
+  const slackUrl = document.getElementById('b_slackUrl').value.trim();
+  if (slackUrl) localStorage.setItem(SLACK_KEY, slackUrl); else localStorage.removeItem(SLACK_KEY);
+  closeBenchmarkSettings();
+  showToast('✓ Alert-Schwellen gespeichert');
+  render();
+}
+
+function renderAlerts(e, partner) {
+  const b = loadBenchmarks();
+  const bannerEl = document.getElementById('alertBanner');
+  if (!bannerEl) return;
+
+  const alerts = [];
+  const closeRate = e.callsShown > 0 ? (e.closes / e.callsShown) * 100 : null;
+  const showRate  = e.callsBooked > 0 ? (e.callsShown / e.callsBooked) * 100 : null;
+  const optinRate = e.clicks > 0 ? (e.leads / e.clicks) * 100 : null;
+  const roi       = e.adSpend > 0 ? ((e.revenue - e.adSpend) / e.adSpend) * 100 : null;
+
+  if (closeRate !== null && closeRate < b.closeCrit) alerts.push({ level:'crit', icon:'🔴', title:`Close Rate kritisch: ${closeRate.toFixed(1)}%`, desc:`Ziel >​${b.closeGood}%. Sofortmaßnahme: Einwand-Handling überarbeiten.` });
+  else if (closeRate !== null && closeRate < b.closeWarn) alerts.push({ level:'warn', icon:'🟡', title:`Close Rate unter Ziel: ${closeRate.toFixed(1)}%`, desc:`Ziel >​${b.closeGood}%. Discovery-Fragen und Qualifizierung schärfen.` });
+
+  if (showRate !== null && showRate < b.showCrit) alerts.push({ level:'crit', icon:'📅', title:`Show-Rate kritisch: ${showRate.toFixed(1)}%`, desc:`Ziel >​${b.showGood}%. Reminder-Sequenz (24h + 1h vor Call) aktivieren.` });
+  else if (showRate !== null && showRate < b.showWarn) alerts.push({ level:'warn', icon:'📅', title:`Show-Rate unter Ziel: ${showRate.toFixed(1)}%`, desc:`Ziel >​${b.showGood}%. Automatische Kalender-Bestätigung prüfen.` });
+
+  if (optinRate !== null && optinRate < b.optinCrit) alerts.push({ level:'crit', icon:'📝', title:`Opt-in Rate kritisch: ${optinRate.toFixed(1)}%`, desc:`Ziel >​${b.optinGood}%. Landing Page sofort testen — Headline & Formular kürzen.` });
+  else if (optinRate !== null && optinRate < b.optinWarn) alerts.push({ level:'warn', icon:'📝', title:`Opt-in Rate unter Ziel: ${optinRate.toFixed(1)}%`, desc:`Ziel >​${b.optinGood}%. A/B-Test mit 2 Headline-Varianten starten.` });
+
+  if (roi !== null && roi < b.roiCrit) alerts.push({ level:'crit', icon:'💸', title:`ROI kritisch: ${roi.toFixed(0)}%`, desc:`Ad-Spend: ${fmtEur(e.adSpend)} | Umsatz: ${fmtEur(e.revenue)}. Kampagnen pausieren bis Funnel gefixt.` });
+  else if (roi !== null && roi < b.roiWarn) alerts.push({ level:'warn', icon:'💸', title:`ROI unter Breakeven: ${roi.toFixed(0)}%`, desc:`Ad-Spend: ${fmtEur(e.adSpend)} | Umsatz: ${fmtEur(e.revenue)}. Targeting und Angebot prüfen.` });
+
+  bannerEl.innerHTML = alerts.map(a => `
+    <div class="alert-banner ${a.level}">
+      <div class="alert-banner-icon">${a.icon}</div>
+      <div class="alert-banner-body">
+        <div class="alert-banner-title">${a.title}</div>
+        <div class="alert-banner-desc">${a.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Auto-trigger Slack for critical alerts
+  if (alerts.some(a => a.level === 'crit')) {
+    triggerSlack(partner, alerts.filter(a => a.level === 'crit'));
+  }
+}
+
+function triggerSlack(partner, critAlerts) {
+  const slackUrl = localStorage.getItem(SLACK_KEY);
+  if (!slackUrl || !slackUrl.startsWith('https://hooks.slack.com')) return;
+  const text = `*KPI Alert — ${partner.name}*\n${critAlerts.map(a => `${a.icon} ${a.title}: ${a.desc}`).join('\n')}`;
+  fetch(slackUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }).catch(() => {});
+}
+
+function testSlack() {
+  const url = document.getElementById('b_slackUrl').value.trim();
+  if (!url || !url.startsWith('https://hooks.slack.com')) { showToast('Bitte gültige Slack Webhook URL eingeben', true); return; }
+  fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: '✅ KPI Dashboard Slack-Verbindung erfolgreich!' }) })
+    .then(() => showToast('✓ Test-Nachricht gesendet'))
+    .catch(() => showToast('Slack-Fehler — URL prüfen', true));
+}
+
+// ─── WOCHENBERICHT / PDF (P5) ─────────────────────────────────
+function generateReport() {
+  const data = getData();
+  const b = loadBenchmarks();
+  const date = new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+
+  const partnerRows = data.partners.map(p => {
+    const e = latestEntry(p);
+    if (!e) return '';
+    const cr = e.callsShown > 0 ? ((e.closes / e.callsShown) * 100).toFixed(1) + '%' : '–';
+    const sr = e.callsBooked > 0 ? ((e.callsShown / e.callsBooked) * 100).toFixed(1) + '%' : '–';
+    const roi = e.adSpend > 0 ? (((e.revenue - e.adSpend) / e.adSpend) * 100).toFixed(0) + '%' : '–';
+    const crNum = parseFloat(cr);
+    const crStyle = crNum >= b.closeGood ? 'color:#10B981' : crNum >= b.closeWarn ? 'color:#F59E0B' : 'color:#EF4444';
+    return `<tr>
+      <td>${esc(p.name)}</td>
+      <td><span style="padding:.2rem .5rem;border-radius:.3rem;background:${p.type==='sales'?'#7C3AED22':'#06B6D422'};font-size:.75rem">${p.type}</span></td>
+      <td>${esc(e.period)}</td>
+      <td>${fmt(e.leads)}</td>
+      <td>${fmt(e.closes)}</td>
+      <td style="${crStyle}">${cr}</td>
+      <td>${sr}</td>
+      <td><strong>€${(e.revenue||0).toLocaleString('de')}</strong></td>
+      <td>${roi}</td>
+    </tr>`;
+  }).join('');
+
+  const totalLeads    = data.partners.reduce((s, p) => s + ((latestEntry(p)||{}).leads||0), 0);
+  const totalCloses   = data.partners.reduce((s, p) => s + ((latestEntry(p)||{}).closes||0), 0);
+  const totalRevenue  = data.partners.reduce((s, p) => s + ((latestEntry(p)||{}).revenue||0), 0);
+  const avgCloseRate  = totalCloses > 0 && totalLeads > 0 ? ((totalCloses / totalLeads) * 100).toFixed(1) + '%' : '–';
+
+  return `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
+  <title>KPI Wochenbericht — ${date}</title>
+  <style>
+    body { font-family: -apple-system,sans-serif; margin: 2rem; color: #1a1a2e; }
+    h1 { color: #7C3AED; } h2 { color: #1a1a2e; border-bottom: 2px solid #e5e7eb; padding-bottom:.5rem; margin:1.5rem 0 .75rem; }
+    table { width:100%; border-collapse:collapse; margin-bottom:1.5rem; }
+    th,td { padding:.5rem .75rem; border:1px solid #e5e7eb; font-size:.8rem; text-align:left; }
+    th { background:#f9fafb; font-weight:700; color:#374151; }
+    tr:nth-child(even) td { background:#fafafa; }
+    .summary { display:flex; gap:1rem; margin:1rem 0; flex-wrap:wrap; }
+    .summary-card { flex:1; min-width:120px; border:1px solid #e5e7eb; border-radius:.5rem; padding:1rem; text-align:center; }
+    .summary-card .val { font-size:1.5rem; font-weight:800; color:#7C3AED; }
+    .summary-card .lbl { font-size:.75rem; color:#6b7280; margin-top:.25rem; }
+    .footer { margin-top:2rem; font-size:.75rem; color:#9ca3af; text-align:center; border-top:1px solid #e5e7eb; padding-top:1rem; }
+  </style>
+  </head><body>
+  <h1>KPI Wochenbericht</h1>
+  <p style="color:#6b7280">Generiert: ${date} | ${data.partners.length} Partner aktiv</p>
+
+  <div class="summary">
+    <div class="summary-card"><div class="val">${fmt(totalLeads)}</div><div class="lbl">Leads gesamt</div></div>
+    <div class="summary-card"><div class="val">${fmt(totalCloses)}</div><div class="lbl">Abschlüsse</div></div>
+    <div class="summary-card"><div class="val">${avgCloseRate}</div><div class="lbl">Close Rate</div></div>
+    <div class="summary-card"><div class="val">€${totalRevenue.toLocaleString('de')}</div><div class="lbl">Umsatz gesamt</div></div>
+  </div>
+
+  <h2>Partner-Übersicht</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Typ</th><th>Periode</th><th>Leads</th><th>Abschl.</th><th>Close %</th><th>Show %</th><th>Umsatz</th><th>ROI</th></tr></thead>
+    <tbody>${partnerRows}</tbody>
+  </table>
+
+  <h2>Alert-Schwellen (aktuelle Konfiguration)</h2>
+  <table><thead><tr><th>Metrik</th><th>Warnung</th><th>Kritisch</th><th>Ziel</th></tr></thead>
+  <tbody>
+    <tr><td>Close Rate</td><td>&lt;${b.closeWarn}%</td><td>&lt;${b.closeCrit}%</td><td>&gt;${b.closeGood}%</td></tr>
+    <tr><td>Show-Rate</td><td>&lt;${b.showWarn}%</td><td>&lt;${b.showCrit}%</td><td>&gt;${b.showGood}%</td></tr>
+    <tr><td>Opt-in Rate</td><td>&lt;${b.optinWarn}%</td><td>&lt;${b.optinCrit}%</td><td>&gt;${b.optinGood}%</td></tr>
+    <tr><td>ROI</td><td>&lt;${b.roiWarn}%</td><td>&lt;${b.roiCrit}%</td><td>&gt;${b.roiGood}%</td></tr>
+  </tbody></table>
+
+  <div class="footer">RealRise KPI Dashboard — ${date} | Vertraulich</div>
+  </body></html>`;
+}
+
+function openReport() {
+  const html = generateReport();
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url, '_blank');
+  if (win) {
+    win.addEventListener('load', () => { win.print(); URL.revokeObjectURL(url); });
+  } else {
+    showToast('Popup blockiert — bitte erlauben und erneut klicken', true);
+    URL.revokeObjectURL(url);
   }
 }
 
