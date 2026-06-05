@@ -733,6 +733,102 @@
     .slack-row input { width: 100%; padding: .5rem .75rem; background: var(--bg); border: 1px solid var(--border); border-radius: .4rem; color: var(--white); font-size: .85rem; }
     .bench-actions { display: flex; gap: .75rem; margin-top: 1.5rem; justify-content: flex-end; }
 
+    /* ─── PERIODEN-VERGLEICH ─── */
+    .compare-toggle-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .compare-selector {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .compare-selector label {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: .3rem;
+    }
+    .compare-selector select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: .4rem .7rem;
+      border-radius: .4rem;
+      font-size: .82rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .compare-selector select:focus { border-color: var(--accent); }
+    .compare-grid-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: .85rem;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .compare-grid-head {
+      background: rgba(124,58,237,.12);
+      padding: .85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-grid-title {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+    .compare-table thead th {
+      background: rgba(45,45,78,.4);
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: .65rem 1rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .compare-table thead th:last-child { text-align: right; }
+    .compare-table tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .compare-table tbody tr:hover { background: rgba(124,58,237,.06); }
+    .compare-table tbody td {
+      padding: .7rem 1rem;
+      color: var(--white);
+      white-space: nowrap;
+    }
+    .compare-table tbody td:first-child { color: var(--muted); font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .compare-table tbody td:last-child { text-align: right; font-weight: 700; }
+    .delta-up   { color: var(--green); }
+    .delta-down { color: var(--red); }
+    .delta-neu  { color: var(--muted); }
+
     /* ─── PRINT / PDF ─── */
     @media print {
       body { background: white !important; color: black !important; }
@@ -835,6 +931,9 @@
 
       <!-- Period Info -->
       <div class="period-info" id="periodInfo"></div>
+
+      <!-- Perioden-Vergleich -->
+      <div id="compareSection"></div>
 
       <!-- KPI Cards -->
       <div class="kpi-grid" id="partnerKpiGrid"></div>
@@ -1060,6 +1159,14 @@
       </div>
     </div>
 
+    <div class="slack-row" style="margin-top:.75rem">
+      <div class="bench-row-title">Alert E-Mail (optional)</div>
+      <input type="email" id="b_alertEmail" placeholder="daniel@realrise.de" style="margin-top:.4rem">
+      <div style="margin-top:.5rem;font-size:.75rem;color:var(--muted)">
+        Kritische Alerts werden zusätzlich per E-Mail gesendet
+      </div>
+    </div>
+
     <div class="bench-actions">
       <button class="btn btn-ghost" onclick="closeBenchmarkSettings()">Abbrechen</button>
       <button class="btn btn-primary" onclick="saveBenchmarkSettings()">Speichern</button>
@@ -1114,6 +1221,11 @@ let adminSortKey = 'revenue';
 let adminSortAsc = false;
 let pinSetMode = false;  // true = setting new PIN, false = verifying PIN
 
+// Perioden-Vergleich
+let compareMode = false;
+let comparePeriodA = null; // Index im entries-Array (neuere Periode)
+let comparePeriodB = null; // Index im entries-Array (ältere Periode)
+
 // ─── MODE ─────────────────────────────────────────────────────
 function setMode(m) {
   // Admin PIN guard
@@ -1145,6 +1257,10 @@ function _applyMode(m) {
 
 function onPartnerChange() {
   selectedPartnerId = document.getElementById('partnerSelect').value;
+  // Vergleich-Modus beim Partner-Wechsel zurücksetzen
+  compareMode = false;
+  comparePeriodA = null;
+  comparePeriodB = null;
   updateUrl();
   render();
 }
@@ -1295,6 +1411,9 @@ function renderPartner(data) {
       <button class="copy-link-btn" id="copyLinkBtn" onclick="copyPartnerLink('${partnerSlug}', this)">🔗 Link kopieren</button>
     </div>
   `;
+
+  // Perioden-Vergleich
+  document.getElementById('compareSection').innerHTML = renderCompareSection(partner, entries);
 
   // KPI Cards
   const closeRate = e.callsShown > 0 ? ((e.closes / e.callsShown) * 100).toFixed(1) : null;
@@ -1966,6 +2085,7 @@ function openBenchmarkSettings() {
   document.getElementById('b_roiCrit').value   = b.roiCrit;
   document.getElementById('b_roiGood').value   = b.roiGood;
   document.getElementById('b_slackUrl').value  = localStorage.getItem(SLACK_KEY) || '';
+  document.getElementById('b_alertEmail').value = localStorage.getItem('kpi-alert-email') || '';
   document.getElementById('benchModal').classList.remove('hidden');
 }
 
@@ -1989,6 +2109,8 @@ function saveBenchmarkSettings() {
   saveBenchmarks(b);
   const slackUrl = document.getElementById('b_slackUrl').value.trim();
   if (slackUrl) localStorage.setItem(SLACK_KEY, slackUrl); else localStorage.removeItem(SLACK_KEY);
+  const alertEmail = document.getElementById('b_alertEmail').value.trim();
+  if (alertEmail) localStorage.setItem('kpi-alert-email', alertEmail); else localStorage.removeItem('kpi-alert-email');
   closeBenchmarkSettings();
   showToast('✓ Alert-Schwellen gespeichert');
   render();
@@ -2030,6 +2152,7 @@ function renderAlerts(e, partner) {
   // Auto-trigger Slack for critical alerts
   if (alerts.some(a => a.level === 'crit')) {
     triggerSlack(partner, alerts.filter(a => a.level === 'crit'));
+    triggerEmailAlert(partner, alerts.filter(a => a.level === 'crit'));
   }
 }
 
@@ -2038,6 +2161,22 @@ function triggerSlack(partner, critAlerts) {
   if (!slackUrl || !slackUrl.startsWith('https://hooks.slack.com')) return;
   const text = `*KPI Alert — ${partner.name}*\n${critAlerts.map(a => `${a.icon} ${a.title}: ${a.desc}`).join('\n')}`;
   fetch(slackUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }).catch(() => {});
+}
+
+function triggerEmailAlert(partner, critAlerts) {
+  const email = localStorage.getItem('kpi-alert-email');
+  if (!email) return;
+  const e = latestEntry(partner);
+  fetch('/.netlify/functions/send-alert', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      partnerName: partner.name,
+      period: e?.period || '–',
+      alerts: critAlerts,
+      recipientEmail: email
+    })
+  }).catch(() => {}); // Stiller Fehler — kein UI-Impact
 }
 
 function testSlack() {
