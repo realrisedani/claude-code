@@ -577,6 +577,76 @@
     .toast.hidden { opacity: 0; transform: translateY(1rem); pointer-events: none; }
     .toast.error { border-color: var(--red); color: var(--red); }
 
+    /* ─── PIN MODAL ─── */
+    .pin-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(6px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pin-overlay.hidden { display: none; }
+    .pin-box {
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    .pin-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .pin-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .4rem; }
+    .pin-box p { font-size: .8rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .pin-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: .7rem 1rem;
+      border-radius: .6rem;
+      font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: .3em;
+      outline: none;
+      margin-bottom: .75rem;
+    }
+    .pin-input:focus { border-color: var(--accent); }
+    .pin-error { color: var(--red); font-size: .78rem; min-height: 1.2em; margin-bottom: .5rem; }
+    .pin-hint { font-size: .72rem; color: var(--muted); margin-top: .75rem; }
+    .pin-hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+    /* ─── COPY LINK BTN ─── */
+    .copy-link-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .75rem;
+      padding: .3rem .7rem;
+      border-radius: .4rem;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .copy-link-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .copy-link-btn.copied { border-color: var(--green); color: var(--green); }
+
+    /* ─── SYNC INDICATOR ─── */
+    .sync-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted);
+      margin-right: .35rem;
+      vertical-align: middle;
+    }
+    .sync-dot.ok  { background: var(--green); }
+    .sync-dot.err { background: var(--red); }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .form-grid { grid-template-columns: 1fr; }
@@ -826,12 +896,28 @@
   </div>
 </div>
 
+<!-- ─── PIN MODAL ─── -->
+<div id="pinOverlay" class="pin-overlay hidden">
+  <div class="pin-box">
+    <div class="pin-icon">🔐</div>
+    <h3 id="pinTitle">Admin-Zugang</h3>
+    <p id="pinDesc">PIN eingeben um fortzufahren</p>
+    <input type="password" id="pinInput" class="pin-input" maxlength="20" placeholder="••••"
+      onkeydown="if(event.key==='Enter')submitPin()">
+    <div class="pin-error" id="pinError"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitPin()">Bestätigen</button>
+    <div class="pin-hint" id="pinHint"></div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast hidden"></div>
 
 <script>
-// ─── DATA LAYER ───────────────────────────────────────────────
-const STORAGE_KEY = 'kpi-partners';
+// ─── CONFIG ───────────────────────────────────────────────────
+const STORAGE_KEY   = 'kpi-partners';
+const PIN_HASH_KEY  = 'kpi-admin-pin';   // SHA-256 hash of admin PIN stored in localStorage
+const PIN_SESSION   = 'kpi-admin-ok';    // sessionStorage flag (cleared on tab close)
 
 function loadData() {
   try {
@@ -855,20 +941,40 @@ let selectedPartnerId = null;
 let activeTab = 'entry';
 let adminSortKey = 'revenue';
 let adminSortAsc = false;
+let pinSetMode = false;  // true = setting new PIN, false = verifying PIN
 
 // ─── MODE ─────────────────────────────────────────────────────
 function setMode(m) {
+  // Admin PIN guard
+  if (m === 'admin' && !sessionStorage.getItem(PIN_SESSION)) {
+    const pinHash = localStorage.getItem(PIN_HASH_KEY);
+    if (pinHash) {
+      // PIN is set — require verification
+      openPinModal(false);
+      return;
+    } else {
+      // No PIN set yet — prompt to create one
+      openPinModal(true);
+      return;
+    }
+  }
+  _applyMode(m);
+}
+
+function _applyMode(m) {
   mode = m;
   document.getElementById('btnAdmin').classList.toggle('active', m === 'admin');
   document.getElementById('btnPartner').classList.toggle('active', m === 'partner');
   document.getElementById('adminView').classList.toggle('active', m === 'admin');
   document.getElementById('partnerView').classList.toggle('active', m === 'partner');
   document.getElementById('partnerSelect').style.display = m === 'partner' ? '' : 'none';
+  updateUrl();
   render();
 }
 
 function onPartnerChange() {
   selectedPartnerId = document.getElementById('partnerSelect').value;
+  updateUrl();
   render();
 }
 
@@ -999,6 +1105,7 @@ function renderPartner(data) {
   const prev = entries.length >= 2 ? entries[entries.length - 2] : null;
 
   // Period info
+  const partnerSlug = toSlug(partner.name);
   document.getElementById('periodInfo').innerHTML = `
     <div>
       <div class="period-label">Partner</div>
@@ -1011,6 +1118,10 @@ function renderPartner(data) {
     <div>
       <div class="period-label">Einträge gesamt</div>
       <div class="period-value">${entries.length}</div>
+    </div>
+    <div>
+      <div class="period-label">Partner-Link</div>
+      <button class="copy-link-btn" id="copyLinkBtn" onclick="copyPartnerLink('${partnerSlug}', this)">🔗 Link kopieren</button>
     </div>
   `;
 
@@ -1157,8 +1268,8 @@ function renderTips(e, type, showRate, ctr, optinRate, closeRate) {
     });
   }
 
-  if (parseFloat(showRate) < 40) {
-    tips.push({ icon: '📅', title: 'Show-Rate unter 40%', desc: 'Automatische Reminder-Sequenz (E-Mail + SMS) 24h und 1h vor dem Call einrichten. Ziel: >60%.' });
+  if (e.callsBooked > 0 && parseFloat(showRate) <= 40) {
+    tips.push({ icon: '📅', title: `Show-Rate nur ${parseFloat(showRate).toFixed(0)}% — Reminder fehlen`, desc: 'Automatische Reminder-Sequenz (E-Mail + SMS) 24h und 1h vor dem Call einrichten. Ziel: >60%.' });
   }
   if (parseFloat(optinRate) < 5) {
     tips.push({ icon: '📝', title: 'Opt-in Rate zu niedrig', desc: 'Landing Page Headline und CTA testen. Kürzere Formulare erhöhen Conversions deutlich. Ziel: >10%.' });
@@ -1166,7 +1277,7 @@ function renderTips(e, type, showRate, ctr, optinRate, closeRate) {
   if (parseFloat(closeRate) < 20 && e.callsShown > 5) {
     tips.push({ icon: '💬', title: 'Close Rate optimieren', desc: 'Discovery-Fragen im Call strukturieren. Einwand-Behandlung schriftlich vorbereiten. Ziel: >30%.' });
   }
-  if (e.adSpend > 0 && e.revenue > 0 && e.revenue < e.adSpend) {
+  if (e.adSpend > 0 && e.revenue < e.adSpend) {
     tips.push({ icon: '💸', title: 'Negativer ROI — Ad-Spend prüfen', desc: `Ausgaben: ${fmtEur(e.adSpend)} | Umsatz: ${fmtEur(e.revenue)}. Entweder Targeting optimieren oder Funnel vor weiterem Scaling fixieren.` });
   }
 
@@ -1445,7 +1556,131 @@ document.getElementById('modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 
+// ─── ADMIN PIN SYSTEM ─────────────────────────────────────────
+function openPinModal(isSetup) {
+  pinSetMode = isSetup;
+  const title  = document.getElementById('pinTitle');
+  const desc   = document.getElementById('pinDesc');
+  const hint   = document.getElementById('pinHint');
+  const errEl  = document.getElementById('pinError');
+  document.getElementById('pinInput').value = '';
+  errEl.textContent = '';
+  if (isSetup) {
+    title.textContent = 'Admin PIN einrichten';
+    desc.textContent  = 'Wähle einen PIN für den Admin-Bereich. Partner sehen nur ihre eigene Ansicht.';
+    hint.innerHTML    = 'Du kannst den PIN später über Admin → Einstellungen ändern.';
+  } else {
+    title.textContent = 'Admin-Zugang';
+    desc.textContent  = 'PIN eingeben um fortzufahren';
+    hint.innerHTML    = '<a onclick="resetPin()">PIN vergessen?</a>';
+  }
+  document.getElementById('pinOverlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('pinInput').focus(), 100);
+}
+
+function closePinModal() {
+  document.getElementById('pinOverlay').classList.add('hidden');
+}
+
+async function submitPin() {
+  const val = document.getElementById('pinInput').value.trim();
+  if (!val) { document.getElementById('pinError').textContent = 'Bitte PIN eingeben.'; return; }
+  const hash = await sha256(val);
+
+  if (pinSetMode) {
+    // Setting new PIN
+    localStorage.setItem(PIN_HASH_KEY, hash);
+    sessionStorage.setItem(PIN_SESSION, '1');
+    closePinModal();
+    showToast('Admin-PIN gesetzt');
+    _applyMode('admin');
+  } else {
+    // Verifying PIN
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+    if (hash === stored) {
+      sessionStorage.setItem(PIN_SESSION, '1');
+      closePinModal();
+      _applyMode('admin');
+    } else {
+      document.getElementById('pinError').textContent = 'Falscher PIN. Bitte erneut versuchen.';
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  }
+}
+
+function resetPin() {
+  if (confirm('Admin-PIN zurücksetzen? Danach kann jeder auf den Admin-Bereich zugreifen bis ein neuer PIN gesetzt wird.')) {
+    localStorage.removeItem(PIN_HASH_KEY);
+    sessionStorage.setItem(PIN_SESSION, '1');
+    closePinModal();
+    showToast('PIN zurückgesetzt — beim nächsten Öffnen neu setzen');
+    _applyMode('admin');
+  }
+}
+
+async function sha256(message) {
+  const buf = new TextEncoder().encode(message);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ─── SHAREABLE URLs ───────────────────────────────────────────
+function toSlug(name) {
+  return name.toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+}
+
+function updateUrl() {
+  const params = new URLSearchParams();
+  if (mode === 'partner' && selectedPartnerId) {
+    const data = getData();
+    const partner = data.partners.find(p => p.id === selectedPartnerId);
+    if (partner) {
+      params.set('partner', toSlug(partner.name));
+    }
+  }
+  const newUrl = params.toString()
+    ? `${window.location.pathname}?${params}`
+    : window.location.pathname;
+  history.replaceState({}, '', newUrl);
+}
+
+function copyPartnerLink(slug, btn) {
+  const url = `${window.location.origin}${window.location.pathname}?partner=${slug}`;
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = '✓ Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '🔗 Link kopieren';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    prompt('Partner-Link (manuell kopieren):', url);
+  });
+}
+
+function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const pParam = params.get('partner');
+  if (!pParam) return;
+  const data = getData();
+  const match = data.partners.find(p => toSlug(p.name) === pParam);
+  if (match) {
+    selectedPartnerId = match.id;
+    // In partner mode from URL, no PIN needed
+    mode = 'partner';
+    document.getElementById('btnAdmin').classList.remove('active');
+    document.getElementById('btnPartner').classList.add('active');
+    document.getElementById('adminView').classList.remove('active');
+    document.getElementById('partnerView').classList.add('active');
+    document.getElementById('partnerSelect').style.display = '';
+  }
+}
+
 // ─── INIT ─────────────────────────────────────────────────────
+initFromUrl();
 render();
 </script>
 </body>
