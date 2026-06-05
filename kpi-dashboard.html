@@ -845,6 +845,15 @@
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- Supabase: nur geladen wenn kpi-config.js vorhanden (lokaler Dev: Datei erstellen, Netlify: Env-Vars) -->
+  <script>
+    // Graceful loader: kpi-config.js ist gitignored — Dashboard läuft auch ohne (localStorage-Mode)
+    window.__SUPABASE_CONFIGURED__ = false;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="kpi-config.js" onerror="console.info('kpi-config.js nicht gefunden — localStorage-Mode aktiv')"></script>
+  <script src="supabase/kpi-data.js" onerror="console.info('kpi-data.js nicht geladen')"></script>
 </head>
 <body>
 

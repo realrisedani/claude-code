@@ -160,6 +160,32 @@ CREATE POLICY "Owner: delete own entries"
   );
 
 
+-- ─── TABLE: webhook_events ───────────────────────────────────────────────────
+-- Stores every incoming webhook for idempotency-check and audit trail.
+-- Used by netlify/functions/webhook-receiver.js.
+
+CREATE TABLE IF NOT EXISTS webhook_events (
+  id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  source          text NOT NULL,          -- 'calendly' | 'stripe' | 'digistore24'
+  event_type      text NOT NULL,
+  payload         jsonb NOT NULL DEFAULT '{}',
+  idempotency_key text NOT NULL UNIQUE,   -- prevents duplicate processing
+  processed_at    timestamptz NOT NULL DEFAULT now(),
+  created_at      timestamptz NOT NULL DEFAULT now()
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS webhook_events_idempotency_key_idx ON webhook_events (idempotency_key);
+CREATE INDEX IF NOT EXISTS webhook_events_source_idx          ON webhook_events (source);
+CREATE INDEX IF NOT EXISTS webhook_events_created_at_idx      ON webhook_events (created_at DESC);
+
+-- Row Level Security
+ALTER TABLE webhook_events ENABLE ROW LEVEL SECURITY;
+
+-- Only service-role (webhook-receiver.js) can write — no user-facing RLS needed
+-- Service-role bypasses RLS by design in Supabase
+
+
 -- ─── REALTIME ────────────────────────────────────────────────────────────────
 -- Enable realtime for both tables (Supabase Dashboard → Database → Replication
 -- or run these statements):
