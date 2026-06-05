@@ -1,6 +1,9 @@
 [build]
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/kpi-dashboard"
   to = "/kpi-dashboard.html"
