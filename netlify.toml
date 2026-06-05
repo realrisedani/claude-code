@@ -5,6 +5,11 @@
   directory = "netlify/functions"
 
 [[redirects]]
+  from = "/"
+  to = "/kpi-dashboard.html"
+  status = 200
+
+[[redirects]]
   from = "/kpi-dashboard"
   to = "/kpi-dashboard.html"
   status = 200
