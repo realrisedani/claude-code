@@ -862,7 +862,7 @@
   <div class="header-inner">
     <div class="header-brand">
       <div class="kicker">RealRise</div>
-      <h1>KPI Dashboard</h1>
+      <h1>KPI Dashboard <span id="sheetsBadge" style="font-size:.6rem;font-weight:600;letter-spacing:.05em;vertical-align:middle;background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);color:var(--muted);padding:.2rem .55rem;border-radius:999px;display:none"></span></h1>
     </div>
     <div class="header-actions">
       <div class="mode-toggle">
@@ -875,6 +875,7 @@
       <button class="btn btn-outline" onclick="openReport()">Wochenbericht</button>
       <button class="btn btn-ghost btn-sm" onclick="openBenchmarkSettings()" title="Alert-Schwellen konfigurieren">⚙ Schwellen</button>
       <button class="btn btn-ghost btn-sm" onclick="loadDemo()" title="Demo-Daten laden">Demo</button>
+      <button id="btnChangePin" class="btn btn-ghost btn-sm" onclick="openPinModal('change')" title="Admin-PIN ändern" style="display:none">🔑 PIN ändern</button>
     </div>
   </div>
 </header>
@@ -1017,6 +1018,7 @@
     <div class="modal-tabs">
       <button class="modal-tab active" onclick="switchTab('entry')">Eintrag hinzufügen</button>
       <button class="modal-tab" onclick="switchTab('partner')">Neuer Partner</button>
+      <button class="modal-tab" onclick="switchTab('sheets')">Google Sheets</button>
     </div>
     <div class="modal-body">
 
@@ -1204,7 +1206,25 @@
 // ─── CONFIG ───────────────────────────────────────────────────
 const STORAGE_KEY   = 'kpi-partners';
 const PIN_HASH_KEY  = 'kpi-admin-pin';   // SHA-256 hash of admin PIN stored in localStorage
-const PIN_SESSION   = 'kpi-admin-ok';    // sessionStorage flag (cleared on tab close)
+const PIN_SESSION   = 'kpi-admin-auth';  // sessionStorage flag (cleared on tab close), value '1'
+const DEFAULT_PIN   = '2612';            // Default PIN — stored as SHA-256 hash, never plaintext
+
+// ─── GOOGLE SHEETS CONFIG ─────────────────────────────────────
+const SHEETS_CONFIG = {
+  spreadsheetId: '',  // Leer = deaktiviert
+  apiKey: '',
+  range: 'KPI-Daten!A2:M',
+  syncInterval: 300000  // 5 Minuten
+};
+
+// Aus localStorage befüllen (gespeichert via Einstellungs-Modal)
+(function loadSheetsConfig() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('kpi-sheets-config') || '{}');
+    if (saved.spreadsheetId) SHEETS_CONFIG.spreadsheetId = saved.spreadsheetId;
+    if (saved.apiKey)        SHEETS_CONFIG.apiKey        = saved.apiKey;
+  } catch (e) {}
+})();
 
 function loadData() {
   try {
@@ -1228,7 +1248,9 @@ let selectedPartnerId = null;
 let activeTab = 'entry';
 let adminSortKey = 'revenue';
 let adminSortAsc = false;
-let pinSetMode = false;  // true = setting new PIN, false = verifying PIN
+let pinSetMode = false;      // true = setting new PIN / 'change' = changing, false = verifying PIN
+let pinAttempts = 0;         // failed attempts counter
+let pinLockedUntil = 0;      // timestamp when lockout expires
 
 // Perioden-Vergleich
 let compareMode = false;
@@ -1260,6 +1282,9 @@ function _applyMode(m) {
   document.getElementById('adminView').classList.toggle('active', m === 'admin');
   document.getElementById('partnerView').classList.toggle('active', m === 'partner');
   document.getElementById('partnerSelect').style.display = m === 'partner' ? '' : 'none';
+  // Show "PIN ändern" button only when in Admin mode
+  const pinBtn = document.getElementById('btnChangePin');
+  if (pinBtn) pinBtn.style.display = m === 'admin' ? '' : 'none';
   updateUrl();
   render();
 }
@@ -2009,25 +2034,32 @@ document.getElementById('modal').addEventListener('click', function(e) {
 });
 
 // ─── ADMIN PIN SYSTEM ─────────────────────────────────────────
-function openPinModal(isSetup) {
-  pinSetMode = isSetup;
+// mode: false = verify, true = setup (first time), 'change' = change PIN
+function openPinModal(mode) {
+  pinSetMode = mode;
   const title  = document.getElementById('pinTitle');
   const desc   = document.getElementById('pinDesc');
   const hint   = document.getElementById('pinHint');
   const errEl  = document.getElementById('pinError');
-  document.getElementById('pinInput').value = '';
+  const inp    = document.getElementById('pinInput');
+  inp.value = '';
+  inp.disabled = false;
   errEl.textContent = '';
-  if (isSetup) {
+  if (mode === true) {
     title.textContent = 'Admin PIN einrichten';
     desc.textContent  = 'Wähle einen PIN für den Admin-Bereich. Partner sehen nur ihre eigene Ansicht.';
-    hint.innerHTML    = 'Du kannst den PIN später über Admin → Einstellungen ändern.';
+    hint.innerHTML    = 'Standard-PIN ist <code>2612</code> — bitte jetzt ändern.';
+  } else if (mode === 'change') {
+    title.textContent = 'PIN ändern';
+    desc.textContent  = 'Aktuellen PIN eingeben zur Bestätigung.';
+    hint.innerHTML    = '';
   } else {
     title.textContent = 'Admin-Zugang';
     desc.textContent  = 'PIN eingeben um fortzufahren';
     hint.innerHTML    = '<a onclick="resetPin()">PIN vergessen?</a>';
   }
   document.getElementById('pinOverlay').classList.remove('hidden');
-  setTimeout(() => document.getElementById('pinInput').focus(), 100);
+  setTimeout(() => inp.focus(), 100);
 }
 
 function closePinModal() {
@@ -2035,30 +2067,99 @@ function closePinModal() {
 }
 
 async function submitPin() {
+  const errEl = document.getElementById('pinError');
   const val = document.getElementById('pinInput').value.trim();
-  if (!val) { document.getElementById('pinError').textContent = 'Bitte PIN eingeben.'; return; }
+  if (!val) { errEl.textContent = 'Bitte PIN eingeben.'; return; }
+
+  // Check lockout
+  if (pinLockedUntil && Date.now() < pinLockedUntil) {
+    const secs = Math.ceil((pinLockedUntil - Date.now()) / 1000);
+    errEl.textContent = `Gesperrt. Bitte ${secs} Sekunden warten.`;
+    return;
+  }
+
   const hash = await sha256(val);
 
-  if (pinSetMode) {
-    // Setting new PIN
+  if (pinSetMode === 'change') {
+    // Step 1 of PIN change: verify old PIN first, then prompt new
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+    if (hash !== stored) {
+      pinAttempts++;
+      if (pinAttempts >= 3) {
+        pinLockedUntil = Date.now() + 30000;
+        pinAttempts = 0;
+        errEl.textContent = '3 Fehlversuche — 30 Sekunden gesperrt.';
+        startLockoutCountdown(errEl);
+      } else {
+        errEl.textContent = `Falscher PIN. Noch ${3 - pinAttempts} Versuch(e).`;
+      }
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+      return;
+    }
+    // Old PIN correct — now ask for new PIN
+    pinAttempts = 0;
+    pinSetMode = 'newpin';
+    document.getElementById('pinTitle').textContent = 'Neuen PIN eingeben';
+    document.getElementById('pinDesc').textContent = 'Wähle einen neuen 4-stelligen PIN.';
+    document.getElementById('pinHint').textContent = '';
+    document.getElementById('pinInput').value = '';
+    errEl.textContent = '';
+    document.getElementById('pinInput').focus();
+    return;
+  }
+
+  if (pinSetMode === 'newpin' || pinSetMode === true) {
+    // Setting / confirming new PIN
+    if (val.length < 4) {
+      errEl.textContent = 'PIN muss mindestens 4 Zeichen haben.';
+      return;
+    }
     localStorage.setItem(PIN_HASH_KEY, hash);
     sessionStorage.setItem(PIN_SESSION, '1');
     closePinModal();
-    showToast('Admin-PIN gesetzt');
+    showToast('Admin-PIN gesetzt ✓');
+    _applyMode('admin');
+    return;
+  }
+
+  // Default: Verifying PIN
+  const stored = localStorage.getItem(PIN_HASH_KEY);
+  if (hash === stored) {
+    pinAttempts = 0;
+    pinLockedUntil = 0;
+    sessionStorage.setItem(PIN_SESSION, '1');
+    closePinModal();
     _applyMode('admin');
   } else {
-    // Verifying PIN
-    const stored = localStorage.getItem(PIN_HASH_KEY);
-    if (hash === stored) {
-      sessionStorage.setItem(PIN_SESSION, '1');
-      closePinModal();
-      _applyMode('admin');
+    pinAttempts++;
+    if (pinAttempts >= 3) {
+      pinLockedUntil = Date.now() + 30000;
+      pinAttempts = 0;
+      errEl.textContent = '3 Fehlversuche — 30 Sekunden gesperrt.';
+      document.getElementById('pinInput').disabled = true;
+      startLockoutCountdown(errEl);
     } else {
-      document.getElementById('pinError').textContent = 'Falscher PIN. Bitte erneut versuchen.';
+      errEl.textContent = `Falscher PIN. Noch ${3 - pinAttempts} Versuch(e).`;
       document.getElementById('pinInput').value = '';
       document.getElementById('pinInput').focus();
     }
   }
+}
+
+function startLockoutCountdown(errEl) {
+  document.getElementById('pinInput').value = '';
+  const tick = setInterval(() => {
+    const remaining = Math.ceil((pinLockedUntil - Date.now()) / 1000);
+    if (remaining <= 0) {
+      clearInterval(tick);
+      errEl.textContent = '';
+      document.getElementById('pinInput').disabled = false;
+      document.getElementById('pinInput').focus();
+    } else {
+      errEl.textContent = `Gesperrt. Bitte ${remaining} Sekunden warten.`;
+    }
+  }, 1000);
 }
 
 function resetPin() {
@@ -2424,6 +2525,33 @@ function openReport() {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────
+// Seed default PIN (2612) on first ever load
+(async () => {
+  if (!localStorage.getItem(PIN_HASH_KEY)) {
+    localStorage.setItem(PIN_HASH_KEY, await sha256(DEFAULT_PIN));
+  }
+})();
+
+// On page load: if session has auth → show admin directly without PIN
+// Otherwise start in partner mode so clicking Admin triggers PIN modal
+(function initAuth() {
+  if (sessionStorage.getItem(PIN_SESSION) === '1') {
+    // Already authenticated this session — show admin
+    mode = 'admin';
+    // PIN-ändern Button sichtbar machen (wird nach DOMContentLoaded via render() auch gesetzt)
+    const pinBtn = document.getElementById('btnChangePin');
+    if (pinBtn) pinBtn.style.display = '';
+  } else {
+    // Not authenticated — start in partner view, Admin click will trigger PIN
+    mode = 'partner';
+    document.getElementById('btnAdmin').classList.remove('active');
+    document.getElementById('btnPartner').classList.add('active');
+    document.getElementById('adminView').classList.remove('active');
+    document.getElementById('partnerView').classList.add('active');
+    document.getElementById('partnerSelect').style.display = '';
+  }
+})();
+
 initFromUrl();
 render();
 </script>
