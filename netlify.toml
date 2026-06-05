@@ -5,6 +5,9 @@
 [functions]
   directory = "netlify/functions"
 
+[functions."weekly-report"]
+  schedule = "0 8 * * 1"
+
 [[headers]]
   for = "/*"
   [headers.values]
